@@ -1,6 +1,6 @@
 //types
 import type { IlluminationManager } from "../IlluminationManager.js";
-import type { Position3Matrix } from "Meta/Util.types";
+import type { Vector3 } from "Meta/Util.types";
 
 export function runRGBUpdate(this: typeof IlluminationManager) {
  while (this._RGBlightUpdateQ.length != 0) {
@@ -14,6 +14,7 @@ export function runRGBUpdate(this: typeof IlluminationManager) {
   if (!this._sDataTool.loadIn(x, y, z)) continue;
   if (this._sDataTool.isBarrier()) continue;
   const sl = this._sDataTool.getLight();
+  if(sl <= 0) continue;
   if (this._nDataTool.loadIn(x - 1, y, z)) {
    const nl = this._nDataTool.getLight();
    if (nl > -1 && this.lightData.isLessThanForRGBAdd(nl, sl)) {
@@ -87,7 +88,7 @@ export function runRGBRemoveAt(
 }
 export function runRGBRemove(
  this: typeof IlluminationManager,
- lightSource?: Position3Matrix
+ lightSource?: Vector3
 ) {
  while (this._RGBlightRemovalQ.length != 0) {
   const node = this._RGBlightRemovalQ.shift();
@@ -99,6 +100,7 @@ export function runRGBRemove(
   const z = node[2];
   if (!this._sDataTool.loadIn(x, y, z)) continue;
   const sl = this._sDataTool.getLight();
+  if(sl <= 0) continue;
   if (this._nDataTool.loadIn(x - 1, y, z)) {
    const nl = this._nDataTool.getLight();
    const n1HasRGB = this.lightData.hasRGBLight(nl);

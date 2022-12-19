@@ -10,8 +10,9 @@ RegisterItemData(DVEW);
 await DVEW.$INIT();
 const builder = DVEW.getBuilder();
 const dataTool = DVEW.getDataTool();
+const brush = DVEW.getBrush();
 DVEW.data.dimensions.registerDimension("other", {
- fluidFlowSpeed: 1,
+ liquidFlowSpeed: 1,
  magmaFlowSpeed: 1,
  sunLight: true,
 });
@@ -34,6 +35,18 @@ for (let x = -16; x <= 16; x += 16) {
  }
 }
 
+for (let x = 0; x < 16; x++) {
+ let y = 5;
+ for (let z = 0; z <= 10; z += 1) {
+  brush.setId("dve:dreamstone-stair");
+  if (x == 0 || x == 15) {
+   brush.setId("dve:dreamstone");
+  }
+  brush.setXYZ(x, y, z).setShapeState(0).paint().clear();
+  y++;
+ }
+}
+brush.setId("dve:debugbox").setXYZ(20, 7, 0).paint();
 builder.setDimension("other");
 for (let x = -64; x <= -32; x += 16) {
  for (let z = -64; z <= -32; z += 16) {
@@ -42,6 +55,7 @@ for (let x = -64; x <= -32; x += 16) {
 }
 
 GetAnalyzerCubeWorld(DVEW);
+
 
 (self as any).DVEW = DVEW;
 (self as any).dataTool = dataTool;

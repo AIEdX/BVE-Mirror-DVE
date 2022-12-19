@@ -6,7 +6,21 @@
     "ts"
    ],
    "id": "threadcomm"
-  }
+  },
+  {
+   "dir": "D:/DSSoftware/DSLIBS/divineBinaryTags/src",
+   "fileExtensions": [
+    "ts"
+   ],
+   "id": "dbt"
+  },
+  {
+    "dir": "D:/DSSoftware/DSLIBS/divineRNG/src",
+    "fileExtensions": [
+     "ts"
+    ],
+    "id": "drng"
+   }
  ],
  "outputs": [
   {
@@ -14,7 +28,19 @@
    "sourceID": "threadcomm",
    "codeSection": "all",
    "keepComments": true
-  }
+  },
+  {
+   "dir": "D:/DSSoftware/APPS/divinevoxelengine/src/Libs/DivineBinaryTags",
+   "sourceID": "dbt",
+   "codeSection": "all",
+   "keepComments": true
+  },
+  {
+    "dir": "D:/DSSoftware/APPS/divinevoxelengine/src/Libs/divineRNG",
+    "sourceID": "drng",
+    "codeSection": "all",
+    "keepComments": true
+   }
  ],
  "codeSections": {
   "test": {

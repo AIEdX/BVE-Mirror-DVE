@@ -1,8 +1,6 @@
 export type ChunkData = {
  buffer: SharedArrayBuffer;
  data: DataView;
- segement1: Uint32Array;
- segement2: Uint32Array;
 };
 
 export type Column = {
@@ -12,6 +10,8 @@ export type Column = {
 };
 
 export type Region = {
+ buffer: SharedArrayBuffer;
+ data: DataView;
  columns: Map<number, Column>;
 };
 export type WorldDimensions = Map<string, Map<string, Region>>;

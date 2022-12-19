@@ -1,6 +1,11 @@
 export const DataSyncTypes = {
  chunk: 0,
- voxelPalette: 1,
- voxelData: 2,
- dimesnion: 3,
+ column: 1,
+ region: 2,
+ voxelPalette: 3,
+ voxelData: 4,
+ dimesnion: 5,
+ chunkTags: 6,
+ columnTags: 7,
+ regionTags: 8,
 };

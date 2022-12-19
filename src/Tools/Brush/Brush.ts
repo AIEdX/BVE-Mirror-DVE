@@ -1,9 +1,10 @@
 import type { AddVoxelData } from "Meta/Data/WorldData.types";
 import { DataTool } from "../../Tools/Data/DataTool.js";
-import { DimensionsRegister } from "../../Data/Dimensions/DimensionsRegister.js";
+import { DimensionsRegister } from "../../Data/World/Dimensions/DimensionsRegister.js";
 import { WorldPainter } from "../../Data/World/WorldPainter.js";
 import { WorldRegister } from "../../Data/World/WorldRegister.js";
 import { VoxelPaletteReader } from "../../Data/Voxel/VoxelPalette.js";
+import { RawVoxelData } from "Meta/index.js";
 export class BrushTool {
  data: AddVoxelData = {
   id: "dve:air",
@@ -18,7 +19,6 @@ export class BrushTool {
  };
 
  _dt = new DataTool();
- _raw: number[] = [];
  setId(id: string, state = 0, shapeState = 0) {
   this.data.id = id;
   this.data.state = state;
@@ -48,7 +48,19 @@ export class BrushTool {
   return this;
  }
 
- setRaw(data: number[]) {
+ clear() {
+  this.data.id = "dve:air";
+  this.data.secondaryVoxelId = "dve:air";
+  this.data.level = 0;
+  this.data.levelState = 0;
+  this.data.state = 0;
+  this.data.secondaryState = 0;
+  this.data.position[0] = 0;
+  this.data.position[1] = 0;
+  this.data.position[2] = 0;
+ }
+
+ setRaw(data: RawVoxelData) {
   this._dt.loadInRaw(data);
   this.data.id = this._dt.getStringId();
   this.data.shapeState = this._dt.getShapeState();

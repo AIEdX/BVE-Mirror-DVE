@@ -1,13 +1,14 @@
-import type { VoxelSubstanceType, VoxelTemplateSubstanceType } from "Meta/index.js";
-export declare class DataTool {
+import type { RawVoxelData, VoxelSubstanceType, VoxelTemplateSubstanceType } from "Meta/index.js";
+import { ChunkDataTool } from "./ChunkDataTool.js";
+import { HeightMapTool } from "./HeightMapTool.js";
+import { DataToolBase } from "./DataToolBase.js";
+export declare class DataTool extends DataToolBase {
     static _dtutil: DataTool;
+    static _chunkTool: ChunkDataTool;
+    static _heightMapTool: HeightMapTool;
     _mode: "World" | "Entity";
     data: {
-        dimension: string;
-        raw: number[];
-        x: number;
-        y: number;
-        z: number;
+        raw: RawVoxelData;
         id: number;
         baseId: number;
         secondaryId: number;
@@ -20,10 +21,56 @@ export declare class DataTool {
         secondarySubstance: VoxelSubstanceType;
     };
     __secondary: boolean;
+    tags: {
+        voxelMap: Uint16Array;
+        substanceRecord: Record<number, VoxelSubstanceType>;
+        voxelData: {
+            substance: VoxelSubstanceType;
+            shapeId: number;
+            hardness: number;
+            material: number;
+            checkCollision: number;
+            colliderId: number;
+            lightSource: number;
+            lightValue: number;
+            isRich: number;
+        };
+        id: string;
+        sync(voxelMap: Uint16Array): void;
+        setVoxel(id: number): void;
+        getVoxelData(id: number): {
+            substance: VoxelSubstanceType;
+            shapeId: number;
+            hardness: number;
+            material: number;
+            checkCollision: number;
+            colliderId: number;
+            lightSource: number;
+            lightValue: number;
+            isRich: number;
+        };
+        getTrueSubstance(id: number): VoxelSubstanceType;
+        $INIT(data: import("../../Libs/DivineBinaryTags/Meta/Util.types.js").RemoteTagManagerInitData): void;
+        byteOffSet: number;
+        tagSize: number;
+        tagIndexes: number;
+        data: DataView;
+        indexMap: Map<string, number>;
+        index: DataView;
+        setBuffer(data: DataView | import("../../Libs/DivineBinaryTags/Meta/Util.types.js").BufferTypes): void;
+        setTagIndex(index: number): void;
+        getTag(id: string): number;
+        setTag(id: string, value: number): boolean;
+        getArrayTagValue(id: string, index: number): number;
+        setArrayTagValue(id: string, index: number, value: number): number | void;
+        loopThroughTags(run: (id: string, value: number) => void): void;
+        loopThroughIndex(run: (data: number[]) => void): void;
+        loopThroughAllIndexTags(run: (id: string, value: number, index: number) => void): void;
+    };
     setDimension(dimensionId: string | number): this;
     setSecondary(enable: boolean): this;
     _getBaseId(id: number): number;
-    loadInRaw(rawData: number[]): void;
+    loadInRaw(rawData: RawVoxelData): void;
     __process(): void;
     loadIn(x: number, y: number, z: number): boolean | undefined;
     commit(heightMapUpdate?: number): false | this;
@@ -42,7 +89,7 @@ export declare class DataTool {
     getSubstance(): VoxelSubstanceType;
     getTemplateSubstance(): VoxelTemplateSubstanceType;
     getState(): number;
-    isRich(): boolean;
+    isRich(): number;
     setAir(): this;
     isAir(): boolean;
     setBarrier(): this;

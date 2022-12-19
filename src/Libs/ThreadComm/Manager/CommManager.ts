@@ -92,11 +92,13 @@ export class CommManager {
 	}
 
 	__handleManagerMessage(data: any, event: any) {
-		this.messageFunctions[data[0]](data, event);
+		if (!this.messageFunctions[data[0]]) return;
+		this.messageFunctions[data[0]].forEach((_) => _(data, event));
 	}
 
 	listenForMessage(message: string | number, run: MessageFunction) {
-		this.messageFunctions[message] = run;
+		this.messageFunctions[message] ??= [];
+		this.messageFunctions[message].push(run);
 	}
 
 	sendMessageToAll(
@@ -113,10 +115,10 @@ export class CommManager {
 		id: string,
 		data: T,
 		transfers: any[] = [],
-		queue?: string
+		queueId?: string
 	) {
 		for (const comm of this.__comms) {
-			comm.runTasks(id, data, transfers, queue);
+			comm.runTasks(id, data, transfers, queueId);
 		}
 	}
 
@@ -125,15 +127,34 @@ export class CommManager {
 		data: T,
 		transfers: any[] = [],
 		threadNumber = -1,
-		queue?: string
+		queueId?: string
 	) {
 		if (threadNumber < 0) {
 			const comm = this.__comms[this._currentCom];
-			comm.runTasks(id, data, transfers, queue);
+			comm.runTasks(id, data, transfers, queueId);
 			return this.__handleCount();
 		} else {
 			const comm = this.__comms[threadNumber];
-			comm.runTasks(id, data, transfers, queue);
+			comm.runTasks(id, data, transfers, queueId);
+			return threadNumber;
+		}
+	}
+
+	runPromiseTasks<T>(
+		id: string | number,
+		requestsID: string,
+		onDone: (data: any) => void,
+		data: T,
+		transfers: any[] = [],
+		threadNumber = -1
+	) {
+		if (threadNumber < 0) {
+			const comm = this.__comms[this._currentCom];
+			comm.runPromiseTasks(id, requestsID, onDone, data, transfers);
+			return this.__handleCount();
+		} else {
+			const comm = this.__comms[threadNumber];
+			comm.runPromiseTasks(id, requestsID, onDone, data, transfers);
 			return threadNumber;
 		}
 	}
@@ -150,7 +171,7 @@ export class CommManager {
 	addQueue<T>(
 		id: string | number,
 		associatedTasksId: string | number,
-		getQueueKey : ((data:T) => string ) | null = null,
+		getQueueKey: ((data: T) => string) | null = null,
 		beforeRun: (data: T) => T = (data: T) => data,
 		afterRun: (data: T, thread: number) => void = (
 			data: T,

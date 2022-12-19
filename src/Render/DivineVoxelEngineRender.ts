@@ -20,10 +20,12 @@ import { InitWorkers } from "./Init/InitWorkers.js";
 import { BuildInitalMeshes } from "./Init/BuildInitalMeshes.js";
 import { RenderTasks } from "./Tasks/Tasks.js";
 import { WorldBounds } from "../Data/World/WorldBounds.js";
-
+import { ThreadComm } from "../Libs/ThreadComm/ThreadComm.js";
 
 export const DVER = {
  UTIL: Util,
+ TC: ThreadComm,
+ currentCom: ThreadComm.parent,
  worldComm: WorldComm,
  nexusComm: NexusComm,
  dataComm: DataComm,
@@ -35,8 +37,8 @@ export const DVER = {
  renderManager: RenderManager,
  meshManager: MeshManager,
 
- data:  {
-    worldBounds : WorldBounds
+ data: {
+  worldBounds: WorldBounds,
  },
 
  textureManager: TextureManager,
@@ -46,11 +48,11 @@ export const DVER = {
 
  _handleOptions() {
   const data = this.settings.settings;
-  if (data.textureOptions) {
-   if (data.textureOptions.width && data.textureOptions.height) {
+  if (data.textures) {
+   if (data.textures.width && data.textures.height) {
     this.renderManager.textureCreator.defineTextureDimensions(
-     data.textureOptions.width,
-     data.textureOptions.height
+     data.textures.width,
+     data.textures.height
     );
    }
   }

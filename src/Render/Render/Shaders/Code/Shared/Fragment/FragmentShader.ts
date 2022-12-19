@@ -22,8 +22,11 @@ export const SharedFragmentShader = {
  varying(ao: boolean = true) {
   let varying = `
    //textures
-    uniform sampler2DArray arrayTex;
-    uniform sampler2DArray overlayTex;
+    uniform sampler2DArray arrayTex[4];
+    uniform sampler2DArray overlayTex[4];
+
+    varying float mipMapLevel;
+
     //uvs
     varying vec3 vUV;
     varying vec4 vOVUV;
@@ -54,6 +57,36 @@ export const SharedFragmentShader = {
  //for fog
  varying vec3 cameraPOS;
  varying vec3 worldPOS;
+ varying float vDistance;
+ `,
+ getBase: `
+
+ vec4 getBase(sampler2DArray[4] tex) {
+   switch (int(mipMapLevel)) {
+      case 0:
+         return texture(tex[0], vec3(vUV.x,vUV.y,animIndex));
+      case 1:
+         return texture(tex[1], vec3(vUV.x,vUV.y,animIndex));
+      case 2:
+         return texture(tex[2], vec3(vUV.x,vUV.y,animIndex));
+      case 3:
+         return texture(tex[3], vec3(vUV.x,vUV.y,animIndex));
+      }
+   return  vec4(0.,0.,0.,0.);
+}
+vec4 getBaseAnimated(sampler2DArray[4] tex, vec2 UV) {
+   switch (int(mipMapLevel)) {
+      case 0:
+         return texture(tex[0], vec3(UV.x,UV.y,animIndex));
+      case 1:
+         return texture(tex[1], vec3(UV.x,UV.y,animIndex));
+      case 2:
+         return texture(tex[2], vec3(UV.x,UV.y,animIndex));
+      case 3:
+         return texture(tex[3], vec3(UV.x,UV.y,animIndex));
+      }
+   return  vec4(0.,0.,0.,0.);
+}
  `,
  useTime: `
     varying float vTime;
@@ -78,7 +111,7 @@ export const SharedFragmentShader = {
     `,
  doFog: `
     vec3 doFog(vec4 base) {
-         if(fogOptions.x == 0.) {
+        if(fogOptions.x == 0.) {
             float fog = CalcFogFactor();
             return fog * base.rgb + (1.0 - fog) * vFogColor;
          }

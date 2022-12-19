@@ -1,39 +1,67 @@
-export const TextureCreator  = {
- context: <CanvasRenderingContext2D | null> null,
+export const TextureCreator = {
+ context: <CanvasRenderingContext2D | null>null,
 
- imgWidth : 16,
- imgHeight : 16,
+ imgWidth: 16,
+ imgHeight: 16,
 
+ _mipMapSizes: [
+  [16, 16],
+  [12, 12],
+  [8, 8],
+  [4, 4],
+ ],
 
-
-  defineTextureDimensions(width : number,height : number) {
-      this.imgWidth = width;
-      this.imgHeight = height;
-  },
+ defineTextureDimensions(width: number, height: number) {
+  this.imgWidth = width;
+  this.imgHeight = height;
+ },
 
  setUpImageCreation() {
-  const TwoDcanvas = document.createElement("canvas");
-
-  const context = TwoDcanvas.getContext("2d");
-
+  const _2dCanvas = document.createElement("canvas");
+  _2dCanvas.width = this.imgWidth;
+  _2dCanvas.height = this.imgHeight;
+  const context = _2dCanvas.getContext("2d", { willReadFrequently: true });
   if (!context) {
    throw new Error("Context did not load for texture creation.");
   }
 
+  context.imageSmoothingEnabled = false;
   this.context = context;
  },
 
  async createMaterialTexture(
-  name : string,
-  scene : BABYLON.Scene,
+  name: string,
+  scene: BABYLON.Scene,
   images: string[],
   width: number = -1,
   height: number = -1
- ): Promise<BABYLON.RawTexture2DArray> {
-  if(width == -1) width = this.imgWidth;
-  if(height == -1) height = this.imgHeight;
-  const resolvedImages: Uint8ClampedArray[] = [];
+ ): Promise<BABYLON.RawTexture2DArray[]> {
+  if (width == -1) width = this.imgWidth;
+  if (height == -1) height = this.imgHeight;
 
+  const textures: BABYLON.RawTexture2DArray[] = [];
+  for (const size of this._mipMapSizes) {
+   const texture = await this._createTextures(
+    name,
+    scene,
+    images,
+    size[0],
+    size[1]
+   );
+
+   textures.push(texture);
+  }
+  return textures;
+ },
+
+ async _createTextures(
+  name: string,
+  scene: BABYLON.Scene,
+  images: string[],
+  width: number,
+  height: number
+ ) {
+  const resolvedImages: Uint8ClampedArray[] = [];
   //create blank fill to pad image array buffer
   let index = 0;
   const data = [];
@@ -68,8 +96,8 @@ export const TextureCreator  = {
    false,
    BABYLON.Texture.NEAREST_SAMPLINGMODE
   );
-  _2DTextureArray.name = name;
 
+  _2DTextureArray.name = name;
 
   return _2DTextureArray;
  },
@@ -79,22 +107,20 @@ export const TextureCreator  = {
   width: number,
   height: number
  ): Promise<Uint8ClampedArray> {
-  const self = this;
-  if(!self.context){
-      throw new Error("Context is not set for texture creation.");
+  if (!this.context) {
+   throw new Error("Context is not set for texture creation.");
   }
   const prom: Promise<Uint8ClampedArray> = new Promise((resolve) => {
-   const loadedImage = new Image();
-   loadedImage.src = imgPath;
-   loadedImage.onload = function () {
-      //@ts-ignore
-    self.context.drawImage(loadedImage, 0, 0, width, height);
-      //@ts-ignore
-    const imgData = self.context.getImageData(0, 0, width, height);
+   const image = new Image();
+   image.src = imgPath;
+   image.onload = () => {
+    const ctx = TextureCreator.context;
+    if (!ctx) return;
+    //clear the canvas before re-rendering another image
+    ctx.clearRect(0, 0, width, height);
+    ctx.drawImage(image, 0, 0, width, height);
+    const imgData = ctx.getImageData(0, 0, width, height);
     resolve(imgData.data);
-    //import to clear the canvas before re-rendering another image
-      //@ts-ignore
-    self.context.clearRect(0,0,width,height);
    };
   });
 
@@ -111,29 +137,4 @@ export const TextureCreator  = {
   }
   return combinedImagedata;
  },
-
-
- getTextureBuffer(imgPath : string, width : number = -1,height : number = -1) {
-    const self = this;
-    if(width == -1) width = this.imgWidth;
-    if(height == -1) height = this.imgHeight;
-    if(!self.context){
-        throw new Error("Context is not set for texture creation.");
-    }
-    const prom: Promise<Uint8ClampedArray> = new Promise((resolve) => {
-     const loadedImage = new Image();
-     loadedImage.src = imgPath;
-     loadedImage.onload = function () {
-        //@ts-ignore
-      self.context.drawImage(loadedImage, 0, 0, width, height);
-      //@ts-ignore
-      const imgData = self.context.getImageData(0, 0, width, height);
-      resolve(imgData.data);
-        //@ts-ignore
-      self.context.clearRect(0,0,width,height);
-     };
-    });
-  
-    return prom;
- }
-}
+};

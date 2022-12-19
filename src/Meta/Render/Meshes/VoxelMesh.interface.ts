@@ -18,11 +18,10 @@ export type VoxelMeshInterface = {
 export type MeshSetData = {
  positionArray: Float32Array;
  normalsArray: Float32Array;
- indiciesArray: Int32Array;
+ indiciesArray: Uint16Array;
  faceDataArray: Float32Array;
  AOColorsArray: Float32Array;
- RGBLightColorsArray: Float32Array;
- sunLightColorsArray: Float32Array;
+ lightColorsArray: Float32Array;
  colorsArray: Float32Array;
  uvArray: Float32Array;
  overlayUVArray: Float32Array;

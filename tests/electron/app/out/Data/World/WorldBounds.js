@@ -1,5 +1,5 @@
 import { Flat3DArray } from "../Util/Flat3DArray.js";
-import { HeightMapArray } from "../Chunk/HeightMapArray.js";
+import { HeightMapArray } from "./Chunk/HeightMapArray.js";
 const __maxChunkYSize = 128;
 const maxBounds = Object.freeze({
     minZ: -32_000_000,
@@ -51,12 +51,12 @@ export const WorldBounds = {
         return hash;
     },
     chunkXPow2: 4,
-    chunkYPow2: 7,
+    chunkYPow2: 4,
     chunkZPow2: 4,
     chunkXSize: 16,
-    chunkYSize: 128,
+    chunkYSize: 16,
     chunkZSize: 16,
-    chunkTotalVoxels: 16 * 128 * 16,
+    chunkTotalVoxels: 16 * 16 * 16,
     chunkArea: 16 * 16,
     regionColumnWidth: 32,
     regionXPow2: 9,

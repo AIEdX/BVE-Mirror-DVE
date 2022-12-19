@@ -4,13 +4,13 @@ import type {
 } from "Meta/Data/Voxels/Voxel.types";
 import { Processor } from "../Processor.js";
 import { VoxelProcessData } from "Meta/Constructor/Voxel.types.js";
-import { AOAddOverride } from "Meta/Constructor/OverRide.types";
 import { DirectionNames } from "Meta/Util.types.js";
 import { DVEC } from "../../../DivineVoxelEngineConstructor.js";
-import { VoxelShapeInterface } from "Meta/index.js";
+import { VoxelShape } from "Meta/index.js";
 import { $3dCardinalNeighbors } from "../../../../Data/Constants/Util/CardinalNeighbors.js";
-import { FaceMap } from "../../../../Data/Constants/Meshing/Faces.js";
+import { FaceMap } from "../../../../Data/Constants/Util/Faces.js";
 import { LightData } from "../../../../Data/Light/LightByte.js";
+import { OverrideManager } from "../../Overrides/OverridesManager.js";
 type Nullable<T> = T | false | null;
 const LD = LightData;
 type Vertexes = 1 | 2 | 3 | 4;
@@ -149,16 +149,19 @@ const shouldSunFlip = () => {
 };
 
 const shouldAOFlip = (face: DirectionNames) => {
+ Processor.faceDataOverride.face = face;
+ Processor.faceDataOverride.default = false;
  if (currentVoxelData.currentShape) {
   if (
-   currentVoxelData.currentShape.aoFlipOverride({
-    face: face,
-    shapeState: currentVoxelData.shapeState,
-   })
+   OverrideManager.runOverride(
+    "AOFlip",
+    currentVoxelData.currentShape.id,
+    "Any",
+    Processor.faceDataOverride
+   )
   ) {
    return false;
   }
- } else {
  }
  let check = false;
  if (!states.ignoreAO) {
@@ -297,7 +300,7 @@ const currentVoxelData: {
  voxelSubstance: VoxelSubstanceType;
  voxelId: string;
  shapeState: number;
- currentShape: Nullable<VoxelShapeInterface>;
+ currentShape: Nullable<VoxelShape>;
  voxelObject: Nullable<VoxelConstructorObject>;
  x: number;
  y: number;
@@ -337,7 +340,7 @@ export function CalculateVoxelLight(
    currentVoxelData.voxelSubstance = this.mDataTool.getSubstance();
    currentVoxelData.isLightSource = this.mDataTool.isLightSource();
    const shapeId = this.mDataTool.getShapeId();
-   currentVoxelData.currentShape = DVEC.DVEB.shapeManager.getShape(shapeId);
+   currentVoxelData.currentShape = DVEC.builder.shapeManager.getShape(shapeId);
   }
   currentVoxelData.shapeState = this.mDataTool.getShapeState();
   currentVoxelData.x = tx;
@@ -456,6 +459,7 @@ const doAO = (
  y: number,
  z: number
 ) => {
+ if (!currentVoxelData.currentShape) return false;
  if (!Processor.nDataTool.isRenderable()) return;
  const neighborVoxelSubstance = Processor.nDataTool.getSubstance();
  if (!currentVoxelData.voxelSubstance) {
@@ -482,36 +486,16 @@ const doAO = (
   substanceRuleResult = false;
  }
 
- const aoOverRide: AOAddOverride = Processor.aoOverRideData;
- aoOverRide.face = face;
- aoOverRide.substanceResult = substanceRuleResult;
- aoOverRide.shapeState = currentVoxelData.shapeState;
- aoOverRide.voxelId = currentVoxelData.voxelId;
- aoOverRide.voxelSubstance = currentVoxelData.voxelSubstance;
- aoOverRide.neighborVoxelId = Processor.nDataTool.getStringId();
- aoOverRide.neighborVoxelSubstance = neighborVoxelSubstance;
- aoOverRide.neighborVoxelShape = DVEC.DVEB.shapeManager.getShape(
-  Processor.nDataTool.getShapeId()
+ Processor.faceDataOverride.face = face;
+ Processor.faceDataOverride.default = substanceRuleResult;
+
+ finalResult = OverrideManager.runOverride(
+  "AO",
+  currentVoxelData.currentShape.id,
+  Processor.nDataTool.getVoxelShapeObj().id,
+  Processor.faceDataOverride
  );
- aoOverRide.neighborVoxelShapeState = Processor.nDataTool.getShapeState();
- aoOverRide.x = currentVoxelData.x;
- aoOverRide.y = currentVoxelData.y;
- aoOverRide.z = currentVoxelData.z;
- aoOverRide.nx = x;
- aoOverRide.ny = y;
- aoOverRide.nz = z;
 
- if (currentVoxelData.currentShape) {
-  finalResult = currentVoxelData.currentShape.aoAddOverride(
-   Processor.aoOverRideData
-  );
- }
-
- if (currentVoxelData.voxelObject && currentVoxelData.voxelObject.aoOverRide) {
-  finalResult = currentVoxelData.voxelObject.aoOverRide(
-   Processor.aoOverRideData
-  );
- }
  if (finalResult) {
   AOVerotexStates[vertex].totalLight = false;
   AOValues.a *= 0.65;
