@@ -4,8 +4,7 @@ export const SharedVertexShader = {
   `,
  standardPositionMain: `
   vec4 worldPosition = world * vec4(position, 1.0);
-  vec3 p = position;
-  gl_Position = worldViewProjection * vec4(p, 1.0); 
+  gl_Position = worldViewProjection * vec4(position, 1.0); 
   `,
  uniforams: `
   uniform mat4 worldViewProjection;
@@ -23,13 +22,12 @@ export const SharedVertexShader = {
   attribute vec3 cuv3;
   attribute vec4 ocuv3;
   attribute float faceData;
-  attribute vec4 rgbLightColors;
-  attribute vec4 sunLightColors;
+  attribute vec4 lightColors;
   attribute vec4 colors;
   `;
   if (ao) {
    attributes += `
-   attribute vec4 aoColors;
+   attribute float aoColors;
    `;
   }
   return attributes;
@@ -42,6 +40,8 @@ export const SharedVertexShader = {
  //for fog 
  varying vec3 cameraPOS;
  varying vec3 worldPOS;
+ varying float vDistance;
+ varying float mipMapLevel;
  `,
  varying(ao: boolean = true) {
   let varying = `
@@ -49,6 +49,9 @@ export const SharedVertexShader = {
   varying vec4 vOVUV;
   varying float vFaceData;
   varying vec3 vNormal;
+
+  
+
   //vectory nomral sun light color scale
   varying float vNColor;
   varying vec4 rgbLColor;
@@ -104,15 +107,17 @@ export const SharedVertexShader = {
     vOVUV.y = getOverlayUVFace(ocuv3.y);
     vOVUV.z = getOverlayUVFace(ocuv3.z);
     vOVUV.w = getOverlayUVFace(ocuv3.w);
+
     `,
 
  passTime: `
+
   vTime = time;
   `,
 
  doAO: `
     if(doAO == 1.0){
-        aoColor = aoColors;
+        aoColor = vec4(aoColors,aoColors,aoColors,1.);
      } else {
         aoColor = vec4(1.0,1.0,1.0,1.0); 
      }
@@ -121,7 +126,7 @@ export const SharedVertexShader = {
  doRGB: `
     if(doRGB == 1.0){
         vDoRGB = 1.0;
-        rgbLColor = rgbLightColors;
+        rgbLColor = vec4(lightColors.rgb,1.);
      } else {
         vDoRGB = 0.0;
      }
@@ -129,7 +134,8 @@ export const SharedVertexShader = {
  doSun: `
     if(doSun == 1.0){
         vDoSun = 1.0;
-        sunLColor = sunLightColors;
+        float s = lightColors.a;
+        sunLColor = vec4(s,s,s,1.);
      } else {
         vDoSun = 0.0;
      }
@@ -159,7 +165,22 @@ export const SharedVertexShader = {
  `,
  updateVarying: `
  cameraPOS = cameraPosition;
- worldPOS = worldPosition.xyz;
+ vec4 temp =  world * vec4(position, 1.0);
+ worldPOS = vec3(temp.x,temp.y,temp.z);
+ vDistance = distance(worldPOS, cameraPOS);
+ mipMapLevel = 3.;
+ if(vDistance <= 20.) {
+  mipMapLevel = 0.;
+ }
+ if(vDistance > 20. &&  vDistance < 30.) {
+  mipMapLevel = 1.;
+ }
+ if(vDistance > 30. && vDistance < 40.) {
+   mipMapLevel = 2.;
+ }
+ if(vDistance >= 50.) {
+  mipMapLevel = 3.;
+  }
  `,
 
  getAnimationType: `

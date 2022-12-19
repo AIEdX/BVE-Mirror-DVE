@@ -1,18 +1,17 @@
 import { CreateGUI } from "../GUI/index.js";
-import { Position3Matrix } from "../../../out/Meta/Util.types";
+import { Vector3 } from "../../../out/Meta/Util.types";
 import { DivineVoxelEngineRender } from "../../../out/Render/DivineVoxelEngineRender.js";
 
 export const SetUpEngine = (canvas: HTMLCanvasElement) => {
-
  let antialias = false;
  const graphics = localStorage.getItem("grahpics");
- if(graphics) {
-    if(graphics == "medium" || graphics == "high" || graphics == "uldate") {
-        antialias = true;
-    }
+ if (graphics) {
+  if (graphics == "medium" || graphics == "high" || graphics == "uldate") {
+   antialias = true;
+  }
  }
 
- const engine = new BABYLON.Engine(canvas, antialias, {});
+ const engine = new BABYLON.Engine(canvas, antialias);
  engine.doNotHandleContextLost = true;
  engine.enableOfflineSupport = false;
  engine.setSize(1920, 1080);
@@ -80,8 +79,8 @@ export const SetUpDarkScene = (engine: BABYLON.Engine) => {
 export const SetUpDefaultCamera = (
  scene: BABYLON.Scene,
  canvas: HTMLCanvasElement,
- startPosition: Position3Matrix = { x: 0, y: 30, z: -2 },
- startTarget: Position3Matrix = { x: 0, y: 0, z: 0 },
+ startPosition: Vector3 = { x: 0, y: 30, z: -2 },
+ startTarget: Vector3 = { x: 0, y: 0, z: 0 },
  makeActiveCamera = true,
  attachControls = true,
  name = "main"
@@ -99,7 +98,7 @@ export const SetUpDefaultCamera = (
 
  camera.fov = 1.5;
  camera.minZ = 0.01;
- camera.maxZ = 500;
+ camera.maxZ = 1000;
  camera.angularSensibility = 1000;
  camera.speed = camera.speed * 0.2;
 
@@ -107,6 +106,10 @@ export const SetUpDefaultCamera = (
  camera.position.x = startPosition.x;
  camera.position.y = startPosition.y;
  camera.position.z = startPosition.z;
+ camera.keysUp.push(87);
+ camera.keysDown.push(83);
+ camera.keysLeft.push(65);
+ camera.keysRight.push(68);
  camera.setTarget(target);
  if (makeActiveCamera) {
   scene.activeCamera = camera;
@@ -114,12 +117,13 @@ export const SetUpDefaultCamera = (
 
  if (attachControls) {
   camera.attachControl(canvas, true);
+  camera.inputs.addKeyboard();
  }
  return camera;
 };
 
 export const SetUpDefaultSkybox = (scene: BABYLON.Scene) => {
- const skybox = BABYLON.MeshBuilder.CreateBox("skyBox", { size: 400.0 }, scene);
+ const skybox = BABYLON.MeshBuilder.CreateBox("skyBox", { size: 800.0 }, scene);
  const skyboxMaterial = new BABYLON.StandardMaterial("skyBox", scene);
  skyboxMaterial.backFaceCulling = false;
  skyboxMaterial.diffuseColor = new BABYLON.Color3(0, 0, 0);

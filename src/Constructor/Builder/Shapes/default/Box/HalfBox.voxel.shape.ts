@@ -1,140 +1,104 @@
-import { DVEB } from "../../../DivineVoxelEngineBuilder.js";
-import type {
- VoxelShapeAddData,
- VoxelShapeInterface,
-} from "Meta/Constructor/VoxelShape.types";
-import { DirectionNames } from "Meta/Util.types.js";
-
-type BoxFaceFunction = (data: VoxelShapeAddData) => void;
-
-const shapeDimensions = {
- width: 0.5,
- depth: 0.5,
- height: 0.25,
-};
-
-const processDefaultFaceData = (
- face: DirectionNames,
- data: VoxelShapeAddData,
- halfUV = false
-) => {
- const flip = DVEB.shapeHelper.shouldFaceFlip(data.face, face);
- DVEB.shapeBuilder.addFace(face, data.position, shapeDimensions, data, flip);
- const uv = data.unTemplate[data.uvTemplateIndex];
- const rotation = DVEB.shapeHelper.getTextureRotation(data.face, face);
- if (!halfUV) {
-  DVEB.uvHelper.addUVs(face, {
-   uvs: data.uvs,
-   uv: uv,
-   width: { start: 0, end: 1 },
-   height: { start: 0, end: 1 },
-   flipped: flip,
-   rotoate: rotation,
-  });
- } else {
-  DVEB.uvHelper.addUVs(face, {
-   uvs: data.uvs,
-   uv: uv,
-   width: { start: 0, end: 1 },
-   height: { start: 0, end: 0.5 },
-   flipped: flip,
-   rotoate: 0,
-  });
- }
- DVEB.uvHelper.processOverlayUVs(data);
- DVEB.shapeHelper.calculateLightColor(
-  data.RGBLightColors,
-  data.sunLightColors,
-  data.lightTemplate,
-  data.lightIndex
- );
- DVEB.shapeHelper.calculateAOColor(
-  data.AOColors,
-  data.aoTemplate,
-  data.aoIndex
- );
-
- if (data.substance == "flora") {
-  let animData = DVEB.shapeHelper.meshFaceData.setAnimationType(3, 0);
-  DVEB.shapeHelper.addFaceData(animData, data.faceData);
- } else {
-  DVEB.shapeHelper.addFaceData(0, data.faceData);
- }
-
- data.uvTemplateIndex += 1;
- data.overylayUVTemplateIndex += 4;
- data.lightIndex += 4;
- data.colorIndex += 4;
- data.aoIndex += 4;
-};
-
-export const HalfBoxVoxelShape: VoxelShapeInterface = {
+import type { VoxelShape } from "Meta/Constructor/VoxelShape.types";
+import { OverrideManager } from "../../../Overrides/OverridesManager.js";
+export const HalfBoxVoxelShape: VoxelShape = {
  id: "HalfBox",
- cullFaceOverrideFunctions: {},
- aoAddOverrideFunctions: {},
- aoFlipOverrideFunctions: {},
- registerShapeForCullFaceOverride(shapeId, func) {
-  this.cullFaceOverrideFunctions[shapeId] = func;
- },
- registerShapeAOAddOverride(shapeId, func) {
-  this.aoAddOverrideFunctions[shapeId] = func;
- },
- cullFaceOverride(data) {
-  if (this.cullFaceOverrideFunctions[data.neighborVoxelShape.id]) {
-   return this.cullFaceOverrideFunctions[data.neighborVoxelShape.id](data);
+ build(mesher) {
+  mesher.quad.setDimensions(1, 1);
+  let animationState = 0;
+  if (mesher.data.getSubstance() == "flora") {
+   animationState = 3;
   }
-  if (data.neighborVoxelShape.id == "Box") {
-   if (data.face == "bottom") {
-    if (data.shapeState == 0) {
-     return false;
-    }
-   }
-   if (
-    data.face == "east" ||
-    data.face == "west" ||
-    data.face == "north" ||
-    data.face == "south"
-   ) {
-    return false;
-   }
-  } 
-  return data.substanceResult;
- },
- aoAddOverride(data) {
-  if (this.aoAddOverrideFunctions[data.neighborVoxelShape.id]) {
-   return this.aoAddOverrideFunctions[data.neighborVoxelShape.id](data);
+  const shapeState = mesher.data.getShapeState();
+  let yAdd = 0;
+  if (shapeState == 1) {
+   yAdd = 0.5;
   }
-  return data.substanceResult;
- },
 
- registerShapeAOFlipOverride(shapeId, func) {
-  this.aoAddOverrideFunctions[shapeId] = func;
- },
- aoFlipOverride(data) {
-  return false;
- },
- addToChunkMesh(data: VoxelShapeAddData) {
-  data.position.x += shapeDimensions.width;
-  data.position.z += shapeDimensions.depth;
-  data.position.y += shapeDimensions.height;
-  if (DVEB.shapeHelper.isFaceExposexd(data.face, "top")) {
-   processDefaultFaceData("top", data);
+  if (mesher.templateData.loadIn("top").isExposed()) {
+   mesher.quad
+    .setDirection("top")
+    .updatePosition(0.5, 0.5 + yAdd, 0.5)
+    .addData(4, animationState)
+    .create();
   }
-  if (DVEB.shapeHelper.isFaceExposexd(data.face, "bottom")) {
-   processDefaultFaceData("bottom", data);
+  if (mesher.templateData.loadIn("bottom").isExposed()) {
+   mesher.quad
+    .setDirection("bottom")
+    .updatePosition(0.5, 0 + yAdd, 0.5)
+    .addData(4, animationState)
+    .create();
   }
-  if (DVEB.shapeHelper.isFaceExposexd(data.face, "east")) {
-   processDefaultFaceData("east", data, true);
+
+  mesher.quad.setDimensions(1, 0.5).uvs.setWidth(0, 1).setHeight(0, 0.5);
+
+  if (mesher.templateData.loadIn("east").isExposed()) {
+   mesher.quad
+    .setDirection("east")
+    .updatePosition(1, 0.25 + yAdd, 0.5)
+    .addData(4, animationState)
+    .create();
   }
-  if (DVEB.shapeHelper.isFaceExposexd(data.face, "west")) {
-   processDefaultFaceData("west", data, true);
+  if (mesher.templateData.loadIn("west").isExposed()) {
+   mesher.quad
+    .setDirection("west")
+    .updatePosition(0, 0.25 + yAdd, 0.5)
+    .addData(4, animationState)
+    .create();
   }
-  if (DVEB.shapeHelper.isFaceExposexd(data.face, "south")) {
-   processDefaultFaceData("south", data, true);
+  if (mesher.templateData.loadIn("south").isExposed()) {
+   mesher.quad
+    .setDirection("south")
+    .updatePosition(0.5, 0.25 + yAdd, 0)
+    .addData(4, animationState)
+    .create();
   }
-  if (DVEB.shapeHelper.isFaceExposexd(data.face, "north")) {
-   processDefaultFaceData("north", data, true);
+  if (mesher.templateData.loadIn("north").isExposed()) {
+   mesher.quad
+    .setDirection("north")
+    .updatePosition(0.5, 0.25 + yAdd, 1)
+    .addData(4, animationState)
+    .create();
   }
-  return DVEB.shapeHelper.produceShapeReturnData(data);
  },
 };
+
+//cullface
+OverrideManager.registerOverride("CullFace", "HalfBox", "Panel", (data) => {
+ return false;
+});
+OverrideManager.registerOverride("CullFace", "HalfBox", "Box", (data) => {
+ if (data.face == "bottom") {
+  if (data.currentVoxel.getShapeState() == 0) {
+   return false;
+  }
+ }
+ if (data.face == "top") {
+  if (data.currentVoxel.getShapeState() == 1) {
+   return false;
+  }
+ }
+
+ return true;
+});
+OverrideManager.registerOverride("CullFace", "HalfBox", "Stair", (data) => {
+ return data.default;
+});
+//AO
+OverrideManager.registerOverride("AO", "HalfBox", "Panel", (data) => {
+ return false;
+});
+OverrideManager.registerOverride("AO", "HalfBox", "Box", (data) => {
+ const shapeState = data.currentVoxel.getShapeState();
+ if (shapeState == 1) {
+  if (data.face == "top") {
+   if (data.neighborVoxel.position.y > data.currentVoxel.position.y) {
+    return true;
+   }
+  }
+  if (data.neighborVoxel.position.y == data.currentVoxel.position.y) {
+   return true;
+  }
+  return false;
+ }
+ return data.default;
+});

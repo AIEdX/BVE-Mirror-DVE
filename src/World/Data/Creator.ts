@@ -1,22 +1,38 @@
-import { ChunkData } from "Meta/Data/WorldData.types.js";
-import { ChunkReader } from "../../Data/Chunk/ChunkReader.js";
-import { HeightMapData } from "../../Data/Chunk/HeightMapData.js";
+import { ChunkDataTags } from "./Tags/ChunkTags.js";
+import { ColumnDataTags } from "./Tags/ColumnTags.js";
+import { RegionDataTags } from "./Tags/RegionTags.js";
 
 export const DataCreator = {
+ convertToSAB(buffer: ArrayBuffer) {
+  const sab = new SharedArrayBuffer(buffer.byteLength);
+  const temp = new Uint8Array(buffer);
+  const temp2 = new Uint8Array(sab);
+  temp2.set(temp, 0);
+  return sab;
+ },
  chunk: {
   getBuffer(buffer: ArrayBuffer | false = false): SharedArrayBuffer {
    if (buffer) {
-    const sab = new SharedArrayBuffer(buffer.byteLength);
-    const temp = new Uint8Array(buffer);
-    const temp2 = new Uint8Array(sab);
-    temp2.set(temp, 0);
-    return sab;
+    return DataCreator.convertToSAB(buffer);
    }
-   const chunkSAB = new SharedArrayBuffer(ChunkReader.chunkByteSize);
-   const data = new DataView(chunkSAB);
-  // HeightMapData.initalizeChunk(data);
 
-   return chunkSAB;
+   return new SharedArrayBuffer(ChunkDataTags.initData.bufferSize);
+  },
+ },
+ column: {
+  getBuffer(buffer: ArrayBuffer | false = false): SharedArrayBuffer {
+   if (buffer) {
+    return DataCreator.convertToSAB(buffer);
+   }
+   return new SharedArrayBuffer(ColumnDataTags.initData.bufferSize);
+  },
+ },
+ region: {
+  getBuffer(buffer: ArrayBuffer | false = false): SharedArrayBuffer {
+   if (buffer) {
+    return DataCreator.convertToSAB(buffer);
+   }
+   return new SharedArrayBuffer(RegionDataTags.initData.bufferSize);
   },
  },
 };

@@ -3,7 +3,7 @@
 </h1>
 <h2>Test Commit</h2>
 <p align="center">
-<img src="https://divinestarapparel.com/wp-content/uploads/2021/02/logo-small.png"/>
+<img src="https://divine-star-software.github.io/DigitalAssets/images/logo-small.png">
 </p>
 
 ---
@@ -29,16 +29,14 @@ Need help or want to share your creations? Join the [discord](https://discord.gg
 - In parallel mesh building, light updates, and other world updats.
 - Multi-threaded data access.
 - Ambient occlusion and smooth lighting.
-- Animated textures.
-- Connected Textures.
+- Animated and connected textures.
 - Custom shaders and shader effects.
 - Vertical and horizontal chunks.
-- Pre-Baking Lighting system.
-  - Flood fill lighting system for local sources.
+- Voxel Lighting system.
+  - Easy to update and remove.
   - Support for different colored lights.
-  - Sunlight calculation for global illumination (like Minecraft)
+  - Sunlight global illumination/
 - World Data API - Easy tools to build worlds.
-- Easy to use light API and light options.
 - Easy to use auto-update world on voxel add/remove
   - Will auto update light sources for you.
 
@@ -48,7 +46,7 @@ Need help or want to share your creations? Join the [discord](https://discord.gg
 - Physics and collision detection.
   - Working to develop some helper functions to determine what voxel the player is looking at or touching.
   - Instead of using collision detection with the actual meshes it will calculate collision in the world thread.
-- Fluid flow and magma flow like Minecraft.
+- Liquid flow and magma flow like Minecraft.
 - Same voxel different colors
   - Set a color directly on voxel data.
   - Options to create shade gradient with neighbors.

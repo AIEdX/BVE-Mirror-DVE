@@ -1,4 +1,4 @@
-import { ChunkReader } from "../Chunk/ChunkReader.js";
+import { ChunkSpace } from "../World/Chunk/ChunkSpace.js";
 import type { EngineSettingsData } from "Meta/Data/Settings/EngineSettings.types";
 import { WorldBounds } from "../World/WorldBounds.js";
 
@@ -31,7 +31,7 @@ export const EngineSettings = {
    autoSyncChunks: true,
    autoSyncVoxelPalette: true,
   },
-  textureOptions: {
+  textures: {
    animationTime: 20,
    width: 16,
    height: 16,
@@ -55,7 +55,7 @@ export const EngineSettings = {
   chunks: {
    autoHeightMap: true,
    chunkXPow2: 4,
-   chunkYPow2: 7,
+   chunkYPow2: 4,
    chunkZPow2: 4,
   },
   voxels: {
@@ -74,7 +74,7 @@ export const EngineSettings = {
   meshes: {
    clearChachedGeometry: false,
    checkMagmaCollisions: false,
-   checkFluidCollisions: false,
+   checkLiquidCollisions: false,
    checkFloraCollisions: false,
    checkSolidCollisions: true,
    seralize: false,
@@ -86,7 +86,7 @@ export const EngineSettings = {
    doSunLight: true,
    doRGBLight: true,
    disableFloraShaderEffects: false,
-   disableFluidShaderEffects: false,
+   disableLiquidShaderEffects: false,
   },
  },
 
@@ -145,7 +145,7 @@ export const EngineSettings = {
      this.settings.world.maxY
     );
    }
-   ChunkReader.syncSettings();
+   ChunkSpace.syncSettings();
  },
 
  syncWithWorldBounds(worldBounds: typeof WorldBounds) {

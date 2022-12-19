@@ -12,7 +12,7 @@ export const SetUpWorkers = (basePath, worldPath, constructorPath, nexusPath = n
     });
     const constructorWorkers = [];
     const cPath = new URL(constructorPath, basePath);
-    for (let i = 0; i < navigator.hardwareConcurrency; i++) {
+    for (let i = 0; i < navigator.hardwareConcurrency - 1; i++) {
         constructorWorkers.push(new Worker(cPath, {
             type: "module",
         }));
@@ -60,7 +60,7 @@ export const SyncWithGraphicsSettings = (DVER) => {
         });
         DVER.renderManager.updateShaderEffectOptions({
             floraEffects: false,
-            fluidEffects: false,
+            liquidEffects: false,
         });
     }
     if (grahpicsLevel == "medium") {
@@ -69,7 +69,7 @@ export const SyncWithGraphicsSettings = (DVER) => {
         });
         DVER.renderManager.updateShaderEffectOptions({
             floraEffects: false,
-            fluidEffects: false,
+            liquidEffects: false,
         });
     }
     if (grahpicsLevel == "high") {
@@ -78,7 +78,7 @@ export const SyncWithGraphicsSettings = (DVER) => {
         });
         DVER.renderManager.updateShaderEffectOptions({
             floraEffects: true,
-            fluidEffects: true,
+            liquidEffects: true,
         });
     }
     if (grahpicsLevel == "ultra") {
@@ -87,7 +87,7 @@ export const SyncWithGraphicsSettings = (DVER) => {
         });
         DVER.renderManager.updateShaderEffectOptions({
             floraEffects: true,
-            fluidEffects: true,
+            liquidEffects: true,
         });
     }
 };

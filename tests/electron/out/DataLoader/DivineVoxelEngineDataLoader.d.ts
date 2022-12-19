@@ -40,7 +40,7 @@ export declare const DVEDL: {
                 autoSyncChunks: boolean;
                 autoSyncVoxelPalette: boolean;
             };
-            textureOptions: {
+            textures: {
                 animationTime: number;
                 width: number;
                 height: number;
@@ -83,7 +83,7 @@ export declare const DVEDL: {
             meshes: {
                 clearChachedGeometry: boolean;
                 checkMagmaCollisions: boolean;
-                checkFluidCollisions: boolean;
+                checkLiquidCollisions: boolean;
                 checkFloraCollisions: boolean;
                 checkSolidCollisions: boolean;
                 seralize: boolean;
@@ -95,7 +95,7 @@ export declare const DVEDL: {
                 doSunLight: boolean;
                 doRGBLight: boolean;
                 disableFloraShaderEffects: boolean;
-                disableFluidShaderEffects: boolean;
+                disableLiquidShaderEffects: boolean;
             };
         };
         getSettings(): EngineSettingsData;
@@ -168,11 +168,11 @@ export declare const DVEDL: {
                 y: number;
                 z: number;
             };
-            getChunkKey(chunkPOS: import("Meta/index.js").Position3Matrix): string;
+            getChunkKey(chunkPOS: import("Meta/index.js").Vector3): string;
             getChunkKeyFromPosition(x: number, y: number, z: number): string;
-            getRegionKey(regionPOS: import("Meta/index.js").Position3Matrix): string;
+            getRegionKey(regionPOS: import("Meta/index.js").Vector3): string;
             getRegionKeyFromPosition(x: number, y: number, z: number): string;
-            getVoxelPositionFromChunkPosition(x: number, y: number, z: number, chunkPOS: import("Meta/index.js").Position3Matrix): {
+            getVoxelPositionFromChunkPosition(x: number, y: number, z: number, chunkPOS: import("Meta/index.js").Vector3): {
                 x: number;
                 y: number;
                 z: number;
@@ -209,20 +209,27 @@ export declare const DVEDL: {
         doFlow(): boolean;
     };
     dataSyncNode: {
-        chunk: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Meta/Data/DataSync.types.js").ChunkSyncData, import("../Meta/Data/DataSync.types.js").ChunkUnSyncData>;
+        _states: Record<string, boolean>;
+        isReady(): boolean;
         voxelPalette: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Meta/Data/DataSync.types.js").VoxelPaletteSyncData, any>;
         voxelData: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Meta/Data/DataSync.types.js").VoxelDataSync, any>;
         dimension: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Meta/Data/DimensionData.types.js").DimensionData, void>;
+        chunk: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Meta/Data/DataSync.types.js").ChunkSyncData, import("../Meta/Data/DataSync.types.js").ChunkUnSyncData>;
+        column: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Meta/Data/DataSync.types.js").ChunkSyncData, import("../Meta/Data/DataSync.types.js").ChunkUnSyncData>;
+        region: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Meta/Data/DataSync.types.js").RegionSyncData, import("../Meta/Data/DataSync.types.js").RegionUnSyncData>;
+        chunkTags: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Libs/DivineBinaryTags/Meta/Util.types.js").RemoteTagManagerInitData, void>;
+        columnTags: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Libs/DivineBinaryTags/Meta/Util.types.js").RemoteTagManagerInitData, void>;
+        regionTags: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Libs/DivineBinaryTags/Meta/Util.types.js").RemoteTagManagerInitData, void>;
     };
     data: {
         voxelDataCreator: {
             voxelBuffer: SharedArrayBuffer;
             voxelMapBuffer: SharedArrayBuffer;
-            shapeMap: Record<string, number>;
+            initData: import("../Libs/DivineBinaryTags/Meta/Util.types.js").RemoteTagManagerInitData;
             __shapeMapSet: boolean;
             isReady(): boolean;
             $createVoxelData(): void;
-            setShapeMap(shapeMap: Record<string, number>): void;
+            setShapeMap(newShapeMap: Record<string, number>): void;
             palette: {
                 _count: number;
                 _palette: Record<number, string>;
@@ -242,7 +249,7 @@ export declare const DVEDL: {
             voxelPalette: boolean;
             voxelData: boolean;
         }>;
-        $INIT(): void;
+        $INIT(): Promise<unknown>;
         isReady(): boolean;
         registerComm(comm: import("../Libs/ThreadComm/Comm/Comm.js").CommBase | import("../Libs/ThreadComm/Manager/CommManager.js").CommManager): void;
         dimesnion: {
@@ -252,12 +259,36 @@ export declare const DVEDL: {
             syncInThread(commName: string, data: import("../Meta/Data/DimensionData.types.js").DimensionData): void;
         };
         chunk: {
-            unSync(dimesnion: string | number, chunkX: number, chunkY: number, chunkZ: number): void;
-            unSyncInThread(commName: string, dimension: string | number, chunkX: number, chunkY: number, chunkZ: number): void;
-            sync(dimension: string | number, x: number, y: number, z: number): void;
-            syncInThread(commName: string, dimesnion: string | number, x: number, y: number, z: number): void;
+            unSync(dimesnion: string, x: number, y: number, z: number): void;
+            unSyncInThread(commName: string, dimension: string, x: number, y: number, z: number): void;
+            sync(dimension: string, x: number, y: number, z: number): void;
+            syncInThread(commName: string, dimesnion: string, x: number, y: number, z: number): void;
         };
-        voxelData: {
+        column: {
+            unSync(dimesnion: string, x: number, y: number, z: number): void;
+            unSyncInThread(commName: string, dimension: string, x: number, y: number, z: number): void;
+            sync(dimension: string, x: number, y: number, z: number): void;
+            syncInThread(commName: string, dimesnion: string, x: number, y: number, z: number): void;
+        };
+        region: {
+            unSync(dimesnion: string, x: number, y: number, z: number): void;
+            unSyncInThread(commName: string, dimension: string, x: number, y: number, z: number): void;
+            sync(dimension: string, x: number, y: number, z: number): void;
+            syncInThread(commName: string, dimesnion: string, x: number, y: number, z: number): void;
+        };
+        voxelTags: {
+            sync(): void;
+            syncInThread(commName: string): void;
+        };
+        chunkTags: {
+            sync(): void;
+            syncInThread(commName: string): void;
+        };
+        columnTags: {
+            sync(): void;
+            syncInThread(commName: string): void;
+        };
+        regionTags: {
             sync(): void;
             syncInThread(commName: string): void;
         };

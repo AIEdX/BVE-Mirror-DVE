@@ -1,3 +1,5 @@
+import { RawVoxelData } from "Meta/index";
+
 export type LightUpdateTask = [number, number, number];
 export type WorldSunTask = [
  dimension: string,
@@ -19,12 +21,12 @@ export type PaintTasks = [
  x: number,
  y: number,
  z: number,
- raw: number[],
+ raw: RawVoxelData,
  buildQueue: string,
  originThread: string
 ];
 export type ReBuildTasks = [
- dimension: string | number,
+ dimension: string,
  x: number,
  y: number,
  z: number,
@@ -33,11 +35,19 @@ export type ReBuildTasks = [
 export type RunRebuildTasks = [buildQueue: string];
 
 export type BuildTasks = [
- dimension: string | number,
+ dimension: string,
  x: number,
  y: number,
  z: number,
  LOD: number
+];
+
+export type GenerateTasks = [
+ dimension: string,
+ x: number,
+ y: number,
+ z: number,
+ data: any
 ];
 
 export type ExplosionTasks = [
