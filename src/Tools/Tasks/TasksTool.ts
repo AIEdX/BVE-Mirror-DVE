@@ -1,4 +1,3 @@
-import { WorldBounds } from "../../Data/World/WorldBounds.js";
 import { ConstructorQueues as CQ } from "../../Common/Queues/ConstructorQueues.js";
 import { ThreadComm } from "../../Libs/ThreadComm/ThreadComm.js";
 import { WorldRegister } from "../../Data/World/WorldRegister.js";
@@ -6,6 +5,8 @@ import { CCM } from "../../Common/Threads/Constructor/ConstructorComm.js";
 import { ConstructorTasks } from "../../Common/Threads/Contracts/ConstructorTasks.js";
 import { GenerateTasks, UpdateTasksO } from "Meta/Tasks/Tasks.types.js";
 import { RawVoxelData } from "Meta/index.js";
+import { WorldSpaces } from "../../Data/World/WorldSpaces.js";
+
 class TasksBase {
  _data = {
   dimension: "main",
@@ -25,7 +26,7 @@ class TasksBase {
   this.flow.update._s = this;
   this.flow.remove._s = this;
   this.explosion.run._s = this;
-  this.voxelUpdate.erease._s = this;
+  this.voxelUpdate.erase._s = this;
   this.voxelUpdate.paint._s = this;
   this.generate.deferred._s = this;
   this.generate.async._s = this;
@@ -37,11 +38,7 @@ class TasksBase {
   z: number,
   dimension = this._data.dimension
  ) {
-  const queueKey = `${dimension}-${WorldBounds.getRegionKeyFromPosition(
-   x,
-   y,
-   z
-  )}`;
+  const queueKey = `${dimension}-${WorldSpaces.region.getKeyXYZ(x, y, z)}`;
   CQ.addQueue(queueKey);
   this._data.queue = queueKey;
   this._thread = ThreadComm.threadName;
@@ -85,20 +82,20 @@ class TasksBase {
  };
 
  voxelUpdate = {
-  erease: {
+  erase: {
    _s: <TasksBase>{},
    add(x: number, y: number, z: number) {
-    CQ.voxelUpdate.erease.add(
+    CQ.voxelUpdate.erase.add(
      [this._s._data.dimension, x, y, z, this._s._data.queue, this._s._thread],
      this._s._data.queue
     );
    },
    run(onDone: Function) {
-    CQ.voxelUpdate.erease.run(this._s._data.queue);
-    CQ.voxelUpdate.erease.onDone(this._s._data.queue, onDone);
+    CQ.voxelUpdate.erase.run(this._s._data.queue);
+    CQ.voxelUpdate.erase.onDone(this._s._data.queue, onDone);
    },
    async runAndAwait() {
-    await CQ.voxelUpdate.erease.runAndAwait(this._s._data.queue);
+    await CQ.voxelUpdate.erase.runAndAwait(this._s._data.queue);
    },
   },
   paint: {

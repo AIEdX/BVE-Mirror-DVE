@@ -1,11 +1,13 @@
 import type { RawVoxelData, VoxelSubstanceType, VoxelTemplateSubstanceType } from "Meta/index.js";
-import { ChunkDataTool } from "./ChunkDataTool.js";
-import { HeightMapTool } from "./HeightMapTool.js";
-import { DataToolBase } from "./DataToolBase.js";
+import { ChunkDataTool } from "./WorldData/ChunkDataTool.js";
+import { HeightMapTool } from "./WorldData/HeightMapTool.js";
+import { DataToolBase } from "./Classes/DataToolBase.js";
+import { ColumnDataTool } from "./WorldData/ColumnDataTool.js";
 export declare class DataTool extends DataToolBase {
     static _dtutil: DataTool;
     static _chunkTool: ChunkDataTool;
     static _heightMapTool: HeightMapTool;
+    static _columntool: ColumnDataTool;
     _mode: "World" | "Entity";
     data: {
         raw: RawVoxelData;
@@ -24,13 +26,15 @@ export declare class DataTool extends DataToolBase {
     tags: {
         voxelMap: Uint16Array;
         substanceRecord: Record<number, VoxelSubstanceType>;
+        materialMap: Record<number, string>;
+        colliderMap: Record<number, string>;
         voxelData: {
             substance: VoxelSubstanceType;
             shapeId: number;
             hardness: number;
-            material: number;
+            material: string;
             checkCollision: number;
-            colliderId: number;
+            colliderId: string;
             lightSource: number;
             lightValue: number;
             isRich: number;
@@ -42,26 +46,29 @@ export declare class DataTool extends DataToolBase {
             substance: VoxelSubstanceType;
             shapeId: number;
             hardness: number;
-            material: number;
+            material: string;
             checkCollision: number;
-            colliderId: number;
+            colliderId: string;
             lightSource: number;
             lightValue: number;
             isRich: number;
         };
         getTrueSubstance(id: number): VoxelSubstanceType;
-        $INIT(data: import("../../Libs/DivineBinaryTags/Meta/Util.types.js").RemoteTagManagerInitData): void;
+        getMaterial(id: number): string;
+        getCollider(id: number): string;
+        $INIT(data: import("../../Libs/DivineBinaryTags/Types/Util.types.js").RemoteTagManagerInitData): void;
         byteOffSet: number;
         tagSize: number;
         tagIndexes: number;
         data: DataView;
         indexMap: Map<string, number>;
         index: DataView;
-        setBuffer(data: DataView | import("../../Libs/DivineBinaryTags/Meta/Util.types.js").BufferTypes): void;
+        setBuffer(data: DataView | import("../../Libs/DivineBinaryTags/Types/Util.types.js").BufferTypes): void;
         setTagIndex(index: number): void;
         getTag(id: string): number;
         setTag(id: string, value: number): boolean;
         getArrayTagValue(id: string, index: number): number;
+        getArrayTagByteIndex(id: string, index: number): number;
         setArrayTagValue(id: string, index: number, value: number): number | void;
         loopThroughTags(run: (id: string, value: number) => void): void;
         loopThroughIndex(run: (data: number[]) => void): void;
@@ -87,6 +94,9 @@ export declare class DataTool extends DataToolBase {
     isLightSource(): boolean;
     getLightSourceValue(): number;
     getSubstance(): VoxelSubstanceType;
+    getMaterial(): string;
+    getCollider(): string;
+    checkCollisions(): boolean;
     getTemplateSubstance(): VoxelTemplateSubstanceType;
     getState(): number;
     isRich(): number;

@@ -4,8 +4,8 @@ import { IlluminationManager } from "./Illumanation/IlluminationManager.js";
 import { ConstructorRemoteThreadTasks } from "../../Common/Threads/Contracts/WorldTasks.js";
 import { FlowManager } from "./Flow/FlowManager.js";
 import { WorldRegister } from "../../Data/World/WorldRegister.js";
-import { WorldBounds } from "../../Data/World/WorldBounds.js";
 import { ExplosionManager } from "./Explosion/ExplosionManager.js";
+import { WorldSpaces } from "../../Data/World/WorldSpaces.js";
 export const Propagation = {
     illumination: IlluminationManager,
     flow: FlowManager,
@@ -17,8 +17,8 @@ export const Propagation = {
     addToRebuildQue(x, y, z, substance) {
         if (DVEC.settings.settings.server.enabled)
             return;
-        const chunkPOS = WorldBounds.getChunkPosition(x, y, z);
-        const chunkKey = WorldBounds.getChunkKey(chunkPOS);
+        const chunkPOS = WorldSpaces.chunk.getPositionXYZ(x, y, z);
+        const chunkKey = WorldSpaces.chunk.getKey();
         if (!this.rebuildQueMap.has(this._buildQueue)) {
             this.rebuildQueMap.set(this._buildQueue, new Map());
         }
@@ -29,6 +29,10 @@ export const Propagation = {
             map.set(chunkKey, true);
             DVEC.worldComm.runTasks(ConstructorRemoteThreadTasks.addToRebuildQue, [this._dimension, chunkPOS.x, chunkPOS.y, chunkPOS.z, this._buildQueue]);
         }
+    },
+    setBuildData(dimension, buildQueue) {
+        this._dimension = dimension;
+        this._buildQueue = buildQueue;
     },
     _process(data) {
         this._dimension = data[0];

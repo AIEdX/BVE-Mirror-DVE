@@ -1,10 +1,13 @@
 import { RegisterVoxels } from "../../Shared/Functions/RegisterVoxelData.js";
+import { CrystalCompressor } from "../../Libs/CC/index.js";
 import { WorldGen } from "./WorldGen/WorldGen.js";
 import { DVEW } from "../../../out/World/DivineVoxelEngineWorld.js";
 import { RegisterItemData } from "../../Shared/Functions/RegisterItemData.js";
 import { GetAnalyzerCubeWorld } from "../../Shared/Debug/Anaylzer/Cube.js";
+import { GetWorldCommands } from "../../Shared/Commands/World/WorldCommands.js";
 RegisterVoxels(DVEW);
 RegisterItemData(DVEW);
+GetWorldCommands();
 await DVEW.$INIT();
 const builder = DVEW.getBuilder();
 const dataTool = DVEW.getDataTool();
@@ -33,15 +36,15 @@ for (let x = -16; x <= 16; x += 16) {
 for (let x = 0; x < 16; x++) {
     let y = 5;
     for (let z = 0; z <= 10; z += 1) {
-        brush.setId("dve:dreamstone-stair");
+        brush.setId("dve_dreamstone-stair");
         if (x == 0 || x == 15) {
-            brush.setId("dve:dreamstone");
+            brush.setId("dve_dreamstone");
         }
         brush.setXYZ(x, y, z).setShapeState(0).paint().clear();
         y++;
     }
 }
-brush.setId("dve:debugbox").setXYZ(20, 7, 0).paint();
+brush.setId("dve_debugbox").setXYZ(20, 7, 0).paint();
 builder.setDimension("other");
 for (let x = -64; x <= -32; x += 16) {
     for (let z = -64; z <= -32; z += 16) {
@@ -51,3 +54,14 @@ for (let x = -64; x <= -32; x += 16) {
 GetAnalyzerCubeWorld(DVEW);
 self.DVEW = DVEW;
 self.dataTool = dataTool;
+const chunkTool = DVEW.getChunkDataTool();
+const test = async () => {
+    chunkTool.loadIn(0, 0, 0);
+    const chunk = chunkTool.getAsArrayBuffer();
+    console.log(chunk);
+    if (!chunk)
+        return;
+    const compressed = await CrystalCompressor.compressArray(new Uint8Array(chunk));
+    console.log(compressed);
+};
+self.test = test;

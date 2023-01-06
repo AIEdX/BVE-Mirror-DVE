@@ -1,10 +1,15 @@
+import { LocationData } from "Meta/Data/CommonTypes";
 interface AnyData {
     [key: string]: any;
 }
 export interface DataHandler extends AnyData {
-    getRegion(x: number, y: number, z: number): Promise<Uint32Array>;
-    saveRegion(x: number, y: number, z: number, regionArray: Uint32Array): Promise<void>;
-    getChunk(x: number, y: number, z: number): Promise<Uint32Array>;
-    saveChunk(x: number, y: number, z: number, chunkArray: Uint32Array): Promise<void>;
+    getRegionHeader(location: LocationData): Promise<ArrayBuffer>;
+    getRegion(location: LocationData): Promise<ArrayBuffer[] | SharedArrayBuffer[]>;
+    saveRegion(regionBuffer: [location: LocationData, buffer: ArrayBuffer][]): Promise<boolean>;
+    getColumn(location: LocationData): Promise<ArrayBuffer | SharedArrayBuffer>;
+    saveColumn(location: LocationData, columnBuffer: ArrayBuffer | SharedArrayBuffer): Promise<boolean>;
+    setPath(id: string): Promise<boolean>;
+    columnExists(location: LocationData): Promise<boolean>;
+    columnTimestamp(location: LocationData): Promise<number>;
 }
 export {};

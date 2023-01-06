@@ -6,7 +6,7 @@ import { Util } from "../Global/Util.helper.js";
 import { RenderedEntitesManager } from "./RenderedEntites/RenderedEntites.manager.js";
 import { TextureManager } from "./Textures/TextureManager.js";
 import { EngineSettings } from "../Data/Settings/EngineSettings.js";
-import { MeshManager } from "./Meshes/MeshManager.js";
+import { MeshManager } from "./Scene/MeshManager.js";
 import { RenderManager } from "./Render/RenderManager.js";
 //inter comms
 import { DataComm } from "./Threads/Data/DataComm.js";
@@ -21,6 +21,7 @@ import { BuildInitalMeshes } from "./Init/BuildInitalMeshes.js";
 import { RenderTasks } from "./Tasks/Tasks.js";
 import { WorldBounds } from "../Data/World/WorldBounds.js";
 import { ThreadComm } from "../Libs/ThreadComm/ThreadComm.js";
+import { WorldSpaces } from "../Data/World/WorldSpaces.js";
 
 export const DVER = {
  UTIL: Util,
@@ -39,6 +40,7 @@ export const DVER = {
 
  data: {
   worldBounds: WorldBounds,
+  spaces : WorldSpaces
  },
 
  textureManager: TextureManager,
@@ -61,6 +63,7 @@ export const DVER = {
  syncSettingsWithWorkers(data: EngineSettingsData) {
   this.settings.syncSettings(data);
   const copy = this.settings.getSettingsCopy();
+
   this.renderManager.syncSettings(copy);
   this.worldComm.sendMessage("sync-settings", [copy]);
   if (this.nexusComm.port) {
@@ -84,7 +87,7 @@ export const DVER = {
  },
 
  async $INIT(initData: DVERInitData) {
-  InitWorkers(this, initData);
+  await InitWorkers(this, initData);
  },
 
  async $SCENEINIT(data: { scene: BABYLON.Scene }) {

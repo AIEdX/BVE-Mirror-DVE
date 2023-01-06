@@ -1,4 +1,4 @@
-import type { RemoteTagManagerInitData } from "Libs/DivineBinaryTags/Meta/Util.types";
+import type { RemoteTagManagerInitData } from "Libs/DivineBinaryTags/Types/Util.types";
 import type { VoxelPalette, VoxelPaletteMap } from "./WorldData.types";
 export declare type DataSyncTypes = "chunk" | "voxel-data" | "iten-data" | "shape-map";
 export declare type ChunkSyncData = [
@@ -48,3 +48,4 @@ export declare type VoxelDataSync = [
     initData: RemoteTagManagerInitData,
     voxelMapData: SharedArrayBuffer
 ];
+export declare type VoxelMapSyncData = [data: Record<number, string>];

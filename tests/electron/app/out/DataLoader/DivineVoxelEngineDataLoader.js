@@ -1,33 +1,38 @@
 //objects
 import { EngineSettings } from "../Data/Settings/EngineSettings.js";
 import { Util } from "../Global/Util.helper.js";
-import { DataManager } from "./DataManager/DataManager.js";
+import { DataSyncNode } from "../Data/DataSyncNode.js";
+import { DataManager } from "../Data/DataManager.js";
+import { WorldDataSerialize } from "./Serializers/WorldDataSerializer.js";
 //intercomms
 import { WorldComm } from "./Threads/World/WorldComm.js";
 import { ParentComm } from "./Threads/Parent/ParentComm.js";
 //functions
 import { InitWorker } from "./Init/InitWorker.js";
-import { DataSyncNode } from "../Data/DataSyncNode.js";
-import { DataSync } from "../World/Data/DataSync.js";
+import { DataLoaderTasks } from "./Tasks/DataLoaderTasks.js";
+import { DataHanlderWrapper } from "./DataHandler/DataHandlerWrapper.js";
 export const DVEDL = {
     environment: "browser",
     __settingsHaveBeenSynced: false,
     UTIL: Util,
     settings: EngineSettings,
     dataSyncNode: DataSyncNode,
-    data: DataSync,
+    data: DataManager,
     worldComm: WorldComm,
     parentComm: ParentComm,
-    dataManager: DataManager,
+    tasks: DataLoaderTasks,
+    serializer: WorldDataSerialize,
+    dataHandler: DataHanlderWrapper,
     syncSettings(data) {
         this.settings.syncSettings(data);
+        this.__settingsHaveBeenSynced = true;
     },
     reStart() { },
     isReady() {
-        return (DVEDL.worldComm.isPortSet() &&
-            DVEDL.__settingsHaveBeenSynced);
+        return DVEDL.worldComm.isPortSet() && DVEDL.__settingsHaveBeenSynced;
     },
-    async $INIT() {
+    async $INIT(dataHanlder) {
+        this.dataHandler.$INIT(dataHanlder);
         await InitWorker(this);
     },
 };

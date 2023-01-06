@@ -1,3 +1,4 @@
+import { LocationData } from "Meta/Data/CommonTypes";
 import { RawVoxelData } from "Meta/index";
 
 export type LightUpdateTask = [number, number, number];
@@ -58,4 +59,11 @@ export type ExplosionTasks = [
  radius: number,
  buildQueue: string,
  originThread: string
+];
+
+export type LoadWorldDataTasks = [data: SharedArrayBuffer];
+
+export type LoadRegionHeadertasks = [
+ location: LocationData,
+ data: SharedArrayBuffer
 ];
