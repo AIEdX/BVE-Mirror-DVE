@@ -1,118 +1,122 @@
-import { LightData } from "../../../Data/Light/LightByte.js";
+//data
 import { $3dCardinalNeighbors } from "../../../Data/Constants/Util/CardinalNeighbors.js";
+//objects
 import { DataTool } from "../../../Tools/Data/DataTool.js";
-import { Propagation } from "../Propagation.js";
-import { IlluminationManager } from "../Illumanation/IlluminationManager.js";
-import { Distance3D } from "../../../Libs/Math/Functions/Distance3d.js";
+import { LightData } from "../../../Data/Light/LightByte.js";
+//functions
+import { Distance3D } from "../../../Math/Functions/Distance3d.js";
+import { RGBRemove, RGBUpdate } from "../Illumanation/Functions/RGBUpdate.js";
+import { SunRemove, SunUpdate } from "../Illumanation/Functions/SunUpdate.js";
+import { FlowManager } from "../Flow/FlowManager.js";
 const dataTool = new DataTool();
 const nDataTool = new DataTool();
 export const ExplosionManager = {
-    _queue: [],
-    _visitedMap: new Map(),
-    addToMap(x, y, z) {
-        const key = `${x}-${y}-${z}`;
-        this._visitedMap.set(key, true);
-    },
-    inMap(x, y, z) {
-        const key = `${x}-${y}-${z}`;
-        return this._visitedMap.has(key);
-    },
-    runExplosion(dimension, sx, sy, sz, radius) {
-        this._queue.push([sx, sy, sz]);
+    runExplosion(tasks) {
+        tasks.start();
+        const [dimension, sx, sy, sz] = tasks.origin;
+        FlowManager.setDimension(dimension);
+        tasks.setPriority(0);
+        const queue = tasks.queues.queue;
+        const map = tasks.queues.map;
+        queue.push([sx, sy, sz]);
         dataTool.setDimension(dimension);
         nDataTool.setDimension(dimension);
-        const dia = radius;
-        while (this._queue.length) {
-            const node = this._queue.shift();
+        const radius = tasks.getData();
+        while (queue.length) {
+            const node = queue.shift();
             if (!node)
                 break;
             const x = node[0];
             const y = node[1];
             const z = node[2];
-            if (!this.inMap(x + 1, y, z)) {
-                if (dataTool.loadIn(x + 1, y, z)) {
+            if (!map.inMap(x + 1, y, z)) {
+                if (dataTool.loadInAt(x + 1, y, z)) {
                     const d = Distance3D(sx, sy, sz, x + 1, y, z);
                     if (d <= radius) {
-                        this._queue.push([x + 1, y, z]);
+                        queue.push([x + 1, y, z]);
                     }
-                    this.addToMap(x + 1, y, z);
+                    map.add(x + 1, y, z);
                 }
             }
-            if (!this.inMap(x - 1, y, z)) {
-                if (dataTool.loadIn(x - 1, y, z)) {
+            if (!map.inMap(x - 1, y, z)) {
+                if (dataTool.loadInAt(x - 1, y, z)) {
                     const d = Distance3D(sx, sy, sz, x - 1, y, z);
                     if (d <= radius) {
-                        this._queue.push([x - 1, y, z]);
+                        queue.push([x - 1, y, z]);
                     }
                 }
-                this.addToMap(x - 1, y, z);
+                map.add(x - 1, y, z);
             }
-            if (!this.inMap(x, y, z + 1)) {
-                if (dataTool.loadIn(x, y, z + 1)) {
+            if (!map.inMap(x, y, z + 1)) {
+                if (dataTool.loadInAt(x, y, z + 1)) {
                     const d = Distance3D(sx, sy, sz, x, y, z + 1);
                     if (d <= radius) {
-                        this._queue.push([x, y, z + 1]);
+                        queue.push([x, y, z + 1]);
                     }
                 }
-                this.addToMap(x, y, z + 1);
+                map.add(x, y, z + 1);
             }
-            if (!this.inMap(x, y, z - 1)) {
-                if (dataTool.loadIn(x, y, z - 1)) {
+            if (!map.inMap(x, y, z - 1)) {
+                if (dataTool.loadInAt(x, y, z - 1)) {
                     const d = Distance3D(sx, sy, sz, x, y, z - 1);
                     if (d <= radius) {
-                        this._queue.push([x, y, z - 1]);
+                        queue.push([x, y, z - 1]);
                     }
                 }
-                this.addToMap(x, y, z - 1);
+                map.add(x, y, z - 1);
             }
-            if (!this.inMap(x, y + 1, z)) {
-                if (dataTool.loadIn(x, y + 1, z)) {
+            if (!map.inMap(x, y + 1, z)) {
+                if (dataTool.loadInAt(x, y + 1, z)) {
                     const d = Distance3D(sx, sy, sz, x, y + 1, z);
                     if (d <= radius) {
-                        this._queue.push([x, y + 1, z]);
+                        queue.push([x, y + 1, z]);
                     }
                 }
-                this.addToMap(x, y + 1, z);
+                map.add(x, y + 1, z);
             }
-            if (!this.inMap(x, y - 1, z)) {
-                if (dataTool.loadIn(x, y - 1, z)) {
+            if (!map.inMap(x, y - 1, z)) {
+                if (dataTool.loadInAt(x, y - 1, z)) {
                     const d = Distance3D(sx, sy, sz, x, y - 1, z);
-                    if (d <= dia) {
-                        this._queue.push([x, y - 1, z]);
+                    if (d <= radius) {
+                        queue.push([x, y - 1, z]);
                     }
                 }
-                this.addToMap(x, y - 1, z);
+                map.add(x, y - 1, z);
             }
-            if (dataTool.loadIn(x, y, z)) {
+            if (dataTool.loadInAt(x, y, z)) {
                 if (dataTool.isRenderable()) {
+                    const substance = dataTool.getSubstance();
                     for (const n of $3dCardinalNeighbors) {
                         const nx = x + n[0];
                         const ny = y + n[1];
                         const nz = z + n[2];
-                        if (nDataTool.loadIn(nx, ny, nz)) {
+                        if (nDataTool.loadInAt(nx, ny, nz)) {
                             const l = nDataTool.getLight();
                             if (l > 0) {
                                 if (LightData.getS(l) > 0) {
-                                    IlluminationManager._sunLightRemove.push([nx, ny, nz]);
+                                    tasks.queues.sun.rmeove.push([nx, ny, nz]);
                                 }
                                 if (LightData.hasRGBLight(l)) {
-                                    IlluminationManager._RGBlightRemovalQ.push([nx, ny, nz]);
+                                    tasks.queues.rgb.rmeove.push([nx, ny, nz]);
                                 }
                             }
                         }
                     }
-                    if (dataTool.isLightSource() && dataTool.getLightSourceValue()) {
-                        IlluminationManager.runRGBRemoveAt(true, x, y, z);
+                    tasks.addNeighborsToRebuildQueue(x, y, z);
+                    if (dataTool.getHardness() > 10_000 ||
+                        substance == "liquid" ||
+                        substance == "magma") {
+                        continue;
                     }
                     dataTool.setAir().commit(2);
-                    Propagation.addToRebuildQue(x, y, z, "all");
                 }
             }
         }
-        IlluminationManager.runSunLightRemove();
-        IlluminationManager.runRGBRemove();
-        IlluminationManager.runSunLightUpdate();
-        IlluminationManager.runRGBUpdate();
-        this._visitedMap.clear();
+        RGBRemove(tasks);
+        SunRemove(tasks);
+        RGBUpdate(tasks);
+        SunUpdate(tasks);
+        tasks.runRebuildQueue();
+        tasks.stop();
     },
 };

@@ -1,11 +1,10 @@
 //built in
 import { DVEMesh } from "./Meshes/DVEMesh.js";
-import { DVEMaterial } from "./Materials/DVEMaterial.js";
 //objects
 import { AnimationManager } from "./Animations/AnimationManager.js";
-import { ShaderBuilder } from "./Shaders/ShaderBuilder.js";
 import { TextureCreator } from "./Textures/TextureCreator.js";
 import { FOManager } from "./FloatingOrigin/FoManager.js";
+import { EngineSettings } from "../../Data/Settings/EngineSettings.js";
 //materials
 import { SkyBoxMaterial } from "./Materials/SkyBox/SkyBoxMaterial.js";
 import { StandardSolidMaterial } from "./Materials/Standard/SolidMaterial.bjsmp.js";
@@ -13,6 +12,8 @@ import { StandardLiquidMaterial } from "./Materials/Standard/LiquidMaterial.bjsm
 import { MeshRegister } from "../Scene/MeshRegister.js";
 import { MeshManager } from "../Scene/MeshManager.js";
 import { MeshCuller } from "../Scene/MeshCuller.js";
+import { DVEShaders } from "./Shaders/DVEShaders.js";
+import { DVEMaterial } from "./Materials/DVEMaterial.js";
 const solidMaterial = new DVEMaterial("solid", {
     alphaBlending: false,
     alphaTesting: true,
@@ -33,11 +34,6 @@ const liquidMat = new DVEMaterial("liquid", {
     alphaTesting: false,
 });
 const liquidMesh = new DVEMesh("liquid", liquidMat);
-const itemMat = new DVEMaterial("Item", {
-    alphaBlending: false,
-    alphaTesting: true,
-});
-const itemMesh = new DVEMesh("Item", itemMat);
 export const RenderManager = {
     fogOptions: {
         mode: "volumetric",
@@ -56,19 +52,17 @@ export const RenderManager = {
         liquidEffects: false,
     },
     fo: FOManager,
-    shaderBuilder: ShaderBuilder,
+    shaders: DVEShaders,
     textureCreator: TextureCreator,
     animationManager: AnimationManager,
     solidMaterial: solidMaterial,
     floraMaterial: floraMat,
     liquidMaterial: liquidMat,
     magmaMaterial: magmaMat,
-    itemMaterial: itemMat,
     solidMesh: solidMesh,
     floraMesh: floraMesh,
     liquidMesh: liquidMesh,
     magmaMesh: magmaMesh,
-    itemMesh: itemMesh,
     solidStandardMaterial: StandardSolidMaterial,
     liquidStandardMaterial: StandardLiquidMaterial,
     skyBoxMaterial: SkyBoxMaterial,
@@ -108,7 +102,6 @@ export const RenderManager = {
         this.liquidMaterial.updateFogOptions(fogData);
         this.floraMaterial.updateFogOptions(fogData);
         this.magmaMaterial.updateFogOptions(fogData);
-        this.itemMaterial.updateFogOptions(fogData);
         this.skyBoxMaterial.updateFogOptions(fogData);
     },
     $INIT(scene) {
@@ -117,6 +110,7 @@ export const RenderManager = {
         this.scene = scene;
         this.meshManager.$INIT(scene);
         this.meshCuller.$INIT(scene);
+        this.textureCreator.defineTextureDimensions(EngineSettings.settings.textures.textureSize, EngineSettings.settings.textures.mipMapSizes);
     },
     updateShaderEffectOptions(options) {
         if (options.floraEffects !== undefined) {
@@ -125,17 +119,38 @@ export const RenderManager = {
         if (options.liquidEffects !== undefined) {
             this.effectOptions.liquidEffects = options.liquidEffects;
         }
+        this.solidMaterial.updateMaterialSettings(EngineSettings.settings);
+        this.floraMaterial.updateMaterialSettings(EngineSettings.settings);
+        this.magmaMaterial.updateMaterialSettings(EngineSettings.settings);
+        this.liquidMaterial.updateMaterialSettings(EngineSettings.settings);
     },
     syncSettings(settings) {
         this.solidMesh.syncSettings(settings);
         this.floraMesh.syncSettings(settings);
         this.liquidMesh.syncSettings(settings);
         this.magmaMesh.syncSettings(settings);
-        this.itemMesh.syncSettings(settings);
-        this.textureCreator.defineTextureDimensions(settings.textures.width, settings.textures.height);
+        this.textureCreator.defineTextureDimensions(settings.textures.textureSize, settings.textures.mipMapSizes);
     },
     getScene() {
         return this.scene;
+    },
+    getDefaultCamera(scene) {
+        const camera = new BABYLON.UniversalCamera("", BABYLON.Vector3.Zero(), scene);
+        camera.touchAngularSensibility = 10000;
+        camera.speed = 1;
+        camera.keysUp.push(87); // W
+        camera.keysDown.push(83); // D
+        camera.keysLeft.push(65); // A
+        camera.keysRight.push(68); // S
+        camera.keysUpward.push(69); // E
+        camera.keysDownward.push(81); // Q
+        camera.minZ = 0.01;
+        camera.maxZ = 1000;
+        camera.fov = 1.2;
+        camera.attachControl(scene.getEngine().getRenderingCanvas(), true);
+        scene.activeCamera = camera;
+        scene.collisionsEnabled = false;
+        return camera;
     },
     createSkyBoxMaterial(scene) {
         if (!this.scene && !scene) {
@@ -153,12 +168,10 @@ export const RenderManager = {
         this.solidMaterial.setSunLightLevel(level);
         this.liquidMaterial.setSunLightLevel(level);
         this.floraMaterial.setSunLightLevel(level);
-        this.itemMaterial.setSunLightLevel(level);
     },
     setBaseLevel(level) {
         this.solidMaterial.setBaseLevel(level);
         this.liquidMaterial.setBaseLevel(level);
         this.floraMaterial.setBaseLevel(level);
-        this.itemMaterial.setBaseLevel(level);
     },
 };

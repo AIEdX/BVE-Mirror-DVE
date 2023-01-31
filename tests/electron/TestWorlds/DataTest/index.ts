@@ -41,7 +41,7 @@ await DVER.$INIT({
   autoSyncChunks: true,
  },
 });
-SyncWithGraphicsSettings(DVER);
+
 const init = async () => {
  const canvas = SetUpCanvas();
  const engine = SetUpEngine(canvas);
@@ -55,7 +55,7 @@ const init = async () => {
  SetUpDefaultSkybox(scene);
 
  await DVER.$SCENEINIT({ scene: scene });
- DVER.renderManager.setBaseLevel(1);
+ DVER.render.setBaseLevel(1);
 
  $INITDataLoader(DVER);
 

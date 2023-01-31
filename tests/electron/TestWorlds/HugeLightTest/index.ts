@@ -30,7 +30,7 @@ const workers = SetUpWorkers(
    },
 });
 
-SyncWithGraphicsSettings(DVER);
+
 const init = async () => {
  const canvas = SetUpCanvas();
  const engine = SetUpEngine(canvas);
@@ -39,7 +39,7 @@ const init = async () => {
  SetUpDefaultSkybox(scene);
 
  await DVER.$SCENEINIT({ scene: scene });
- DVER.renderManager.setBaseLevel(0.5);
+ DVER.render.setBaseLevel(0.5);
 
 
 

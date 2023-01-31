@@ -40,7 +40,6 @@ await DVER.$INIT({
   autoSunLight: false,
  },
 });
-SyncWithGraphicsSettings(DVER);
 
 const init = async () => {
  const canvas = SetUpCanvas();
@@ -55,13 +54,14 @@ const init = async () => {
  scene.collisionsEnabled = false;
  const box = SetUpDefaultSkybox(scene);
  box.checkCollisions = false;
- const bmat = DVER.renderManager.createSkyBoxMaterial(scene);
+ const bmat = DVER.render.createSkyBoxMaterial(scene);
  if (bmat) {
   box.material = bmat;
  }
 
  // CreateWorldAxis(scene, 36);
  await DVER.$SCENEINIT({ scene: scene });
+ 
 
  const hemLight = new BABYLON.HemisphericLight(
   "",
@@ -69,8 +69,8 @@ const init = async () => {
   scene
  );
 
- DVER.renderManager.setBaseLevel(0.8);
- DVER.renderManager.setSunLevel(0.8);
+ DVER.render.setBaseLevel(0.8);
+ DVER.render.setSunLevel(0.8);
 
  runRenderLoop(engine, scene, camera, DVER);
 };

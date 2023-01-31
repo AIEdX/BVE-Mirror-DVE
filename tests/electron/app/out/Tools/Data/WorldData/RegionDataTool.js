@@ -1,15 +1,12 @@
 //objects
 import { WorldRegister } from "../../../Data/World/WorldRegister.js";
-import { PositionBoundDataTool } from "../Classes/DataToolBase.js";
+import { EncodedPositionDataTool } from "../../Classes/DataToolBase.js";
 import { RegionTags } from "../../../Data/World/Region/RegionTags.js";
-export class RegionDataTool extends PositionBoundDataTool {
+export class RegionDataTool extends EncodedPositionDataTool {
     tags = RegionTags;
     _region = {};
-    loadIn(x, y, z) {
-        this.position.x = x;
-        this.position.y = y;
-        this.position.z = z;
-        const reigon = WorldRegister.region.get(this.dimension, x, y, z);
+    loadIn() {
+        const reigon = WorldRegister.region.get(this.location);
         if (!reigon)
             return false;
         this.tags.setBuffer(reigon.data);

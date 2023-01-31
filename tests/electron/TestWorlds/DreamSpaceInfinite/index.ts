@@ -46,23 +46,23 @@ await DVER.$INIT({
  },
 });
 
-SyncWithGraphicsSettings(DVER);
 const init = async () => {
  const canvas = SetUpCanvas();
  const engine = SetUpEngine(canvas);
  const scene = SetUpDefaultScene(engine);
  const camera = SetUpDefaultCamera(scene, canvas, { x: 0, y: 0.01, z: 0 });
  const box = SetUpDefaultSkybox(scene);
- const bmat = DVER.renderManager.createSkyBoxMaterial(scene);
+ const bmat = DVER.render.createSkyBoxMaterial(scene);
  if (bmat) {
   box.material = bmat;
  }
  (window as any).DVER = DVER;
-
+ $INITDataLoader(DVER);
  scene.fogDensity = 0.005;
  await DVER.$SCENEINIT({ scene: scene });
- DVER.renderManager.setBaseLevel(0);
- DVER.renderManager.setSunLevel(0.8);
+ SyncWithGraphicsSettings(DVER);
+ DVER.render.setBaseLevel(0);
+ DVER.render.setSunLevel(0.8);
  const hemLight = new BABYLON.HemisphericLight(
   "",
   new BABYLON.Vector3(0, 1, 0),
@@ -73,8 +73,7 @@ const init = async () => {
  const debugCube = GetAnalyzerCubeRender(DVER, player);
  (window as any).debugCube = debugCube;
 
- $INITDataLoader(DVER);
-
+ (window as any).DVER = DVER;
  runRenderLoop(engine, scene, player, DVER);
 };
 

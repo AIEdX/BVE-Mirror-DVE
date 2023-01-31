@@ -1,11 +1,12 @@
 import { ConstructorTasks } from "../../Common/Threads/Contracts/ConstructorTasks.js";
 import { DVEC } from "../DivineVoxelEngineConstructor.js";
 import { ThreadComm } from "../../Libs/ThreadComm/ThreadComm.js";
-import type {
+import {
  BuildTasks,
  ExplosionTasks,
  GenerateTasks,
  PaintTasks,
+ PriorityTask,
  UpdateTasksO,
  WorldSunTask,
 } from "Meta/Tasks/Tasks.types.js";
@@ -13,94 +14,161 @@ import type {
 import { EreaseAndUpdate, PaintAndUpdate } from "./Functions/VoxelUpdate.js";
 import { WorldRegister } from "../../Data/World/WorldRegister.js";
 import { ChunkDataTool } from "../../Tools/Data/WorldData/ChunkDataTool.js";
-import { WorldSpaces } from "../../Data/World/WorldSpaces.js";
-
+import { TasksRequest } from "./TasksRequest.js";
 
 const chunkTool = new ChunkDataTool();
 
 export const Tasks = {
- build: {
-  chunk: ThreadComm.registerTasks<BuildTasks>(
-   ConstructorTasks.buildChunk,
-   async (data) => {
-    const chunkPOS = WorldSpaces.chunk.getPositionXYZ(data[1],data[2],data[3]);
-    await DVEC.builder.buildChunk(
-     data[0],
-     chunkPOS.x,
-     chunkPOS.y,
-     chunkPOS.z,
-     data[4]
-    );
+ data: {
+  syncTextures: ThreadComm.registerTasks(
+   "sync-uv-texuture-data",
+   (data: any) => {
+
+    DVEC.builder.textureManager.setUVTextureMap(data[0]);
+    DVEC.builder.textureManager.setOverlayUVTextureMap(data[1]);
+    DVEC.hooks.texturesRegistered.run(DVEC.builder.textureManager);
    }
   ),
+ },
+ build: {
+  chunk: {
+   tasks: ThreadComm.registerTasks<PriorityTask<BuildTasks>>(
+    ConstructorTasks.buildChunk,
+    async (buildData) => {
+     if (buildData.priority == 0) {
+      Tasks.build.chunk.run(buildData.data);
+      return;
+     }
+     DVEC.tasksQueue.addTasks(
+      buildData.priority,
+      buildData.data,
+      Tasks.build.chunk.run
+     );
+    }
+   ),
+   async run(data: BuildTasks) {
+    const location = data[0];
+    await DVEC.builder.buildChunk(location, data[1]);
+   },
+  },
   column: ThreadComm.registerTasks<BuildTasks>(
    ConstructorTasks.buildColumn,
-   async (data) => {
-    const column = WorldRegister.column.get(data[0], data[1], data[3], data[2]);
+   async (data, onDone) => {
+    const column = WorldRegister.column.get(data[0]);
     if (!column) return false;
     if (column.chunks.size == 0) return false;
+    let totalChunks = 0;
+    const location = data[0];
     for (const [key, chunk] of column.chunks) {
      chunkTool.setChunk(chunk);
      const chunkPOS = chunkTool.getPositionData();
-     await DVEC.builder.buildChunk(
-      data[0],
-      chunkPOS.x,
-      chunkPOS.y,
-      chunkPOS.z,
-      data[4]
+     location[1] = chunkPOS.x;
+     location[2] = chunkPOS.y;
+     location[3] = chunkPOS.z;
+     totalChunks++;
+     DVEC.tasksQueue.addTasks(
+      2,
+      <BuildTasks>[[...location], data[1]],
+      async (data) => {
+       await Tasks.build.chunk.run(data);
+       totalChunks--;
+       if (totalChunks == 0) {
+        if (onDone) onDone(true);
+       }
+      }
      );
     }
-   }
-  ),
-  entity: ThreadComm.registerTasks<any[]>(
-   ConstructorTasks.constructEntity,
-   (data) => {
-    const x = data[0];
-    const y = data[1];
-    const z = data[2];
-    const width = data[3];
-    const depth = data[4];
-    const height = data[5];
-    const composed = data[6];
-    const arrays: Uint32Array[] = [];
-    for (let i = 7; i < 7 + 2 * composed; i += 2) {
-     arrays.push(new Uint32Array(data[i]), new Uint32Array(data[i + 1]));
-    }
-    DVEC.builder.entityConstructor.setEntityData(
-     x,
-     y,
-     z,
-     width,
-     depth,
-     height,
-     composed,
-     arrays
-    );
-    DVEC.builder.constructEntity();
-   }
-  ),
-  item: ThreadComm.registerTasks<any[]>(
-   ConstructorTasks.constructItem,
-   (data) => {
-    const itemId = data[0];
-    const x = data[1];
-    const y = data[2];
-    const z = data[3];
-    DVEC.builder.itemMesher.createItem(itemId, x, y, z);
-   }
+   },
+   "deffered"
   ),
  },
  voxelUpdate: {
   erase: ThreadComm.registerTasks<UpdateTasksO>(
    ConstructorTasks.voxelErease,
-   async (data) => {
+   async (data, onDone) => {
     await EreaseAndUpdate(data);
-   }
+    if (onDone) onDone();
+   },
+   "deffered"
   ),
+
   paint: ThreadComm.registerTasks<PaintTasks>(
    ConstructorTasks.voxelPaint,
-   async (data) => {
+   async (data, onDone) => {
     await PaintAndUpdate(data);
+    if (onDone) onDone();
+   },
+   "deffered"
+  ),
+ },
+ explosion: ThreadComm.registerTasks<ExplosionTasks>(
+  ConstructorTasks.explosion,
+  async (data) => {
+   await DVEC.propagation.expolosion.run(
+    TasksRequest.getExplosionRequests(data[0], data[1], data[2], data[3])
+   );
+  }
+ ),
+
+ worldSun: ThreadComm.registerTasks<WorldSunTask>(
+  ConstructorTasks.worldSun,
+  (data, onDone) => {
+   DVEC.tasksQueue.addTasks(2, data, () => {
+    DVEC.propagation.worldSun.run(
+     TasksRequest.getWorldSunRequests(data[0], data[1])
+    );
+    if (onDone) onDone();
+   });
+  },
+  "deffered"
+ ),
+ worldGen: {
+  generate: ThreadComm.registerTasks<GenerateTasks>(
+   ConstructorTasks.generate,
+   (data, onDone) => {
+    if (!onDone) return;
+    DVEC.tasksQueue.addTasks(2, data, () => {
+     DVEC.worldGen.generate(data, onDone);
+    });
+   },
+   "deffered"
+  ),
+ },
+ anaylzer: {
+  propagation: ThreadComm.registerTasks<UpdateTasksO>(
+   ConstructorTasks.analyzerPropagation,
+   async (data, onDone) => {
+    await DVEC.analyzer.runPropagation(data);
+    if (onDone) onDone();
+   },
+   "deffered"
+  ),
+  update: ThreadComm.registerTasks<UpdateTasksO>(
+   ConstructorTasks.analyzerUpdate,
+   async (data, onDone) => {
+    await DVEC.analyzer.runUpdate(data);
+    if (onDone) onDone();
+   },
+   "deffered"
+  ),
+ },
+ flow: {
+  update: ThreadComm.registerTasks<UpdateTasksO>(
+   ConstructorTasks.flowUpdate,
+   async (data) => {
+    const tasks = TasksRequest.getFlowUpdateRequest(data[0], data[1], data[2]);
+    tasks.start();
+    await DVEC.propagation.flow.update(tasks);
+    tasks.stop();
+   }
+  ),
+  remove: ThreadComm.registerTasks<UpdateTasksO>(
+   ConstructorTasks.flowRemove,
+   async (data) => {
+    const tasks = TasksRequest.getFlowUpdateRequest(data[0], data[1], data[2]);
+    tasks.start();
+    await DVEC.propagation.flow.remove(tasks);
+    tasks.stop();
    }
   ),
  },
@@ -108,22 +176,23 @@ export const Tasks = {
   update: ThreadComm.registerTasks<UpdateTasksO>(
    ConstructorTasks.RGBlightUpdate,
    (data) => {
-    DVEC.propagation.runRGBUpdate(data);
+    const tasks = TasksRequest.getLightUpdateRequest(data[0], data[1], data[2]);
+    const [dimension, x, y, z] = data[0];
+    tasks.queues.rgb.update.push([x, y, z]);
+    tasks.start();
+    DVEC.propagation.rgb.update(tasks);
+    tasks.stop();
    }
   ),
   remove: ThreadComm.registerTasks<UpdateTasksO>(
    ConstructorTasks.RGBlightRemove,
    (data) => {
-    DVEC.propagation.runRGBRemove(data);
-   }
-  ),
- },
- worldSun: {
-  run: ThreadComm.registerTasks<WorldSunTask>(
-   ConstructorTasks.worldSun,
-   (data, onDone) => {
-    DVEC.propagation.runWorldSun(data);
-    if (onDone) onDone();
+    const tasks = TasksRequest.getLightUpdateRequest(data[0], data[1], data[2]);
+    const [dimension, x, y, z] = data[0];
+    tasks.queues.rgb.rmeove.push([x, y, z]);
+    tasks.start();
+    DVEC.propagation.rgb.remove(tasks);
+    tasks.stop();
    }
   ),
  },
@@ -131,46 +200,24 @@ export const Tasks = {
   update: ThreadComm.registerTasks<UpdateTasksO>(
    ConstructorTasks.sunLightUpdate,
    (data) => {
-    DVEC.propagation.runSunLightUpdate(data);
+    const tasks = TasksRequest.getLightUpdateRequest(data[0], data[1], data[2]);
+    const [dimension, x, y, z] = data[0];
+    tasks.queues.sun.update.push([x, y, z]);
+    tasks.start();
+    DVEC.propagation.sun.update(tasks);
+    tasks.stop();
    }
   ),
   remove: ThreadComm.registerTasks<UpdateTasksO>(
    ConstructorTasks.sunLightRemove,
    (data) => {
-    DVEC.propagation.runSunLightRemove(data);
+    const tasks = TasksRequest.getLightUpdateRequest(data[0], data[1], data[2]);
+    const [dimension, x, y, z] = data[0];
+    tasks.queues.sun.rmeove.push([x, y, z]);
+    tasks.start();
+    DVEC.propagation.sun.remove(tasks);
+    tasks.stop();
    }
-  ),
- },
- explosion: {
-  run: ThreadComm.registerTasks<ExplosionTasks>(
-   ConstructorTasks.explosion,
-   (data) => {
-    DVEC.propagation.runExplosion(data);
-   }
-  ),
- },
- flow: {
-  update: ThreadComm.registerTasks<UpdateTasksO>(
-   ConstructorTasks.flowUpdate,
-   async (data) => {
-    await DVEC.propagation.updateFlowAt(data);
-   }
-  ),
-  remove: ThreadComm.registerTasks<UpdateTasksO>(
-   ConstructorTasks.flowRemove,
-   (data) => {
-    DVEC.propagation.removeFlowAt(data);
-   }
-  ),
- },
- worldGen: {
-  generate: ThreadComm.registerTasks<GenerateTasks>(
-   ConstructorTasks.generate,
-   (data, onDone) => {
-    if (!onDone) return;
-    DVEC.worldGen.generate(data, onDone);
-   },
-   "deffered"
   ),
  },
 };

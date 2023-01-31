@@ -1,11 +1,13 @@
+import { LocationData } from "Libs/voxelSpaces/Types/VoxelSpaces.types";
 import type { VoxelTemplateSubstanceType } from "Meta/index";
 
 export type SetChunkMeshTask = [
- dimension: string,
+ location: LocationData,
+ meshes: (ChunkMeshData | RemoveChunkTasks)[]
+];
+
+export type ChunkMeshData = [
  substanceType: VoxelTemplateSubstanceType,
- chunkX: number,
- chunkY: number,
- chunkZ: number,
  positions: Float32Array,
  normals: Float32Array,
  indicies: Uint16Array,
@@ -17,18 +19,17 @@ export type SetChunkMeshTask = [
  overlayUVs: Float32Array
 ];
 
-export type RemoveChunkMeshTasks = [
- dimension: string,
+type RemoveChunkTasks = [
  substanceType: VoxelTemplateSubstanceType,
- chunkX: number,
- chunkY: number,
- chunkZ: number
+ removeFlag: false
+];
+
+export type RemoveChunkMeshTasks = [
+ location: LocationData,
+ substanceType: VoxelTemplateSubstanceType
 ];
 
 export type RemoveChunksOutsideDistance = [
- dimension: string,
- x: number,
- y: number,
- z: number,
+ location: LocationData,
  distance: number
 ];

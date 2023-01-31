@@ -1,7 +1,7 @@
+//data
+import { MeshFaceDataByte } from "../../../Data/Meshing/MeshFaceDataBytes.js";
 import { LightData } from "../../../Data/Light/LightByte.js";
 import { FaceByte } from "../../../Data/Meshing/FaceByte.js";
-//managers
-import { ShapeManager } from "../../Managers/Shapes/ShapeManager.js";
 import { GetConstructorDataTool } from "../../Tools/Data/ConstructorDataTool.js";
 import { GeometryBuilder } from "../Geometry/GeometryBuilder.js";
 const dataTool = GetConstructorDataTool();
@@ -17,7 +17,7 @@ export const VoxelMesher = {
         this.templateIncrement = onOff;
         return this;
     },
-    $buildMesh(type, template, LOD = 1, chunkX = 0, chunkY = 0, chunkZ = 0) {
+    $buildMesh(type, template, LOD = 1, location) {
         const data = {
             substance: type,
             LOD: LOD,
@@ -58,11 +58,16 @@ export const VoxelMesher = {
             data.position.x = template.positionTemplate[positionIndex];
             data.position.y = template.positionTemplate[positionIndex + 1];
             data.position.z = template.positionTemplate[positionIndex + 2];
-            this.data.loadIn(chunkX + data.position.x, chunkY + data.position.y, chunkZ + data.position.z);
+            if (!this.data.loadInAt(location[1] + data.position.x, location[2] + data.position.y, location[3] + data.position.z)) {
+                return false;
+            }
+            if (!this.data.isRenderable()) {
+                return false;
+            }
             this.quad.setPosition(data.position.x, data.position.y, data.position.z);
             data.face = template.faceTemplate[i];
-            data.shapeState = template.shapeStateTemplate[i];
-            ShapeManager.getShape(template.shapeTemplate[i]).build(this);
+            data.shapeState = this.data.getShapeState();
+            this.data.getVoxelShapeObj().build(this);
             if (data.flowTemplate) {
                 if (this.templateData.loadIn("top").isExposed()) {
                     data.flowTemplateIndex += 4;
@@ -123,7 +128,7 @@ export const VoxelMesher = {
         },
         setAnimationState(type) {
             this._faceData = type;
-            // this._faceData = MeshFaceDataByte.setAnimationType(type, this._faceData);
+            this._faceData = MeshFaceDataByte.setAnimationType(type, this._faceData);
             return this;
         },
         setDimensions(width = 0, height = 0) {
@@ -478,11 +483,11 @@ export const VoxelMesher = {
             },
             _getBrightestLight() {
                 const direction = VoxelMesher.quad._direction;
-                const x = dataTool.position.x;
-                const y = dataTool.position.y;
-                const z = dataTool.position.z;
+                const x = dataTool.location[1];
+                const y = dataTool.location[2];
+                const z = dataTool.location[3];
                 let l = this._getLight[direction](x, y, z);
-                dataTool.loadIn(x, y, z);
+                dataTool.loadInAt(x, y, z);
                 if (l < 0) {
                     l = dataTool.getLight();
                 }
@@ -492,32 +497,32 @@ export const VoxelMesher = {
             },
             _getLight: {
                 top: (x, y, z) => {
-                    if (!dataTool.loadIn(x, y + 1, z))
+                    if (!dataTool.loadInAt(x, y + 1, z))
                         return -1;
                     return dataTool.getLight();
                 },
                 bottom: (x, y, z) => {
-                    if (!dataTool.loadIn(x, y - 1, z))
+                    if (!dataTool.loadInAt(x, y - 1, z))
                         return -1;
                     return dataTool.getLight();
                 },
                 east: (x, y, z) => {
-                    if (!dataTool.loadIn(x + 1, y, z))
+                    if (!dataTool.loadInAt(x + 1, y, z))
                         return -1;
                     return dataTool.getLight();
                 },
                 west: (x, y, z) => {
-                    if (!dataTool.loadIn(x - 1, y, z))
+                    if (!dataTool.loadInAt(x - 1, y, z))
                         return -1;
                     return dataTool.getLight();
                 },
                 south: (x, y, z) => {
-                    if (!dataTool.loadIn(x, y, z - 1))
+                    if (!dataTool.loadInAt(x, y, z - 1))
                         return -1;
                     return dataTool.getLight();
                 },
                 north: (x, y, z) => {
-                    if (!dataTool.loadIn(x, y, z + 1))
+                    if (!dataTool.loadInAt(x, y, z + 1))
                         return -1;
                     return dataTool.getLight();
                 },

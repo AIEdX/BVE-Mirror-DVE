@@ -53,7 +53,7 @@ await DVER.$INIT({
   pickable: false,
  },
 });
-SyncWithGraphicsSettings(DVER);
+
 const init = async () => {
  const canvas = SetUpCanvas();
  const engine = SetUpEngine(canvas);
@@ -68,7 +68,7 @@ const init = async () => {
 
  //CreateWorldAxis(scene, 36);
  await DVER.$SCENEINIT({ scene: scene });
- DVER.renderManager.setBaseLevel(1);
+ DVER.render.setBaseLevel(1);
 
  const hemLight = new BABYLON.HemisphericLight(
   "",
@@ -89,7 +89,7 @@ const init = async () => {
  chunkMarker.position.z = 8;
  chunkMarker.position.y = 128 / 2; */
 
- //(DVER as any).renderManager.liquidMaterial.material.wireframe = true;
+ //(DVER as any).render.liquidMaterial.material.wireframe = true;
 
  runRenderLoop(engine, scene, camera, DVER);
 };

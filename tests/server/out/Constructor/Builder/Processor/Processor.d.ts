@@ -1,8 +1,9 @@
-import type { DirectionNames, EngineSettingsData, VoxelConstructorObject, VoxelShape, VoxelSubstanceType } from "Meta/index.js";
-import type { FullChunkTemplate } from "Meta/Constructor/ChunkTemplate.types.js";
-import type { VoxelProcessData } from "Meta/Constructor/Voxel.types.js";
+import type { DirectionNames, EngineSettingsData, VoxelShape, VoxelSubstanceType } from "Meta/index.js";
+import type { FullVoxelSubstanceTemplate } from "Meta/Constructor/VoxelTemplate.types.js";
+import type { VoxelConstructor } from "Meta/Constructor/Voxel.types.js";
 import type { FaceDataOverride } from "Meta/Constructor/OverRide.types";
 import type { TextureRotations } from "Meta/Constructor/Geometry/Geometry.types.js";
+import type { LocationData } from "Libs/voxelSpaces/Types/VoxelSpaces.types.js";
 import { CalculateVoxelLight, VoxelLightMixCalc } from "./Functions/CalculateVoxelLight.js";
 import { CalculateFlow } from "./Functions/CalculateFlow.js";
 /**# Chunk Processor
@@ -43,6 +44,8 @@ export declare const Processor: {
         setB(value: number, sl: number): number;
         removeS(sl: number): number;
         hasRGBLight(sl: number): boolean;
+        hasSunLight(sl: number): boolean;
+        mixLight(l1: number, l2: number): number;
         getRGB(sl: number): number;
         setRGB(value: number, sl: number): number;
         decodeLightFromVoxelData(voxelData: number): number;
@@ -69,6 +72,7 @@ export declare const Processor: {
     calculatFlow: typeof CalculateFlow;
     voxellightMixCalc: typeof VoxelLightMixCalc;
     doVoxelLight: typeof CalculateVoxelLight;
+    nLocation: LocationData;
     exposedFaces: number[];
     faceStates: number[];
     textureRotation: TextureRotations[];
@@ -80,19 +84,13 @@ export declare const Processor: {
         entity: boolean;
         composedEntity: number;
     };
-    voxelProcesseData: VoxelProcessData;
     faceDataOverride: FaceDataOverride;
-    aoOverRideData: any;
-    template: FullChunkTemplate;
-    faceIndexMap: Record<DirectionNames, number>;
-    dimension: number;
+    template: FullVoxelSubstanceTemplate;
     $INIT(): void;
-    cullCheck(face: DirectionNames, voxelObject: VoxelConstructorObject, voxelShape: VoxelShape, voxelSubstance: VoxelSubstanceType, x: number, y: number, z: number, faceBit: number): number;
+    cullCheck(face: DirectionNames, voxelObject: VoxelConstructor, voxelShape: VoxelShape, voxelSubstance: VoxelSubstanceType, faceBit: number): number;
     faceStateCheck(face: DirectionNames, faceBit: number): number;
-    _process(template: FullChunkTemplate, x: number, y: number, z: number, doSecondCheck?: boolean): void;
-    constructEntity(composed?: number): FullChunkTemplate;
-    makeAllChunkTemplates(dimension: string, chunkX: number, chunkY: number, chunkZ: number, LOD?: number): FullChunkTemplate;
-    processVoxelLight(data: VoxelProcessData, ignoreAO?: boolean): void;
+    _process(doSecondCheck?: boolean): void;
+    makeAllChunkTemplates(location: LocationData, LOD?: number): FullVoxelSubstanceTemplate;
     syncSettings(settings: EngineSettingsData): void;
     flush(): void;
 };

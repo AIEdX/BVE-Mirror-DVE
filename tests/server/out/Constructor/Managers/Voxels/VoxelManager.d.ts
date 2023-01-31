@@ -1,9 +1,6 @@
-import type { VoxelHooks, VoxelConstructorObject } from "Meta/Data/Voxels/Voxel.types";
+import { VoxelConstructor } from "../../../Meta/Constructor/Voxel.types.js";
 export declare const VoxelManager: {
-    voxelObjects: Record<string, VoxelConstructorObject>;
-    syncShapeData(): Generator<never, void, unknown>;
-    getVoxel(id: string): VoxelConstructorObject;
-    registerVoxel(voxel: VoxelConstructorObject): void;
-    runVoxelHookForAll(hook: VoxelHooks): void;
-    removeVoxelHookForAll(hook: VoxelHooks): void;
+    voxelObjects: Map<string, VoxelConstructor>;
+    getVoxel(id: string): VoxelConstructor;
+    registerVoxel(voxel: VoxelConstructor): void;
 };

@@ -5,18 +5,19 @@ import { WorldPainter } from "../../Data/World/WorldPainter.js";
 import { WorldRegister } from "../../Data/World/WorldRegister.js";
 import { VoxelPaletteReader } from "../../Data/Voxel/VoxelPalette.js";
 import { RawVoxelData } from "Meta/index.js";
-export class BrushTool {
+import { LocationBoundTool } from "../Classes/LocationBoundTool.js";
+export class BrushTool extends LocationBoundTool {
  data: AddVoxelData = {
   id: "dve_air",
-  position: [0, 0, 0],
   state: 0,
   shapeState: 0,
-  dimension: "main",
   secondaryState: 0,
   secondaryVoxelId: "dve_air",
   level: 0,
   levelState: 0,
- };
+ }; 
+
+ _update = true;
 
  _dt = new DataTool();
  setId(id: string, state = 0, shapeState = 0) {
@@ -26,8 +27,8 @@ export class BrushTool {
   return this;
  }
 
- setDimension(dimensionId: string | number) {
-  this.data.dimension = DimensionsRegister.getDimensionStringId(dimensionId);
+ setDimension(dimensionId: string) {
+  this.location[0] = dimensionId;
   this._dt.setDimension(dimensionId);
   return this;
  }
@@ -55,9 +56,9 @@ export class BrushTool {
   this.data.levelState = 0;
   this.data.state = 0;
   this.data.secondaryState = 0;
-  this.data.position[0] = 0;
-  this.data.position[1] = 0;
-  this.data.position[2] = 0;
+  this.location[1] = 0;
+  this.location[2] = 0;
+  this.location[3] = 0;
  }
 
  setRaw(data: RawVoxelData) {
@@ -93,29 +94,17 @@ export class BrushTool {
   return this._dt.data.raw;
  }
 
- setXYZ(x: number, y: number, z: number) {
-  this.data.position[0] = x;
-  this.data.position[1] = y;
-  this.data.position[2] = z;
-  return this;
- }
-
  getData() {
   return this.data;
  }
 
  paint() {
-  WorldPainter.paint.voxel(this.data);
+  WorldPainter.paint.voxel(this.location, this.data,this._update);
   return this;
  }
 
  erase() {
-  WorldPainter.paint.erase(
-   this.data.dimension,
-   this.data.position[0],
-   this.data.position[1],
-   this.data.position[2]
-  );
+  WorldPainter.paint.erase(this.location);
   return this;
  }
 

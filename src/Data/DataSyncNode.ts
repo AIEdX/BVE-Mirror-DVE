@@ -1,12 +1,11 @@
 import type {
- ChunkSyncData,
- ChunkUnSyncData,
  VoxelMapSyncData,
- RegionSyncData,
- RegionUnSyncData,
  VoxelDataSync,
  VoxelPaletteSyncData,
+ WorldDataSync,
+ RegisterStringMapSync,
 } from "Meta/Data/DataSync.types.js";
+import type { LocationData } from "Libs/voxelSpaces/Types/VoxelSpaces.types.js";
 import type { DimensionData } from "Meta/Data/DimensionData.types.js";
 import type { RemoteTagManagerInitData } from "Libs/DivineBinaryTags/Types/Util.types.js";
 //objects
@@ -33,29 +32,32 @@ export const DataSyncNode = {
     done = false;
    }
   }
+
   return true;
  },
  voxelPalette: ThreadComm.onDataSync<VoxelPaletteSyncData, any>(
-  DataSyncTypes.voxelPalette
+  DataSyncTypes.voxelPalette,
+  (data) => {
+   VoxelPaletteReader.setVoxelPalette(data[0], data[1]);
+  }
  ),
- voxelData: ThreadComm.onDataSync<VoxelDataSync, any>(DataSyncTypes.voxelData),
- materialMap: ThreadComm.onDataSync<VoxelMapSyncData, any>(
-  DataSyncTypes.materials
- ),
- colliderMap: ThreadComm.onDataSync<VoxelMapSyncData, any>(
-  DataSyncTypes.colliders
+ voxelData: ThreadComm.onDataSync<VoxelDataSync, any>(
+  DataSyncTypes.voxelTags,
+  (data) => {
+   VoxelTags.$INIT(data[0]);
+   VoxelTags.sync(new Uint16Array(data[1]));
+   DataSyncNode._states.voxelData = true;
+  }
  ),
  dimension: ThreadComm.onDataSync<DimensionData, void>(DataSyncTypes.dimesnion),
- chunk: ThreadComm.onDataSync<ChunkSyncData, ChunkUnSyncData>(
-  DataSyncTypes.chunk
- ),
- column: ThreadComm.onDataSync<ChunkSyncData, ChunkUnSyncData>(
+ chunk: ThreadComm.onDataSync<WorldDataSync, LocationData>(DataSyncTypes.chunk),
+ column: ThreadComm.onDataSync<WorldDataSync, LocationData>(
   DataSyncTypes.column
  ),
- region: ThreadComm.onDataSync<RegionSyncData, RegionUnSyncData>(
+ region: ThreadComm.onDataSync<WorldDataSync, LocationData>(
   DataSyncTypes.region
  ),
- regionHeader: ThreadComm.onDataSync<RegionSyncData, RegionUnSyncData>(
+ regionHeader: ThreadComm.onDataSync<WorldDataSync, LocationData>(
   DataSyncTypes.regionHeader
  ),
  chunkTags: ThreadComm.onDataSync<RemoteTagManagerInitData, void>(
@@ -67,45 +69,44 @@ export const DataSyncNode = {
  regionTags: ThreadComm.onDataSync<RemoteTagManagerInitData[], void>(
   DataSyncTypes.regionTags
  ),
+ stringMap: ThreadComm.onDataSync<RegisterStringMapSync, void>(
+  DataSyncTypes.registerStringMap,
+  (data) => {
+   Register.stringMaps.syncStringMap(data);
+  }
+ ),
 };
-
-DataSyncNode.voxelPalette.addOnSync((data) => {
- VoxelPaletteReader.setVoxelPalette(data[0], data[1]);
-});
-
-DataSyncNode.colliderMap.addOnSync((data) => {
- VoxelTags.colliderMap = data[0];
-});
-
-DataSyncNode.materialMap.addOnSync((data) => {
- VoxelTags.materialMap = data[0];
-});
-
-DataSyncNode.voxelData.addOnSync((data) => {
- VoxelTags.$INIT(data[0]);
- VoxelTags.sync(new Uint16Array(data[1]));
-
- DataSyncNode._states.voxelData = true;
-});
 
 DataSyncNode.dimension.addOnSync((data) => {
  DimensionsRegister.registerDimension(data.id, data.options);
 });
 
 DataSyncNode.chunk.addOnSync((data) => {
- WorldRegister.chunk.add(data[0], data[1], data[2], data[3], data[4]);
+ WorldRegister.chunk.add(data[0], data[1]);
+});
+
+DataSyncNode.chunk.addOnUnSync((data) => {
+ WorldRegister.chunk.remove(data);
 });
 
 DataSyncNode.column.addOnSync((data) => {
- WorldRegister.column.add(data[0], data[1], data[2], data[3], data[4]);
+ WorldRegister.column.add(data[0], data[1]);
+});
+
+DataSyncNode.column.addOnUnSync((data) => {
+ WorldRegister.column.remove(data);
 });
 
 DataSyncNode.region.addOnSync((data) => {
- WorldRegister.region.add(data[0], data[1], data[2], data[3], data[4]);
+ WorldRegister.region.add(data[0], data[1]);
+});
+
+DataSyncNode.region.addOnUnSync((data) => {
+ WorldRegister.region.remove(data);
 });
 
 DataSyncNode.regionHeader.addOnSync((data) => {
- RegionHeaderRegister.add([data[0], data[1], data[2], data[3]], data[4]);
+ RegionHeaderRegister.add(data[0], data[1]);
 });
 
 DataSyncNode.chunkTags.addOnSync((data) => {

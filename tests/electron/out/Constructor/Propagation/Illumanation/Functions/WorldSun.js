@@ -3,6 +3,7 @@ import { WorldBounds } from "../../../../Data/World/WorldBounds.js";
 import { WorldRegister } from "../../../../Data/World/WorldRegister.js";
 import { $3dCardinalNeighbors } from "../../../../Data/Constants/Util/CardinalNeighbors.js";
 import { WorldSpaces } from "../../../../Data/World/WorldSpaces.js";
+import { IlluminationManager as IM } from "../IlluminationManager.js";
 const inColumnBounds = (cx, cz, x, z) => {
     if (x >= cx &&
         x <= cx + WorldSpaces.chunk._bounds.x &&
@@ -11,58 +12,58 @@ const inColumnBounds = (cx, cz, x, z) => {
         return true;
     return false;
 };
-export function RunWorldSun(data) {
-    const dimension = data[0];
-    const cx = data[1];
-    const cz = data[2];
-    const cy = data[3];
-    if (!WorldRegister.column.get(dimension, cx, cz, cy))
+export function RunWorldSun(tasks) {
+    IM.setDimension(tasks.origin[0]);
+    tasks.start();
+    if (!WorldRegister.column.get(tasks.origin))
         return false;
-    const RmaxY = WorldRegister.column.height.getRelative(dimension, cx, cz, cy);
-    const AmaxY = WorldRegister.column.height.getAbsolute(dimension, cx, cz, cy);
+    const [dimension, cx, cy, cz] = tasks.origin;
+    const queue = tasks.queues.sun;
+    IM._sDataTool.setDimension(dimension);
+    const RmaxY = WorldRegister.column.height.getRelative(tasks.origin);
+    const AmaxY = WorldRegister.column.height.getAbsolute(tasks.origin);
+    //fill
     for (let ix = cx; ix < cx + WorldSpaces.chunk._bounds.x; ix++) {
         for (let iz = cz; iz < cz + WorldSpaces.chunk._bounds.z; iz++) {
             for (let iy = AmaxY; iy < WorldBounds.bounds.MaxY; iy++) {
-                if (!this._sDataTool.loadIn(ix, iy, iz))
+                if (!IM._sDataTool.loadInAt(ix, iy, iz))
                     continue;
-                const l = this._sDataTool.getLight();
+                const l = IM._sDataTool.getLight();
                 if (l < 0)
                     continue;
-                this._sDataTool.setLight(this.lightData.setS(0xf, l)).commit();
-                /*  if (iy <= RmaxY) {
-                  this._worldSunQueue.push([ix, iy, iz]);
-                 } */
+                IM._sDataTool.setLight(IM.lightData.setS(0xf, l)).commit();
             }
         }
     }
+    //accumulate
     for (let ix = cx; ix < cx + WorldSpaces.chunk._bounds.x; ix++) {
         for (let iz = cz; iz < cz + WorldSpaces.chunk._bounds.z; iz++) {
             for (let iy = AmaxY; iy <= RmaxY; iy++) {
-                if (!this._sDataTool.loadIn(ix, iy, iz))
+                if (!IM._sDataTool.loadInAt(ix, iy, iz))
                     continue;
-                const l = this._sDataTool.getLight();
-                if (l < 0 && this.lightData.getS(l) != 0xf)
+                const l = IM._sDataTool.getLight();
+                if (l < 0 && IM.lightData.getS(l) != 0xf)
                     continue;
                 let add = false;
                 for (const n of $3dCardinalNeighbors) {
                     const nx = ix + n[0];
                     const ny = iy + n[1];
                     const nz = iz + n[2];
-                    if (this._nDataTool.loadIn(nx, ny, nz)) {
-                        const nl = this._nDataTool.getLight();
-                        if (nl >= 0 && this.lightData.getS(nl) < 0xf) {
+                    if (IM._nDataTool.loadInAt(nx, ny, nz)) {
+                        const nl = IM._nDataTool.getLight();
+                        if (nl >= 0 && IM.lightData.getS(nl) < 0xf) {
                             add = true;
                             break;
                         }
                     }
                 }
                 if (add) {
-                    this._worldSunQueue.push([ix, iy, iz]);
+                    queue.push([ix, iy, iz]);
                 }
             }
         }
     }
-    const queue = this._worldSunQueue;
+    //flood
     while (queue.length) {
         const node = queue.shift();
         if (!node) {
@@ -71,68 +72,67 @@ export function RunWorldSun(data) {
         const x = node[0];
         const y = node[1];
         const z = node[2];
-        if (!this._sDataTool.loadIn(x, y, z))
+        if (!IM._sDataTool.loadInAt(x, y, z))
             continue;
-        const sl = this._sDataTool.getLight();
+        const sl = IM._sDataTool.getLight();
         if (sl <= 0)
             continue;
-        const sunL = this.lightData.getS(sl);
+        const sunL = IM.lightData.getS(sl);
         if (sunL >= 0xf && !inColumnBounds(cx, cz, x, z))
             continue;
-        if (this._nDataTool.loadIn(x - 1, y, z)) {
-            const nl = this._nDataTool.getLight();
-            if (nl > -1 && this.lightData.isLessThanForSunAdd(nl, sl)) {
+        if (IM._nDataTool.loadInAt(x - 1, y, z)) {
+            const nl = IM._nDataTool.getLight();
+            if (nl > -1 && IM.lightData.isLessThanForSunAdd(nl, sl)) {
                 queue.push([x - 1, y, z]);
-                this._nDataTool.setLight(this.lightData.getMinusOneForSun(sl, nl)).commit();
+                IM._nDataTool.setLight(IM.lightData.getMinusOneForSun(sl, nl)).commit();
             }
         }
-        if (this._nDataTool.loadIn(x + 1, y, z)) {
-            const nl = this._nDataTool.getLight();
-            if (nl > -1 && this.lightData.isLessThanForSunAdd(nl, sl)) {
+        if (IM._nDataTool.loadInAt(x + 1, y, z)) {
+            const nl = IM._nDataTool.getLight();
+            if (nl > -1 && IM.lightData.isLessThanForSunAdd(nl, sl)) {
                 queue.push([x + 1, y, z]);
-                this._nDataTool.setLight(this.lightData.getMinusOneForSun(sl, nl)).commit();
+                IM._nDataTool.setLight(IM.lightData.getMinusOneForSun(sl, nl)).commit();
             }
         }
-        if (this._nDataTool.loadIn(x, y, z - 1)) {
-            const nl = this._nDataTool.getLight();
-            if (nl > -1 && this.lightData.isLessThanForSunAdd(nl, sl)) {
+        if (IM._nDataTool.loadInAt(x, y, z - 1)) {
+            const nl = IM._nDataTool.getLight();
+            if (nl > -1 && IM.lightData.isLessThanForSunAdd(nl, sl)) {
                 queue.push([x, y, z - 1]);
-                this._nDataTool.setLight(this.lightData.getMinusOneForSun(sl, nl)).commit();
+                IM._nDataTool.setLight(IM.lightData.getMinusOneForSun(sl, nl)).commit();
             }
         }
-        if (this._nDataTool.loadIn(x, y, z + 1)) {
-            const nl = this._nDataTool.getLight();
-            if (nl > -1 && this.lightData.isLessThanForSunAdd(nl, sl)) {
+        if (IM._nDataTool.loadInAt(x, y, z + 1)) {
+            const nl = IM._nDataTool.getLight();
+            if (nl > -1 && IM.lightData.isLessThanForSunAdd(nl, sl)) {
                 queue.push([x, y, z + 1]);
-                this._nDataTool.setLight(this.lightData.getMinusOneForSun(sl, nl)).commit();
+                IM._nDataTool.setLight(IM.lightData.getMinusOneForSun(sl, nl)).commit();
             }
         }
-        if (this._nDataTool.loadIn(x, y - 1, z)) {
-            const nl = this._nDataTool.getLight();
-            if (nl > -1 && this.lightData.isLessThanForSunAddDown(nl, sl)) {
-                if (this._nDataTool.isAir()) {
+        if (IM._nDataTool.loadInAt(x, y - 1, z)) {
+            const nl = IM._nDataTool.getLight();
+            if (nl > -1 && IM.lightData.isLessThanForSunAddDown(nl, sl)) {
+                if (IM._nDataTool.isAir()) {
                     queue.push([x, y - 1, z]);
-                    this._nDataTool
-                        .setLight(this.lightData.getSunLightForUnderVoxel(sl, nl))
+                    IM._nDataTool
+                        .setLight(IM.lightData.getSunLightForUnderVoxel(sl, nl))
                         .commit();
                 }
                 else {
-                    const substance = this._nDataTool.getSubstance();
+                    const substance = IM._nDataTool.getSubstance();
                     if (substance != "magma" && substance != "solid") {
                         queue.push([x, y - 1, z]);
-                        this._nDataTool
-                            .setLight(this.lightData.getMinusOneForSun(sl, nl))
-                            .commit();
+                        IM._nDataTool.setLight(IM.lightData.getMinusOneForSun(sl, nl)).commit();
                     }
                 }
             }
         }
-        if (this._nDataTool.loadIn(x, y + 1, z)) {
-            const nl = this._nDataTool.getLight();
-            if (nl > -1 && this.lightData.isLessThanForSunAdd(nl, sl)) {
+        if (IM._nDataTool.loadInAt(x, y + 1, z)) {
+            const nl = IM._nDataTool.getLight();
+            if (nl > -1 && IM.lightData.isLessThanForSunAdd(nl, sl)) {
                 queue.push([x, y + 1, z]);
-                this._nDataTool.setLight(this.lightData.getMinusOneForSun(sl, nl)).commit();
+                IM._nDataTool.setLight(IM.lightData.getMinusOneForSun(sl, nl)).commit();
             }
         }
     }
+    tasks.stop();
 }

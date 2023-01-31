@@ -1,22 +1,19 @@
 export const SharedVertexShader = {
     top: `
+ #extension GL_EXT_gpu_shader4 : enable
   precision highp float;
   `,
     standardPositionMain: `
-  vec4 worldPosition = world * vec4(position, 1.0);
-  gl_Position =  worldViewProjection * vec4(position + worldOrigin, 1.0) ;
-  `,
-    standardPositioFOnMain: `
-  vec4 worldPosition = world * vec4(position, 1.0);
-  gl_Position =  worldViewProjection * vec4(position + worldOrigin, 1.0) ;
+ vec4 worldPosition = world * vec4(position, 1.0);
+ gl_Position = viewProjection * world * vec4(position, 1.0); 
   `,
     uniforams: `
 uniform mat4 worldViewProjection;
 uniform mat4 world;      
-uniform vec3 worldMatrix;       
+uniform mat4 viewProjection;    
 uniform vec3 cameraPosition;         
+
 uniform mat4 view;                    
-uniform mat4 viewProjection;       
 uniform float doEffects;      
 uniform vec4 fogOptions;      
 uniform vec3 worldOrigin;
@@ -45,6 +42,7 @@ uniform vec3 worldOrigin;
  //for fog 
  varying vec3 cameraPOS;
  varying vec3 worldPOS;
+ varying vec3 worldPOSNoOrigin;
  varying float vDistance;
  varying float mipMapLevel;
  `,
@@ -52,7 +50,7 @@ uniform vec3 worldOrigin;
         let varying = `
   varying vec3 vUV;
   varying vec4 vOVUV;
-  varying float vFaceData;
+
   varying vec3 vNormal;
 
   
@@ -64,7 +62,7 @@ uniform vec3 worldOrigin;
   varying vec4 vColors;
   //texture animations
   varying float animIndex;
-  varying float overlayAnimIndex;
+
   //animation States
   varying float vAnimation;
  ${SharedVertexShader.defaultVarying}
@@ -109,7 +107,6 @@ uniform vec3 worldOrigin;
     vOVUV.y = getOverlayUVFace(ocuv3.y);
     vOVUV.z = getOverlayUVFace(ocuv3.z);
     vOVUV.w = getOverlayUVFace(ocuv3.w);
-
     `,
     passTime: `
 
@@ -165,26 +162,32 @@ uniform vec3 worldOrigin;
  cameraPOS = cameraPosition;
  vec4 temp =  world * vec4(position, 1.0);
  worldPOS = vec3(temp.x,temp.y,temp.z);
- vDistance = distance(worldPOS, cameraPOS);
+ vDistance = distance(cameraPOS , worldPOS );
  mipMapLevel = 0.;
  if(vDistance <= 30.) {
   mipMapLevel = 0.;
  }
- if(vDistance > 30. &&  vDistance <= 40.) {
+ if(vDistance > 50. &&  vDistance <= 70.) {
   mipMapLevel = 1.;
  }
- if(vDistance > 40. && vDistance < 50.) {
+ if(vDistance > 70. && vDistance < 90.) {
    mipMapLevel = 2.;
  }
- if(vDistance >= 50.) {
+ if(vDistance >= 90.) {
   mipMapLevel = 3.;
   }
-
+  mat4 a;
+  a[0] = world[0];
+  a[1] = world[1];
+  a[2] = world[2];
+  a[3] = vec4(world[3].xyz - worldOrigin.xyz, 1.);
+  temp =  a * vec4(position , 1.0);
+  worldPOSNoOrigin =  vec3(temp.x,temp.y,temp.z);
  `,
     getAnimationType: `
  int getAnimationType() {
-   highp int index = int(faceData);
-   return  index & 0xff;
+   int index = int(faceData);
+  return  index & 0xff;
 }
  `,
     animationFunctions: `

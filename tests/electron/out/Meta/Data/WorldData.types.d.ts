@@ -15,8 +15,6 @@ export declare type Region = {
 export declare type WorldDimensions = Map<string, Map<string, Region>>;
 export declare type AddVoxelData = {
     id: string;
-    dimension: string;
-    position: [number, number, number];
     state: number;
     shapeState: number;
     level: number;
@@ -24,5 +22,5 @@ export declare type AddVoxelData = {
     secondaryVoxelId: string;
     secondaryState: number;
 };
-export declare type VoxelPalette = Record<number, string>;
+export declare type VoxelPalette = string[];
 export declare type VoxelPaletteMap = Record<string, number>;

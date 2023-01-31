@@ -1,3 +1,4 @@
+import { Util } from "../../Global/Util.helper.js";
 import type { EngineSettingsData } from "Meta/Data/Settings/EngineSettings.types";
 import { WorldBounds } from "../World/WorldBounds.js";
 import { WorldSpaces } from "../World/WorldSpaces.js";
@@ -7,6 +8,7 @@ import { WorldSpaces } from "../World/WorldSpaces.js";
  * Handles common settings for all contexts
  */
 export const EngineSettings = {
+ enviorment: Util.getEnviorment(),
  //context: <EngineSettingsContext>"MatrixLoadedThread",
  settings: <EngineSettingsData>{
   nexus: {
@@ -23,8 +25,8 @@ export const EngineSettings = {
    autoSyncChunks: true,
    autoSyncVoxelPalette: true,
   },
-  server : {
-    enabled : false
+  server: {
+   enabled: false,
   },
   richWorld: {
    enabled: false,
@@ -33,8 +35,8 @@ export const EngineSettings = {
   },
   textures: {
    animationTime: 20,
-   width: 16,
-   height: 16,
+   textureSize : 16,
+   mipMapSizes : [16, 12, 8, 4],
   },
   updating: {
    autoRebuild: true,
@@ -61,8 +63,8 @@ export const EngineSettings = {
   voxels: {
    doColors: true,
   },
-  flow : {
-    enable : true
+  flow: {
+   enable: true,
   },
   lighting: {
    doAO: true,
@@ -81,7 +83,7 @@ export const EngineSettings = {
    pickable: false,
   },
   materials: {
-   mode : "classic",
+   mode: "classic",
    doAO: true,
    doSunLight: true,
    doRGBLight: true,
@@ -117,25 +119,21 @@ export const EngineSettings = {
   this.__syncWithObjects();
  },
 
-
  __syncWithObjects() {
-
   WorldSpaces.$INIT(this.settings);
-   if (this.settings.world) {
-    WorldBounds.setWorldBounds(
-     this.settings.world.minX,
-     this.settings.world.maxX,
-     this.settings.world.minZ,
-     this.settings.world.maxZ,
-     this.settings.world.minY,
-     this.settings.world.maxY
-    );
-   }
+  if (this.settings.world) {
+   WorldBounds.setWorldBounds(
+    this.settings.world.minX,
+    this.settings.world.maxX,
+    this.settings.world.minZ,
+    this.settings.world.maxZ,
+    this.settings.world.minY,
+    this.settings.world.maxY
+   );
+  }
  },
 
- syncWithWorldBounds(worldBounds: typeof WorldBounds) {
-
- },
+ syncWithWorldBounds(worldBounds: typeof WorldBounds) {},
 
  getSettingsCopy() {
   return JSON.parse(JSON.stringify(this.settings));
@@ -175,5 +173,14 @@ export const EngineSettings = {
  },
  doFlow() {
   return this.settings.flow.enable;
- }
+ },
+ saveWorldData() {
+  return this.settings.data.enabled;
+ },
+ isServer() {
+  return this.settings.server.enabled && this.enviorment == "node";
+ },
+ isClient() {
+  return this.enviorment != "browser";
+ },
 };

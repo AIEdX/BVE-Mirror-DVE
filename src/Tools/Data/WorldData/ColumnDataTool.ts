@@ -2,35 +2,16 @@
 import type { Column } from "Meta/Data/WorldData.types.js";
 //objects
 import { WorldRegister } from "../../../Data/World/WorldRegister.js";
-import { PositionBoundDataTool } from "../Classes/DataToolBase.js";
+import { EncodedPositionDataTool } from "../../Classes/DataToolBase.js";
 import { ColumnTags } from "../../../Data/World/Column/ColumnTags.js";
 import { ChunkTags } from "../../../Data/World/Chunk/ChunkTags.js";
-import { LocationData } from "Meta/Data/CommonTypes.js";
 
-export class ColumnDataTool extends PositionBoundDataTool {
+export class ColumnDataTool extends EncodedPositionDataTool {
  tags = ColumnTags;
  _column = <Column>{};
 
- loadIn(x: number, y: number, z: number) {
-  this.position.x = x;
-  this.position.y = y;
-  this.position.z = z;
-  const column = WorldRegister.column.get(this.dimension, x, z, y);
-  if (!column) return false;
-  this.tags.setBuffer(column.data);
-  this._c = column.data;
-  this._column = column;
-  return true;
- }
-
- loadInAt(location: LocationData) {
-  this.setLocation(location);
-  const column = WorldRegister.column.get(
-   this.dimension,
-   this.position.x,
-   this.position.z,
-   this.position.y
-  );
+ loadIn() {
+  const column = WorldRegister.column.get(this.location);
   if (!column) return false;
   this.tags.setBuffer(column.data);
   this._c = column.data;
@@ -62,10 +43,44 @@ export class ColumnDataTool extends PositionBoundDataTool {
  }
 
  markAsNotStored() {
-  return this.setTagValue("#dve_is_stored", 0);
+  this.setTagValue("#dve_is_stored", 0);
+  return this;
  }
 
  markAsStored() {
-  return this.setTagValue("#dve_is_stored", 1);
+  this.setTagValue("#dve_is_stored", 1);
+  return this;
+ }
+
+ isPersistent() {
+  return this.getTagValue("#dve_persistent") == 1;
+ }
+
+ setPersistence(value: boolean) {
+  this.setTagValue("#dve_persistent", value ? 1 : 0);
+ }
+
+ isDirty() {
+  return this.getTagValue("#dve_is_dirty") == 1;
+ }
+
+ setDirty(value: boolean) {
+  this.setTagValue("#dve_is_dirty", value ? 1 : 0);
+ }
+
+ getLastSaveTimestamp() {
+  return this.getTagValue("#dve_last_save_timestamp");
+ }
+
+ setLastSaveTimestamp() {
+  return this.setTagValue("#dve_last_save_timestamp", Date.now());
+ }
+
+ getLastAnalyzerUpdateTimestamp() {
+  return this.getTagValue("#dve_last_analyzer_update_timestamp");
+ }
+
+ setLastAnalyzerUpdateTimestamp() {
+  return this.setTagValue("#dve_last_analyzer_update_timestamp", Date.now());
  }
 }

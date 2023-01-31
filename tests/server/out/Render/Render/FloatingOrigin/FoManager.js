@@ -3,6 +3,10 @@ import { FONode } from "./FONode.js";
 export const FOManager = {
     activeCamera: null,
     activeNode: null,
+    onOriginSet: [],
+    registerOnOriginSet(run) {
+        this.onOriginSet.push(run);
+    },
     getCamera(scene, name, position = BABYLON.Vector3.Zero(), canvas) {
         const camera = new FOCamera(name, position, scene);
         camera.touchAngularSensibility = 10000;
@@ -26,5 +30,14 @@ export const FOManager = {
     },
     getNode(scene, name) {
         return new FONode(name, scene);
+    },
+    setOriginCenter(scene, object) {
+        this.activeNode = this.getNode(scene, "world-origin");
+        this.onOriginSet.forEach((_) => _(this.activeCamera));
+        scene.onBeforeActiveMeshesEvaluationObservable.add(() => {
+            this.activeNode.update(object.position);
+            const node = this.activeNode;
+            //  object.position.set(0, 0, 0);
+        });
     },
 };

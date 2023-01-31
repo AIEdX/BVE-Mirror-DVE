@@ -1,5 +1,5 @@
 //objects
-import { VoxelMath } from "../../../Libs/Math/VoxelMath.js";
+import { VoxelMath } from "../../../Math/VoxelMath.js";
 import { CollisionsHanlder } from "./Collisions/CollisionsHandler.js";
 import { EntityBase } from "./Entities/Entity.base.js";
 import { ColliderManager } from "./Colliders/ColliderManager.js";
@@ -12,7 +12,7 @@ export const DVP = {
     colliders: ColliderManager,
     _dataTool: new DataTool(),
     getCollider(x, y, z, dimension = 0) {
-        if (!this._dataTool.loadIn(x, y, z))
+        if (!this._dataTool.loadInAt(x, y, z))
             return false;
         if (!this._dataTool.checkCollisions())
             return false;

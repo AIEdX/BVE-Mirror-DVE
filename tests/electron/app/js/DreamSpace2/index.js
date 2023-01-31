@@ -1,5 +1,5 @@
 import { SetUpEngine, SetUpCanvas, SetUpDefaultCamera, SetUpDefaultSkybox, runRenderLoop, SetUpDefaultScene, } from "../Shared/Babylon/index.js";
-import { RunInit, SetUpWorkers, SyncWithGraphicsSettings } from "../Shared/Create/index.js";
+import { RunInit, SetUpWorkers } from "../Shared/Create/index.js";
 import { DVER } from "../../out/Render/DivineVoxelEngineRender.js";
 import { RegisterTexutres } from "../Shared/Functions/RegisterTextures.js";
 import { GetAnalyzerCubeRender } from "../Shared/Debug/Anaylzer/Cube.js";
@@ -23,7 +23,6 @@ await DVER.$INIT({
         maxY: 128,
     },
 });
-SyncWithGraphicsSettings(DVER);
 const init = async () => {
     const canvas = SetUpCanvas();
     const engine = SetUpEngine(canvas);
@@ -31,10 +30,10 @@ const init = async () => {
     const camera = SetUpDefaultCamera(scene, canvas, { x: 0, y: 70, z: 0 });
     SetUpDefaultSkybox(scene);
     await DVER.$SCENEINIT({ scene: scene });
-    DVER.renderManager.setBaseLevel(0.0);
-    DVER.renderManager.setSunLevel(1);
-    //DVER.renderManager.setSunLevel(0.01);
-    DVER.renderManager.setBaseLevel(0.05);
+    DVER.render.setBaseLevel(0.0);
+    DVER.render.setSunLevel(1);
+    //DVER.render.setSunLevel(0.01);
+    DVER.render.setBaseLevel(0.05);
     const dayNightCyle = {
         tick: 0,
         value: 0,
@@ -52,7 +51,7 @@ const init = async () => {
                 scene.fogColor.r += 0.01;
                 scene.fogColor.g += 0.01;
                 scene.fogColor.b += 0.015;
-                DVER.renderManager.setSunLevel(dayNightCyle.value);
+                DVER.render.setSunLevel(dayNightCyle.value);
             }
             if (dayNightCyle.tick == dayNightCyle.max) {
                 dayNightCyle.direction = "down";
@@ -65,7 +64,7 @@ const init = async () => {
                 scene.fogColor.r -= 0.01;
                 scene.fogColor.g -= 0.01;
                 scene.fogColor.b -= 0.015;
-                DVER.renderManager.setSunLevel(dayNightCyle.value);
+                DVER.render.setSunLevel(dayNightCyle.value);
             }
             if (dayNightCyle.tick == 0) {
                 dayNightCyle.direction = "up";

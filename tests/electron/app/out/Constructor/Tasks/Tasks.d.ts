@@ -1,34 +1,38 @@
-import type { BuildTasks, ExplosionTasks, GenerateTasks, PaintTasks, UpdateTasksO, WorldSunTask } from "Meta/Tasks/Tasks.types.js";
+import { BuildTasks, ExplosionTasks, GenerateTasks, PaintTasks, PriorityTask, UpdateTasksO, WorldSunTask } from "Meta/Tasks/Tasks.types.js";
 export declare const Tasks: {
+    data: {
+        syncTextures: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<any>;
+    };
     build: {
-        chunk: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<BuildTasks>;
+        chunk: {
+            tasks: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<PriorityTask<BuildTasks>>;
+            run(data: BuildTasks): Promise<void>;
+        };
         column: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<BuildTasks>;
-        entity: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<any[]>;
-        item: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<any[]>;
     };
     voxelUpdate: {
         erase: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<UpdateTasksO>;
         paint: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<PaintTasks>;
     };
-    rgb: {
+    explosion: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<ExplosionTasks>;
+    worldSun: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<WorldSunTask>;
+    worldGen: {
+        generate: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<GenerateTasks>;
+    };
+    anaylzer: {
+        propagation: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<UpdateTasksO>;
         update: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<UpdateTasksO>;
-        remove: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<UpdateTasksO>;
-    };
-    worldSun: {
-        run: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<WorldSunTask>;
-    };
-    sun: {
-        update: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<UpdateTasksO>;
-        remove: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<UpdateTasksO>;
-    };
-    explosion: {
-        run: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<ExplosionTasks>;
     };
     flow: {
         update: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<UpdateTasksO>;
         remove: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<UpdateTasksO>;
     };
-    worldGen: {
-        generate: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<GenerateTasks>;
+    rgb: {
+        update: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<UpdateTasksO>;
+        remove: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<UpdateTasksO>;
+    };
+    sun: {
+        update: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<UpdateTasksO>;
+        remove: import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<UpdateTasksO>;
     };
 };

@@ -1,5 +1,5 @@
 import type { VoxelShape } from "Meta/Constructor/VoxelShape.types";
-import { OverrideManager } from "../../../Overrides/OverridesManager.js";
+import { OverrideManager } from "../../../Rules/Overrides/OverridesManager.js";
 import { VoxelMesher } from "../../../Tools/VoxelMesher.js";
 
 let animationState = 0;
@@ -91,9 +91,10 @@ const shapeStates: Record<number, (mesher: typeof VoxelMesher) => void> = {
 };
 
 export const PanelVoxelShape: VoxelShape = {
- id: "Panel",
+ id: "#dve_panel",
  build(mesher) {
   animationState = 0;
+
   if (mesher.data.getSubstance() == "flora") {
    animationState = 2;
   }

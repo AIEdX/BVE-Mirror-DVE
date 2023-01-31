@@ -1,44 +1,47 @@
+import { VoxelTagIDs } from "../../../Data/Constants/Tags/VoxelTagIds.js";
 import { TagManager } from "../../../Libs/DivineBinaryTags/TagManager.js";
 export const VoxelDataTags = new TagManager("voxel-tags");
-VoxelDataTags.registerTag({
-    id: "#dve_substance",
-    type: "typed-number",
-    numberType: "8ui",
-});
-VoxelDataTags.registerTag({
-    id: "#dve_shape_id",
-    type: "typed-number",
-    numberType: "16ui",
-});
-VoxelDataTags.registerTag({
-    id: "#dve_material",
-    type: "typed-number",
-    numberType: "16ui",
-});
-VoxelDataTags.registerTag({
-    id: "#dve_hardness",
-    type: "typed-number",
-    numberType: "16ui",
-});
-VoxelDataTags.registerTag({
-    id: "#dve_collider_id",
-    type: "typed-number",
-    numberType: "16ui",
-});
-VoxelDataTags.registerTag({
-    id: "#dve_is_light_source",
-    type: "boolean",
-});
-VoxelDataTags.registerTag({
-    id: "#dve_light_value",
-    type: "typed-number",
-    numberType: "16ui",
-});
-VoxelDataTags.registerTag({
-    id: "#dve_is_rich",
-    type: "boolean",
-});
-VoxelDataTags.registerTag({
-    id: "#dve_check_collisions",
-    type: "boolean",
-});
+export function InitalizeVoxelTags() {
+    VoxelDataTags.registerTag({
+        id: VoxelTagIDs.substance,
+        type: "typed-number",
+        numberType: "8ui",
+    });
+    VoxelDataTags.registerTag({
+        id: VoxelTagIDs.shapeID,
+        type: "typed-number",
+        numberType: "16ui",
+    });
+    VoxelDataTags.registerTag({
+        id: VoxelTagIDs.material,
+        type: "typed-number",
+        numberType: "16ui",
+    });
+    VoxelDataTags.registerTag({
+        id: VoxelTagIDs.hardness,
+        type: "typed-number",
+        numberType: "16ui",
+    });
+    VoxelDataTags.registerTag({
+        id: VoxelTagIDs.colliderID,
+        type: "typed-number",
+        numberType: "16ui",
+    });
+    VoxelDataTags.registerTag({
+        id: VoxelTagIDs.isLightSource,
+        type: "boolean",
+    });
+    VoxelDataTags.registerTag({
+        id: VoxelTagIDs.lightValue,
+        type: "typed-number",
+        numberType: "16ui",
+    });
+    VoxelDataTags.registerTag({
+        id: VoxelTagIDs.isRich,
+        type: "boolean",
+    });
+    VoxelDataTags.registerTag({
+        id: VoxelTagIDs.checkCollisions,
+        type: "boolean",
+    });
+}

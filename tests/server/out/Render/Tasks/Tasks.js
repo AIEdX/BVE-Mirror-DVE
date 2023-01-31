@@ -1,6 +1,6 @@
 import { ThreadComm } from "../../Libs/ThreadComm/ThreadComm.js";
 import { DVER } from "../DivineVoxelEngineRender.js";
-import { Distance3D } from "../../Libs/Math/Functions/Distance3d.js";
+import { Distance3D } from "../../Math/Functions/Distance3d.js";
 export const RenderTasks = {
     setChunk: ThreadComm.registerTasks("set-chunk", (data) => {
         DVER.meshManager.updateChunk(data);
@@ -17,7 +17,7 @@ export const RenderTasks = {
         const y = data[2];
         const z = data[3];
         const maxRadius = data[4];
-        const register = DVER.renderManager.meshRegister;
+        const register = DVER.render.meshRegister;
         const dimension = register.dimensions.get(dimesnionId);
         if (!dimension)
             return;

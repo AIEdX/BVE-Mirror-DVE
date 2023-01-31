@@ -41,13 +41,12 @@ await DVER.$INIT({
  },
 });
 
-SyncWithGraphicsSettings(DVER);
 const init = async () => {
  const canvas = SetUpCanvas();
  const engine = SetUpEngine(canvas);
 
  const scene = SetUpDefaultScene(engine);
- const camera = DVER.renderManager.fo.getCamera(
+ const camera = DVER.render.fo.getCamera(
   scene,
   "",
   new BABYLON.Vector3(0, 10, 0),
@@ -56,14 +55,15 @@ const init = async () => {
 
  (window as any).scene = scene;
  const box = SetUpDefaultSkybox(scene);
- const bmat = DVER.renderManager.createSkyBoxMaterial(scene);
+ const bmat = DVER.render.createSkyBoxMaterial(scene);
  if (bmat) {
   box.material = bmat;
  }
  await InitalizeAudio();
  //CreateWorldAxis(scene, 36);
  await DVER.$SCENEINIT({ scene: scene });
- DVER.renderManager.setBaseLevel(1);
+ SyncWithGraphicsSettings(DVER);
+ DVER.render.setBaseLevel(1);
 
  const hemLight = new BABYLON.HemisphericLight(
   "",
@@ -100,8 +100,7 @@ const init = async () => {
  const debugCube = GetAnalyzerCubeRender(DVER, camera);
  (window as any).debugCube = debugCube;
 
- 
- runRenderLoop(engine, scene, {position : truePosition}, DVER);
+ runRenderLoop(engine, scene, { position: truePosition }, DVER);
 };
 (window as any).DVER = DVER;
 RunInit(init);

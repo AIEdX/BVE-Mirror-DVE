@@ -1,10 +1,12 @@
 /// <reference types="babylonjs" />
+import { LocationData } from "Libs/voxelSpaces/Types/VoxelSpaces.types.js";
 import { EngineSettingsData } from "Meta/index.js";
-import { SetChunkMeshTask } from "Meta/Tasks/RenderTasks.types";
+import { ChunkMeshData } from "Meta/Tasks/RenderTasks.types";
 import { DVEMaterial } from "../Materials/DVEMaterial.js";
 export declare class DVEMesh {
     name: string;
     dveMat: DVEMaterial;
+    meshes: BABYLON.Mesh[];
     pickable: boolean;
     checkCollisions: boolean;
     seralize: boolean;
@@ -13,7 +15,8 @@ export declare class DVEMesh {
     constructor(name: string, dveMat: DVEMaterial);
     createTemplateMesh(scene: BABYLON.Scene): BABYLON.Mesh;
     syncSettings(settings: EngineSettingsData): void;
-    _applyVertexData(mesh: BABYLON.Mesh, data: SetChunkMeshTask): void;
-    rebuildMeshGeometory(mesh: BABYLON.Mesh, data: SetChunkMeshTask): Promise<BABYLON.Mesh>;
-    createMeshGeometory(mesh: BABYLON.Mesh, data: SetChunkMeshTask): Promise<BABYLON.Mesh>;
+    _setEmptyData(mesh: BABYLON.Mesh): void;
+    _clearCached(mesh: BABYLON.Mesh): void;
+    removeMesh(mesh: BABYLON.Mesh): void;
+    setMeshData(mesh: BABYLON.Mesh, location: LocationData, data: ChunkMeshData): Promise<BABYLON.Mesh>;
 }

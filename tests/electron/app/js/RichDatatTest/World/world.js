@@ -2,7 +2,7 @@ import { RegisterVoxels } from "../../Shared/Functions/RegisterVoxelData.js";
 import { WorldGen } from "./WorldGen/WorldGen.js";
 import { DVEW } from "../../../out/World/DivineVoxelEngineWorld.js";
 import { RegisterItemData } from "../../Shared/Functions/RegisterItemData.js";
-import { VoxelMath } from "../../../out/Libs/Math/VoxelMath.js";
+import { VoxelMath } from "../../../out/Math/VoxelMath.js";
 RegisterVoxels(DVEW);
 RegisterItemData(DVEW);
 self.DVEW = DVEW;
@@ -50,7 +50,7 @@ const positionVector = VoxelMath.getVector3(0, 0, 0);
 const pickedVector = VoxelMath.getVector3(0, 0, 0);
 const dataTool = DVEW.getDataTool();
 DVEW.parentComm.listenForMessage("pick-voxel", (data) => {
-    if (!dataTool.loadIn(pickedVector.x, pickedVector.y, pickedVector.z))
+    if (!dataTool.loadInAt(pickedVector.x, pickedVector.y, pickedVector.z))
         return;
     if (!dataTool.isRenderable())
         return;
@@ -78,7 +78,7 @@ setInterval(() => {
         const x = voxels[i];
         const y = voxels[i + 1];
         const z = voxels[i + 2];
-        if (!dataTool.loadIn(x, y, z))
+        if (!dataTool.loadInAt(x, y, z))
             continue;
         if (!dataTool.isRenderable())
             continue;

@@ -2,25 +2,33 @@ import { RegionHeaderRegister } from "../../Data/World/Region/RegionHeaderRegist
 import { LocationData } from "Meta/Data/CommonTypes.js";
 import { CommBase } from "../../Libs/ThreadComm/Comm/Comm.js";
 import { ThreadComm } from "../../Libs/ThreadComm/ThreadComm.js";
-import { DataToolWorldBound } from "./Classes/DataToolBase.js";
 import { ColumnDataTool } from "./WorldData/ColumnDataTool.js";
+import { WorldRegister } from "../../Data/World/WorldRegister.js";
+import { LocationBoundTool } from "../Classes/LocationBoundTool.js";
+import { Distance3D } from "../../Math/Functions/Distance3d.js";
 
-export class DataLoaderTool extends DataToolWorldBound {
+export class DataLoaderTool extends LocationBoundTool {
  static columnDataTool = new ColumnDataTool();
  static isEnabled() {
   const comm = ThreadComm.getComm("data-loader");
   return Boolean(comm);
  }
 
+ _enabled = true;
  dataComm: CommBase;
 
  constructor() {
   super();
   const comm = ThreadComm.getComm("data-loader");
   if (!comm) {
-   throw new Error("Data Loader comm must be set.");
+   this._enabled = false;
+   console.error("Data Loader comm must be set.");
   }
   this.dataComm = comm;
+ }
+
+ isEnabled() {
+  return this._enabled;
  }
 
  saveRegion(onDone?: Function) {
@@ -72,12 +80,16 @@ export class DataLoaderTool extends DataToolWorldBound {
  saveColumnIfNotStored(onDone?: (saved: boolean) => void) {
   const location = this.getLocation();
 
-  if (!DataLoaderTool.columnDataTool.loadInAt(location)) return false;
-  if (DataLoaderTool.columnDataTool.isStored()) return false;
+  if (!DataLoaderTool.columnDataTool.setLocation(location).loadIn())
+   return onDone ? onDone(false) : false;
+  if (DataLoaderTool.columnDataTool.isStored())
+   return onDone ? onDone(false) : false;
   this.dataComm.runPromiseTasks(
    "save-column",
    location.toString(),
-   () => (onDone ? onDone(true) : false),
+   () => {
+    if (onDone) onDone(true);
+   },
    location
   );
 
@@ -112,7 +124,9 @@ export class DataLoaderTool extends DataToolWorldBound {
   this.dataComm.runPromiseTasks(
    "load-column",
    location.toString(),
-   () => (onDone ? onDone() : false),
+   () => {
+    onDone ? onDone(true) : false;
+   },
    location
   );
  }
@@ -123,6 +137,18 @@ export class DataLoaderTool extends DataToolWorldBound {
     resolve(true);
    });
   });
+ }
+
+ unLoadColumn(onDone: (done: boolean) => void) {
+  const location = this.getLocation();
+  this.dataComm.runPromiseTasks(
+   "unload-column",
+   location.toString(),
+   () => {
+    onDone ? onDone(true) : false;
+   },
+   location
+  );
  }
 
  _runTask(id: string, location: LocationData, onDone?: Function) {
@@ -148,7 +174,7 @@ export class DataLoaderTool extends DataToolWorldBound {
   onDone ? onDone(exists >= 1 ? true : false) : false;
  }
 
- loadRegionHeader(onDone: (success: boolean) => void) {
+ loadRegionHeader(onDone?: (success: boolean) => void) {
   const location = this.getLocation();
   this.dataComm.runPromiseTasks(
    "load-region-header",
@@ -194,5 +220,55 @@ export class DataLoaderTool extends DataToolWorldBound {
     resolve(timeStamp);
    });
   });
+ }
+
+ unLoadAllOutsideRadius(
+  radius: number,
+  run: (column: ColumnDataTool) => boolean = (columntool) => true,
+  onDone?: Function
+ ) {
+  const [dimension, sx, sy, sz] = this.location;
+  const regions = WorldRegister.dimensions.get(dimension);
+  if (!regions) return;
+  let totalColumns = 0;
+  for (const [key, region] of regions) {
+   for (const [ckey, column] of region.columns) {
+    DataLoaderTool.columnDataTool.setColumn(column);
+    if (DataLoaderTool.columnDataTool.isPersistent()) continue;
+    const [dimension, cx, cy, cz] =
+     DataLoaderTool.columnDataTool.getLocationData();
+    if (!run(DataLoaderTool.columnDataTool)) continue;
+    const d = Distance3D(sx, sy, sz, cx, cy, cz);
+    if (d > radius) {
+     totalColumns++;
+     this.setXYZ(cx, cy, cz).unLoadColumn(() => {
+      totalColumns--;
+     });
+    }
+   }
+  }
+  const inte = setInterval(() => {
+   if (totalColumns == 0) {
+    clearInterval(inte);
+    if (onDone) onDone();
+   }
+  }, 1);
+ }
+
+ getAllUnStoredColumns(
+  run: (dimension: string, x: number, y: number, z: number) => void
+ ) {
+  const [dimension, sx, sy, sz] = this.location;
+  const regions = WorldRegister.dimensions.get(dimension);
+  if (!regions) return;
+  for (const [key, region] of regions) {
+   for (const [ckey, column] of region.columns) {
+    DataLoaderTool.columnDataTool.setColumn(column);
+    if (DataLoaderTool.columnDataTool.isStored()) continue;
+    const [dimension, cx, cy, cz] =
+     DataLoaderTool.columnDataTool.getLocationData();
+    run(dimension, cx, cy, cz);
+   }
+  }
  }
 }

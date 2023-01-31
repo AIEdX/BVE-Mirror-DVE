@@ -2,14 +2,14 @@
 import type {
  DirectionNames,
  EngineSettingsData,
- VoxelConstructorObject,
  VoxelShape,
  VoxelSubstanceType,
 } from "Meta/index.js";
-import type { FullChunkTemplate } from "Meta/Constructor/ChunkTemplate.types.js";
-import type { VoxelProcessData } from "Meta/Constructor/Voxel.types.js";
+import type { FullVoxelSubstanceTemplate } from "Meta/Constructor/VoxelTemplate.types.js";
+import type { VoxelConstructor } from "Meta/Constructor/Voxel.types.js";
 import type { FaceDataOverride } from "Meta/Constructor/OverRide.types";
 import type { TextureRotations } from "Meta/Constructor/Geometry/Geometry.types.js";
+import type { LocationData } from "Libs/voxelSpaces/Types/VoxelSpaces.types.js";
 
 //functions
 import {
@@ -18,19 +18,20 @@ import {
 } from "./Functions/CalculateVoxelLight.js";
 import { CalculateFlow } from "./Functions/CalculateFlow.js";
 //objects
-import { Builder } from "../Builder.js";
 //data
 import { FaceByte } from "../../../Data/Meshing/FaceByte.js";
 import { LightData } from "../../../Data/Light/LightByte.js";
 //maps
 import { $3dCardinalNeighbors } from "../../../Data/Constants/Util/CardinalNeighbors.js";
 
-import { FaceMap } from "../../../Data/Constants/Util/Faces.js";
+import { FaceMap, FaceRecord } from "../../../Data/Constants/Util/Faces.js";
 //tools
 import { GetConstructorDataTool } from "../../../Constructor/Tools/Data/ConstructorDataTool.js";
 import { HeightMapTool } from "../../../Tools/Data/WorldData/HeightMapTool.js";
-import { OverrideManager } from "../Overrides/OverridesManager.js";
+import { OverrideManager } from "../Rules/Overrides/OverridesManager.js";
 import { WorldSpaces } from "../../../Data/World/WorldSpaces.js";
+import { VoxelTemplater } from "../Tools/VoxelTemplater.js";
+import { SubstanceRules } from "../Rules/SubstanceRules.js";
 
 const mDT = GetConstructorDataTool();
 const nDT = GetConstructorDataTool();
@@ -51,6 +52,8 @@ export const Processor = {
  voxellightMixCalc: VoxelLightMixCalc,
  doVoxelLight: CalculateVoxelLight,
 
+ nLocation: <LocationData>["main", 0, 0, 0],
+
  exposedFaces: <number[]>[],
  faceStates: <number[]>[],
  textureRotation: <TextureRotations[]>[],
@@ -62,52 +65,18 @@ export const Processor = {
   entity: false,
   composedEntity: 1,
  },
- voxelProcesseData: <VoxelProcessData>{
-  dimension: 0,
-  voxelState: 0,
-  voxelShapeState: 0,
-  level: 0,
-  levelState: 0,
-  exposedFaces: [],
-  faceStates: [],
-  textureRotations: [],
-  overlayUVTemplate: [],
-  uvTemplate: [],
-  colorTemplate: [],
-  aoTemplate: [],
-  lightTemplate: [],
-  x: 0,
-  y: 0,
-  z: 0,
- },
  faceDataOverride: <FaceDataOverride>{
   face: "south",
   default: false,
   currentVoxel: mDT,
   neighborVoxel: nDT,
  },
- aoOverRideData: <any>{
-  face: "",
-  substanceResult: true,
-  shapeState: 0,
-  voxel: {},
-  neighborVoxel: {},
-  neighborVoxelShape: {},
-  neighborVoxelShapeState: 0,
-  x: 0,
-  y: 0,
-  z: 0,
-  nx: 0,
-  ny: 0,
-  nz: 0,
- },
- template: <FullChunkTemplate>{
+ template: <FullVoxelSubstanceTemplate>{
   solid: {
    positionTemplate: [],
    faceTemplate: [],
    uvTemplate: [],
    overlayUVTemplate: [],
-   shapeTemplate: [],
    shapeStateTemplate: [],
    colorTemplate: [],
    lightTemplate: [],
@@ -118,7 +87,6 @@ export const Processor = {
    faceTemplate: [],
    uvTemplate: [],
    overlayUVTemplate: [],
-   shapeTemplate: [],
    shapeStateTemplate: [],
    colorTemplate: [],
    lightTemplate: [],
@@ -129,7 +97,6 @@ export const Processor = {
    faceTemplate: [],
    uvTemplate: [],
    overlayUVTemplate: [],
-   shapeTemplate: [],
    shapeStateTemplate: [],
    colorTemplate: [],
    lightTemplate: [],
@@ -141,7 +108,6 @@ export const Processor = {
    faceTemplate: [],
    uvTemplate: [],
    overlayUVTemplate: [],
-   shapeTemplate: [],
    shapeStateTemplate: [],
    colorTemplate: [],
    lightTemplate: [],
@@ -150,37 +116,23 @@ export const Processor = {
   },
  },
 
- faceIndexMap: <Record<DirectionNames, number>>{
-  top: 0,
-  bottom: 1,
-  east: 2,
-  west: 3,
-  south: 4,
-  north: 5,
- },
-
- dimension: 0,
-
  $INIT() {
-  this.voxelProcesseData.faceStates = this.faceStates;
-  this.voxelProcesseData.exposedFaces = this.exposedFaces;
-  this.voxelProcesseData.textureRotations = this.textureRotation;
+  SubstanceRules.$INIT();
+  VoxelTemplater.currentVoxel = mDT;
+  VoxelTemplater.utilDataTool = nDT;
  },
 
  cullCheck(
   face: DirectionNames,
-  voxelObject: VoxelConstructorObject,
+  voxelObject: VoxelConstructor,
   voxelShape: VoxelShape,
   voxelSubstance: VoxelSubstanceType,
-  x: number,
-  y: number,
-  z: number,
   faceBit: number
  ) {
-  const voxelExists = this.nDataTool.loadIn(x, y, z);
+  const voxelExists = this.nDataTool.loadIn();
   let finalResult = false;
   if (voxelExists && this.nDataTool.isRenderable()) {
-   let substanceRuleResult = Builder.voxelHelper.substanceRuleCheck(
+   let substanceRuleResult = SubstanceRules.exposedCheck(
     voxelSubstance,
     this.nDataTool.getSubstance()
    );
@@ -212,7 +164,7 @@ export const Processor = {
    finalResult = true;
   }
 
-  const faceIndex = this.faceIndexMap[face];
+  const faceIndex = FaceRecord[face];
   if (finalResult) {
    this.exposedFaces[faceIndex] = 1;
    this.faceStates[faceIndex] = 0;
@@ -227,7 +179,7 @@ export const Processor = {
  },
 
  faceStateCheck(face: DirectionNames, faceBit: number) {
-  const faceIndex = this.faceIndexMap[face];
+  const faceIndex = FaceRecord[face];
   if (this.exposedFaces[faceIndex]) {
    faceBit = this.faceByte.setFaceRotateState(
     face,
@@ -243,20 +195,12 @@ export const Processor = {
   return faceBit;
  },
 
- _process(
-  template: FullChunkTemplate,
-  x: number,
-  y: number,
-  z: number,
-  doSecondCheck = false
- ) {
-  const LOD = this.LOD;
-  if (!this.mDataTool.loadIn(x, y, z)) return;
+ _process(doSecondCheck = false) {
+  if (!this.mDataTool.loadInAtLocation(this.nLocation)) return;
   if (!this.mDataTool.isRenderable()) return;
-
   if (!doSecondCheck) {
    if (this.mDataTool.hasSecondaryVoxel()) {
-    this._process(template, x, y, z, true);
+    this._process(true);
    }
   }
 
@@ -265,62 +209,46 @@ export const Processor = {
   const voxelObject = this.mDataTool.getVoxelObj();
   if (!voxelObject) return;
 
-  const voxelState = this.mDataTool.getState();
   const voxelShape = this.mDataTool.getVoxelShapeObj();
-  const voxelShapeState = this.mDataTool.getShapeState();
   const voxelSubstance = this.mDataTool.getSubstance();
 
   let faceBit = 0;
 
-  let faceIndex = 0;
-  for (const point of $3dCardinalNeighbors) {
+  let i = $3dCardinalNeighbors.length;
+  while (i--) {
+   const point = $3dCardinalNeighbors[i];
+   this.nDataTool.setXYZ(
+    this.nLocation[1] + point[0] * this.LOD,
+    this.nLocation[2] + point[1] * this.LOD,
+    this.nLocation[3] + point[2] * this.LOD
+   );
    faceBit = this.cullCheck(
-    FaceMap[faceIndex],
+    FaceMap[i],
     voxelObject,
     voxelShape,
     voxelSubstance,
-    x + point[0] * LOD,
-    y + point[1] * LOD,
-    z + point[2] * LOD,
     faceBit
    );
-
-   faceIndex++;
   }
 
   if (faceBit == 0) return;
 
   let baseTemplate;
   if (voxelSubstance == "transparent") {
-   baseTemplate = template["solid"];
+   baseTemplate = this.template["solid"];
   } else {
-   baseTemplate = template[voxelSubstance];
+   baseTemplate = this.template[voxelSubstance];
   }
+  VoxelTemplater._template = baseTemplate;
 
-  baseTemplate.shapeStateTemplate.push(voxelShapeState);
+  voxelObject.process(VoxelTemplater);
 
-  this.voxelProcesseData.voxelState = voxelState;
-  this.voxelProcesseData.voxelShapeState = voxelShapeState;
-  this.voxelProcesseData.level = this.mDataTool.getLevel();
-  this.voxelProcesseData.levelState = this.mDataTool.getLevelState();
-  this.voxelProcesseData.x = x;
-  this.voxelProcesseData.y = y;
-  this.voxelProcesseData.z = z;
-  this.voxelProcesseData.overlayUVTemplate = baseTemplate.overlayUVTemplate;
-  this.voxelProcesseData.uvTemplate = baseTemplate.uvTemplate;
-  this.voxelProcesseData.colorTemplate = baseTemplate.colorTemplate;
-  this.voxelProcesseData.aoTemplate = baseTemplate.aoTemplate;
-  this.voxelProcesseData.lightTemplate = baseTemplate.lightTemplate;
-
-  voxelObject.process(this.voxelProcesseData, Builder);
-
-  baseTemplate.shapeTemplate.push(this.mDataTool.getShapeId());
-
-  const voxelPOS = WorldSpaces.voxel.getPositionXYZ(x, y, z);
+  const voxelPOS = WorldSpaces.voxel.getPositionLocation(this.nLocation);
   baseTemplate.positionTemplate.push(voxelPOS.x, voxelPOS.y, voxelPOS.z);
 
-  for (const face of FaceMap) {
-   faceBit = this.faceStateCheck(face, faceBit);
+  i = FaceMap.length;
+  while (i--) {
+   faceBit = this.faceStateCheck(FaceMap[i], faceBit);
   }
 
   baseTemplate.faceTemplate.push(faceBit);
@@ -331,65 +259,41 @@ export const Processor = {
   ) {
    this.calculatFlow(
     this.faceStates[0] == 1,
-    x,
-    y,
-    z,
+    this.nLocation[1],
+    this.nLocation[2],
+    this.nLocation[3],
     (baseTemplate as any).flowTemplate
    );
   }
  },
 
- constructEntity(composed = 1) {
-  this.settings.entity = true;
-  this.settings.composedEntity = composed;
-
-  const maxX = Builder.entityConstructor.width;
-  const maxY = Builder.entityConstructor.height;
-  const maxZ = Builder.entityConstructor.depth;
-  for (let x = 0; x < maxX; x++) {
-   for (let z = 0; z < maxZ; z++) {
-    for (let y = 0; y < maxY; y++) {
-     this._process(this.template, x, y, z);
-    }
-   }
-  }
-  return this.template;
- },
-
  makeAllChunkTemplates(
-  dimension: string,
-  chunkX: number,
-  chunkY: number,
-  chunkZ: number,
+  location: LocationData,
   LOD = 1
- ): FullChunkTemplate {
-  heightMapTool.setDimension(dimension);
-  heightMapTool.chunk.loadIn(chunkX, chunkY, chunkZ);
-
-  this.nDataTool.setDimension(dimension);
-  this.mDataTool.setDimension(dimension);
-  this.voxelProcesseData.dimension = this.dimension;
+ ): FullVoxelSubstanceTemplate {
+  heightMapTool.chunk.loadInAtLocation(location);
+  this.nDataTool.setDimension(location[0]);
+  this.mDataTool.setDimension(location[0]);
   this.settings.entity = false;
   this.LOD = LOD;
-  const template: FullChunkTemplate = this.template;
-  let maxX = WorldSpaces.chunk._bounds.x;
-  let maxZ = WorldSpaces.chunk._bounds.z;
-  for (let x = 0; x < maxX; x += LOD) {
-   for (let z = 0; z < maxZ; z += LOD) {
-    let minY = heightMapTool.chunk.setXZ(x, z).getMin();
-    let maxY = heightMapTool.chunk.setXZ(x, z).getMax() + 1;
-
+  const [dimension, cx, cy, cz] = location;
+  this.nLocation[0] = dimension;
+  let maxX = WorldSpaces.chunk._bounds.x + cx;
+  let maxZ = WorldSpaces.chunk._bounds.z + cz;
+  let [minY, maxY] = heightMapTool.chunk.getMinMax();
+  minY += cy;
+  maxY += cy + 1;
+  for (let x = cx; x < maxX; x += LOD) {
+   for (let z = cz; z < maxZ; z += LOD) {
     for (let y = minY; y < maxY; y += LOD) {
-     this._process(template, x + chunkX, y + chunkY, z + chunkZ);
+     this.nLocation[1] = x;
+     this.nLocation[2] = y;
+     this.nLocation[3] = z;
+     this._process();
     }
    }
   }
-
   return this.template;
- },
-
- processVoxelLight(data: VoxelProcessData, ignoreAO = false): void {
-  this.doVoxelLight(data, data.x, data.y, data.z, ignoreAO, this.LOD);
  },
 
  syncSettings(settings: EngineSettingsData) {
@@ -406,11 +310,6 @@ export const Processor = {
  },
 
  flush() {
-  (this as any).voxelProcesseData.overlayUVTemplate = null;
-  (this as any).voxelProcesseData.uvTemplate = null;
-  (this as any).voxelProcesseData.colorTemplate = null;
-  (this as any).voxelProcesseData.aoTemplate = null;
-  (this as any).voxelProcesseData.lightTemplate = null;
   for (const substance of Object.keys(this.template)) {
    //@ts-ignore
    for (const templateKey of Object.keys(this.template[substance])) {

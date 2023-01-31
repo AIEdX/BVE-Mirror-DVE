@@ -1,16 +1,16 @@
 //types
-import type {
+import {
  BuildTasks,
  ExplosionTasks,
  GenerateTasks,
  LightUpdateTask,
  PaintTasks,
- UpdateTasksO,
+ UpdateTasks,
+ PriorityTask,
 } from "Meta/Tasks/Tasks.types.js";
 //objects
-import { CCM } from "../Threads/Constructor/ConstructorComm.js";
+import { CCM } from "../../World/Threads/Threads.js";
 import { ConstructorTasks } from "../Threads/Contracts/ConstructorTasks.js";
-import { WorldRegister } from "../../Data/World/WorldRegister.js";
 
 const QMBase = {
  $INIT() {
@@ -80,19 +80,19 @@ const QMBase = {
   });
  },
  rgb: {
-  update: CCM.addQueue<UpdateTasksO>(
+  update: CCM.addQueue<UpdateTasks>(
    "rgb-update",
    ConstructorTasks.RGBlightUpdate,
    null
   ),
-  remove: CCM.addQueue<UpdateTasksO>(
+  remove: CCM.addQueue<UpdateTasks>(
    "rgb-remove",
    ConstructorTasks.RGBlightRemove
   ),
  },
- worldSun: CCM.addQueue<UpdateTasksO>("world-sun", ConstructorTasks.worldSun),
+ worldSun: CCM.addQueue<UpdateTasks>("world-sun", ConstructorTasks.worldSun),
  voxelUpdate: {
-  erase: CCM.addQueue<UpdateTasksO>(
+  erase: CCM.addQueue<UpdateTasks>(
    "voxel-update-erase",
    ConstructorTasks.voxelErease
   ),
@@ -102,11 +102,11 @@ const QMBase = {
   ),
  },
  sun: {
-  update: CCM.addQueue<UpdateTasksO>(
+  update: CCM.addQueue<UpdateTasks>(
    "sun-update",
    ConstructorTasks.sunLightUpdate
   ),
-  remove: CCM.addQueue<UpdateTasksO>(
+  remove: CCM.addQueue<UpdateTasks>(
    "sun-remove",
    ConstructorTasks.sunLightRemove
   ),
@@ -115,17 +115,14 @@ const QMBase = {
   run: CCM.addQueue<ExplosionTasks>("explosion", ConstructorTasks.explosion),
  },
  flow: {
-  update: CCM.addQueue<UpdateTasksO>(
-   "flow-update",
-   ConstructorTasks.flowUpdate
-  ),
-  remove: CCM.addQueue<UpdateTasksO>(
-   "flow-remove",
-   ConstructorTasks.flowRemove
-  ),
+  update: CCM.addQueue<UpdateTasks>("flow-update", ConstructorTasks.flowUpdate),
+  remove: CCM.addQueue<UpdateTasks>("flow-remove", ConstructorTasks.flowRemove),
  },
  build: {
-  chunk: CCM.addQueue<BuildTasks>("build-chunk", ConstructorTasks.buildChunk),
+  chunk: CCM.addQueue<PriorityTask<BuildTasks>>(
+   "build-chunk",
+   ConstructorTasks.buildChunk
+  ),
  },
  generate: CCM.addQueue<GenerateTasks>("generatek", ConstructorTasks.generate),
 };

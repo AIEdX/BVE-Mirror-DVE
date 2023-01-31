@@ -13,7 +13,7 @@ export const SetUpWorkers = (basePath, worldPath, constructorPath, nexusPath = n
     });
     const constructorWorkers = [];
     const cPath = new URL(constructorPath, basePath);
-    for (let i = 0; i < navigator.hardwareConcurrency - 1; i++) {
+    for (let i = 0; i < navigator.hardwareConcurrency - 2; i++) {
         constructorWorkers.push(new Worker(cPath, {
             type: "module",
         }));
@@ -56,37 +56,37 @@ export const SyncWithGraphicsSettings = (DVER) => {
     if (!grahpicsLevel)
         grahpicsLevel = "medium";
     if (grahpicsLevel == "low") {
-        DVER.renderManager.updateFogOptions({
+        DVER.render.updateFogOptions({
             mode: "exponential",
         });
-        DVER.renderManager.updateShaderEffectOptions({
+        DVER.render.updateShaderEffectOptions({
             floraEffects: false,
             liquidEffects: false,
         });
     }
     if (grahpicsLevel == "medium") {
-        DVER.renderManager.updateFogOptions({
+        DVER.render.updateFogOptions({
             mode: "volumetric",
         });
-        DVER.renderManager.updateShaderEffectOptions({
+        DVER.render.updateShaderEffectOptions({
             floraEffects: false,
             liquidEffects: false,
         });
     }
     if (grahpicsLevel == "high") {
-        DVER.renderManager.updateFogOptions({
+        DVER.render.updateFogOptions({
             mode: "volumetric",
         });
-        DVER.renderManager.updateShaderEffectOptions({
+        DVER.render.updateShaderEffectOptions({
             floraEffects: true,
             liquidEffects: true,
         });
     }
     if (grahpicsLevel == "ultra") {
-        DVER.renderManager.updateFogOptions({
+        DVER.render.updateFogOptions({
             mode: "animated-volumetric",
         });
-        DVER.renderManager.updateShaderEffectOptions({
+        DVER.render.updateShaderEffectOptions({
             floraEffects: true,
             liquidEffects: true,
         });

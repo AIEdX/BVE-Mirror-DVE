@@ -1,7 +1,7 @@
 //types
 import type { ColliderObject } from "Plugins/Physics/Types/Physics/Collider.type.js";
 //objects
-import { VoxelMath } from "../../../Libs/Math/VoxelMath.js";
+import { VoxelMath } from "../../../Math/VoxelMath.js";
 import { CollisionsHanlder } from "./Collisions/CollisionsHandler.js";
 import { EntityBase } from "./Entities/Entity.base.js";
 import { ColliderManager } from "./Colliders/ColliderManager.js";
@@ -19,7 +19,7 @@ export const DVP = {
   z: number,
   dimension: number = 0
  ): false | ColliderObject {
-  if (!this._dataTool.loadIn(x, y, z)) return false;
+  if (!this._dataTool.loadInAt(x, y, z)) return false;
   if (!this._dataTool.checkCollisions()) return false;
   if (this._dataTool.getSubstance() == "liquid") return false;
   let collider = this._dataTool.getCollider();

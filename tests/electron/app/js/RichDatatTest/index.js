@@ -1,5 +1,5 @@
 import { SetUpEngine, SetUpCanvas, SetUpDefaultCamera, SetUpDefaultSkybox, runRenderLoop, SetUpDefaultScene, } from "../Shared/Babylon/index.js";
-import { RunInit, SetUpWorkers, SyncWithGraphicsSettings } from "../Shared/Create/index.js";
+import { RunInit, SetUpWorkers } from "../Shared/Create/index.js";
 import { DVER } from "../../out/Render/DivineVoxelEngineRender.js";
 import { RegisterTexutres } from "../Shared/Functions/RegisterTextures.js";
 RegisterTexutres(DVER);
@@ -24,7 +24,6 @@ await DVER.$INIT({
         autoSunLight: false,
     },
 });
-SyncWithGraphicsSettings(DVER);
 const init = async () => {
     const canvas = SetUpCanvas();
     const engine = SetUpEngine(canvas);
@@ -34,7 +33,7 @@ const init = async () => {
     SetUpDefaultSkybox(scene);
     //CreateWorldAxis(scene, 36);
     await DVER.$SCENEINIT({ scene: scene });
-    DVER.renderManager.setBaseLevel(1);
+    DVER.render.setBaseLevel(1);
     const hemLight = new BABYLON.HemisphericLight("", new BABYLON.Vector3(0, 1, 0), scene);
     const mat = new BABYLON.StandardMaterial("");
     mat.diffuseColor = new BABYLON.Color3(1, 0, 1);

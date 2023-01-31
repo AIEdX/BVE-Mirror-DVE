@@ -1,5 +1,5 @@
 import { SetUpEngine, SetUpCanvas, SetUpDefaultCamera, SetUpDefaultSkybox, runRenderLoop, SetUpDefaultScene, } from "../Shared/Babylon/index.js";
-import { RunInit, SetUpWorkers, SyncWithGraphicsSettings } from "../Shared/Create/index.js";
+import { RunInit, SetUpWorkers } from "../Shared/Create/index.js";
 import { DVER } from "../../out/Render/DivineVoxelEngineRender.js";
 import { RegisterTexutres } from "../Shared/Functions/RegisterTextures.js";
 RegisterTexutres(DVER);
@@ -15,7 +15,6 @@ await DVER.$INIT({
         autoSunLight: false,
     },
 });
-SyncWithGraphicsSettings(DVER);
 const setUpLightAndShadows = (scene) => {
     const light = new BABYLON.DirectionalLight("light", new BABYLON.Vector3(-1, -1, -0.1), scene);
     /*  let goingUp = false;
@@ -71,18 +70,18 @@ const setUpLightAndShadows = (scene) => {
         for (const meshKey of Object.keys(DVER.meshManager.meshes.solid)) {
             const mesh = DVER.meshManager.meshes.solid[0][meshKey];
             mesh.receiveShadows = true;
-            mesh.material = DVER.renderManager.solidStandardMaterial.getMaterial();
-            DVER.renderManager.liquidStandardMaterial.addToRenderList(mesh);
+            mesh.material = DVER.render.solidStandardMaterial.getMaterial();
+            DVER.render.liquidStandardMaterial.addToRenderList(mesh);
             shadowGenerator.addShadowCaster(mesh);
         }
         for (const meshKey of Object.keys(DVER.meshManager.meshes.solid)) {
             const mesh = DVER.meshManager.meshes.solid[0][meshKey];
-            DVER.renderManager.liquidStandardMaterial.addToRenderList(mesh);
+            DVER.render.liquidStandardMaterial.addToRenderList(mesh);
         }
         for (const meshKey of Object.keys(DVER.meshManager.meshes.liquid)) {
             const mesh = DVER.meshManager.meshes.liquid[0][meshKey];
             mesh.receiveShadows = true;
-            mesh.material = DVER.renderManager.liquidStandardMaterial.getMaterial();
+            mesh.material = DVER.render.liquidStandardMaterial.getMaterial();
         }
     }, 5000);
 };
@@ -93,7 +92,7 @@ const init = async () => {
     const camera = SetUpDefaultCamera(scene, canvas, { x: 15, y: 36, z: 7 }, { x: 7, y: 30, z: 7 });
     SetUpDefaultSkybox(scene);
     await DVER.$SCENEINIT({ scene: scene });
-    DVER.renderManager.setBaseLevel(1);
+    DVER.render.setBaseLevel(1);
     /*  var pipeline = new BABYLON.DefaultRenderingPipeline(
       "defaultPipeline",
       true,

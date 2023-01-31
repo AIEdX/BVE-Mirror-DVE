@@ -1,103 +1,51 @@
 import { WorldRegister } from "../../Data/World/WorldRegister.js";
-import { CCM } from "../../Common/Threads/Constructor/ConstructorComm.js";
 import { ChunkDataTool } from "../Data/WorldData/ChunkDataTool.js";
 import { ThreadComm } from "../../Libs/ThreadComm/ThreadComm.js";
 import { LocationData } from "Meta/Data/CommonTypes.js";
-import { WorldSpaces } from "../../Data/World/WorldSpaces.js";
+import { LocationBoundTool } from "../../Tools/Classes/LocationBoundTool.js";
+import { TasksTool } from "../../Tools/Tasks/TasksTool.js";
+import { RemoveChunksOutsideDistance } from "Meta/Tasks/RenderTasks.types.js";
 
 const parentComm = ThreadComm.parent;
-export class BuilderTool {
+export class BuilderTool extends LocationBoundTool {
  static _chunkTool = new ChunkDataTool();
-
+ tasks = TasksTool();
  data = {
-  dimesnion: "main",
-  x: 0,
-  y: 0,
-  z: 0,
   LOD: 1,
  };
- setDimension(dimensionId: string) {
-  this.data.dimesnion = dimensionId;
-  return this;
- }
+
  setLOD(lod: number) {
   this.data.LOD = lod;
   return this;
  }
- setXZ(x: number, z: number) {
-  this.data.x = x;
-  this.data.z = z;
-  return this;
- }
- setXYZ(x: number, y: number, z: number) {
-  this.data.x = x;
-  this.data.y = y;
-  this.data.z = z;
-  return this;
- }
  buildChunk() {
-  CCM.tasks.build.chunk([
-   this.data.dimesnion,
-   this.data.x,
-   this.data.y,
-   this.data.z,
-   this.data.LOD,
-  ]);
+  const [dimension, x, y, z] = this.location;
+  this.tasks.build.chunk.add(x, y, z);
+  this.tasks.build.chunk.run(() => {});
   return this;
  }
- buildColumn() {
-  CCM.tasks.build.column([
-   this.data.dimesnion,
-   this.data.x,
-   this.data.y,
-   this.data.z,
-   this.data.LOD,
-  ]);
+ buildColumn(onDone?: (data: any) => void) {
+  const [dimension, x, y, z] = this.location;
+  this.tasks.setFocalPoint(this.location);
+  this.tasks.build.column.deferred.run(x, y, z, onDone ? onDone : (data) => {});
   return this;
  }
  removeColumn() {
-  const column = WorldRegister.column.get(
-   this.data.dimesnion,
-   this.data.x,
-   this.data.z,
-   this.data.y
-  );
+  const column = WorldRegister.column.get(this.location);
   if (!column) return false;
   if (column.chunks.size == 0) return false;
-  const columnPOS = WorldSpaces.column.getPositionXYZ(
-   this.data.x,
-   this.data.y,
-   this.data.z
-  );
-  parentComm.runTasks<LocationData>("remove-column", [
-   this.data.dimesnion,
-   columnPOS.x,
-   columnPOS.y,
-   columnPOS.z,
-  ]);
+
+  parentComm.runTasks<LocationData>("remove-column", this.location);
   return this;
  }
  fillColumn() {
-  WorldRegister.column.fill(
-   this.data.dimesnion,
-   this.data.x,
-   this.data.z,
-   this.data.y
-  );
+  WorldRegister.column.fill(this.location);
   return this;
  }
  removeColumnsOutsideRadius(radius: number) {
-  const columnPOS = WorldSpaces.column.getPositionXYZ(
-   this.data.x,
-   this.data.y,
-   this.data.z
+  parentComm.runTasks<RemoveChunksOutsideDistance>(
+   "remove-column-outside-radius",
+   [this.location, radius]
   );
-  parentComm.runTasks("remove-column-outside-radius", [
-   this.data.dimesnion,
-   columnPOS.x,
-   columnPOS.y,
-   columnPOS.z,
-   radius,
-  ]);
  }
 }

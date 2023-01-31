@@ -1,5 +1,5 @@
 import { DataTool } from "../../../../Tools/Data/DataTool.js";
-import { VoxelMath } from "../../../../Libs/Math/VoxelMath.js";
+import { VoxelMath } from "../../../../Math/VoxelMath.js";
 import { DVP } from "../DivineVoxelPhysics.js";
 import { Vector3 } from "Meta/Util.types.js";
 const ep = 0.001;
@@ -91,7 +91,7 @@ export class EntityBase {
    for (let y = minY; y <= maxY; y++) {
     for (let z = minZ; z <= maxZ; z++) {
      for (let x = minX; x <= maxX; x++) {
-      if(!this.dataTool.loadIn(x,y,z)) continue;
+      if(!this.dataTool.loadInAt(x,y,z)) continue;
       const colliderObject = DVP.getCollider(x, y, z);
       if (!colliderObject) continue;
 

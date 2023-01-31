@@ -23,12 +23,11 @@ varying float vDoAO;
         let varying = `
 //textures
 uniform sampler2DArray arrayTex[4];
-uniform sampler2DArray overlayTex[4];
+uniform sampler2DArray voxelOverlayTexture[4];
 varying float mipMapLevel;
 //uvs
 varying vec3 vUV;
 varying vec4 vOVUV;
-varying float vFaceData;
 //colors
 varying vec4 rgbLColor;
 varying vec4 sunLColor;
@@ -38,7 +37,7 @@ varying vec3 vNormal;
 varying float vNColor;
 //texture animations
 varying float animIndex;
-varying float overlayAnimIndex;
+
 //animation States
 varying float vAnimation;
 ${SharedFragmentShader.defaultVarying}
@@ -54,6 +53,7 @@ ${SharedFragmentShader.defaultVarying}
  //for fog
  varying vec3 cameraPOS;
  varying vec3 worldPOS;
+ varying vec3 worldPOSNoOrigin;
  varying float vDistance;
  `,
     getBase: `
@@ -85,10 +85,10 @@ vec4 getBaseAnimated(sampler2DArray[4] tex, vec2 UV, float index) {
 }
  vec4 getBaseColor() {
    vec4 rgb = getBase(arrayTex, animIndex);
-   vec4 oRGB1 =  getBase(overlayTex, vOVUV.x);
-   vec4 oRGB2 =  getBase(overlayTex, vOVUV.y);
-   vec4 oRGB3 =  getBase(overlayTex, vOVUV.z);
-   vec4 oRGB4 =  getBase(overlayTex, vOVUV.w);
+   vec4 oRGB1 =  getBase(voxelOverlayTexture, vOVUV.x);
+   vec4 oRGB2 =  getBase(voxelOverlayTexture, vOVUV.y);
+   vec4 oRGB3 =  getBase(voxelOverlayTexture, vOVUV.z);
+   vec4 oRGB4 =  getBase(voxelOverlayTexture, vOVUV.w);
 
    if (rgb.a < 0.85 && oRGB1.a < 0.85 && oRGB2.a < 0.85 && oRGB3.a < 0.85 && oRGB4.a < 0.85) { 
       return vec4(0.,0.,0.,0.);
@@ -109,10 +109,10 @@ vec4 getBaseAnimated(sampler2DArray[4] tex, vec2 UV, float index) {
  }
  vec4 getAnimatedBaseColor(vec2 UV) {
    vec4 rgb = getBaseAnimated(arrayTex,UV ,animIndex);
-   vec4 oRGB1 =  getBase(overlayTex, vOVUV.x);
-   vec4 oRGB2 =  getBase(overlayTex, vOVUV.y);
-   vec4 oRGB3 =  getBase(overlayTex, vOVUV.z);
-   vec4 oRGB4 =  getBase(overlayTex, vOVUV.w);
+   vec4 oRGB1 =  getBase(voxelOverlayTexture, vOVUV.x);
+   vec4 oRGB2 =  getBase(voxelOverlayTexture, vOVUV.y);
+   vec4 oRGB3 =  getBase(voxelOverlayTexture, vOVUV.z);
+   vec4 oRGB4 =  getBase(voxelOverlayTexture, vOVUV.w);
 
    if (rgb.a < 0.85 && oRGB1.a < 0.85 && oRGB2.a < 0.85 && oRGB3.a < 0.85 && oRGB4.a < 0.85) { 
       return vec4(0.,0.,0.,0.);
@@ -131,6 +131,25 @@ vec4 getBaseAnimated(sampler2DArray[4] tex, vec2 UV, float index) {
    }
    return rgb;
 }
+vec3 doLightFog(vec4 base) {
+   vec3 fogC = vFogColor;
+   if(worldPOS.y < 60.) {
+      fogC -= .5;
+   }
+   if(fogOptions.x == 0.) {
+      float fog = CalcFogFactor();
+      return fog * base.rgb + (1.0 - fog) * fogC * sunLColor.rgb * sunLightLevel;
+   }
+   if(fogOptions.x == 1.) {
+      float fogFactor = CalcVFogFactor();
+      return mix( base.rgb, fogC * sunLColor.rgb * sunLightLevel, fogFactor );
+   }
+   if(fogOptions.x == 2.) {
+      float fogFactor = CalcVFogFactorAnimated();
+      return mix( base.rgb, fogC * sunLColor.rgb  * sunLightLevel, fogFactor );
+   }
+   return base.rgb;
+}
  `,
     useTime: `
 varying float vTime;
@@ -148,7 +167,6 @@ vec4 getAO(vec4 base) {
     getLight: `
 vec4 getLight(vec4 base) {
    vec4 final = ( ((rgbLColor * vDoRGB)  +  ((sunLColor * vDoSun  * sunLightLevel * vNColor))  ) + baseLevel) ;
-   // final = clamp(final,0.,1.1);
    return base * final; 
 }
     `,
@@ -168,6 +186,7 @@ vec3 doFog(vec4 base) {
    }
    return base.rgb;
 }
+
     `,
     doVFog: `
 vec3 doVFog(vec4 base) {

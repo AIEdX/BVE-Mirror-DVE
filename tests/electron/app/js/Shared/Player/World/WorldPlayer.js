@@ -1,4 +1,4 @@
-import { VoxelMath } from "../../../../out/Libs/Math/VoxelMath.js";
+import { VoxelMath } from "../../../../out/Math/VoxelMath.js";
 import { PlayerData } from "../Shared/PlayerData.js";
 import { PlayerTags } from "../Shared/PlayerTags.js";
 export const WorldPlayer = async (DVEW) => {
@@ -32,12 +32,12 @@ export const WorldPlayer = async (DVEW) => {
         let x = PlayerData.pick.position.x + PlayerData.pick.normal.x;
         let y = PlayerData.pick.position.y + PlayerData.pick.normal.y;
         let z = PlayerData.pick.position.z + PlayerData.pick.normal.z;
-        if (!dataTool.loadIn(x, y, z))
+        if (!dataTool.loadInAt(x, y, z))
             return;
         if (dataTool.isRenderable())
             return;
-        DVEW.parentComm.runTasks("play-sound", ["voxel-place", data[1], x, y, z]);
         await brush.setId(data[1]).setXYZ(x, y, z).paintAndAwaitUpdate();
+        DVEW.parentComm.runTasks("play-sound", ["voxel-place", data[1], x, y, z]);
         const raw = brush.getRaw();
         worldPlayerObject.onAdd.forEach((_) => _(raw, x, y, z));
     });
@@ -45,7 +45,7 @@ export const WorldPlayer = async (DVEW) => {
         let x = PlayerData.pick.position.x;
         let y = PlayerData.pick.position.y;
         let z = PlayerData.pick.position.z;
-        if (!dataTool.loadIn(x, y, z))
+        if (!dataTool.loadInAt(x, y, z))
             return;
         if (dataTool.isRenderable()) {
             const id = dataTool.getStringId();
@@ -87,7 +87,7 @@ export const WorldPlayer = async (DVEW) => {
             const x = voxels[i];
             const y = voxels[i + 1];
             const z = voxels[i + 2];
-            if (!dataTool.loadIn(x, y, z))
+            if (!dataTool.loadInAt(x, y, z))
                 continue;
             if (dataTool.isRenderable()) {
                 PlayerData.pick.position.x = x;

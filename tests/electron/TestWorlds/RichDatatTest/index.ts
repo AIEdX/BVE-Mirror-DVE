@@ -42,7 +42,7 @@ await DVER.$INIT({
   autoSunLight: false,
  },
 });
-SyncWithGraphicsSettings(DVER);
+
 const init = async () => {
  const canvas = SetUpCanvas();
  const engine = SetUpEngine(canvas);
@@ -58,7 +58,7 @@ const init = async () => {
 
  //CreateWorldAxis(scene, 36);
  await DVER.$SCENEINIT({ scene: scene });
- DVER.renderManager.setBaseLevel(1);
+ DVER.render.setBaseLevel(1);
 
  const hemLight = new BABYLON.HemisphericLight(
   "",

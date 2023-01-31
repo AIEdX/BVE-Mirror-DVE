@@ -1,5 +1,5 @@
 import { SetUpEngine, SetUpCanvas, SetUpDarkScene, SetUpDefaultCamera, SetUpDefaultSkybox, CreateWorldAxis, runRenderLoop, } from "../Shared/Babylon/index.js";
-import { RunInit, SetUpWorkers, SyncWithGraphicsSettings, } from "../Shared/Create/index.js";
+import { RunInit, SetUpWorkers, } from "../Shared/Create/index.js";
 import { DVER } from "../../out/Render/DivineVoxelEngineRender.js";
 import { RegisterTexutres } from "../Shared/Functions/RegisterTextures.js";
 import { GetAnalyzerCubeRender } from "../Shared/Debug/Anaylzer/Cube.js";
@@ -31,7 +31,6 @@ await DVER.$INIT({
         maxY: 128,
     },
 });
-SyncWithGraphicsSettings(DVER);
 const init = async () => {
     const canvas = SetUpCanvas();
     const engine = SetUpEngine(canvas);
@@ -41,8 +40,8 @@ const init = async () => {
     CreateWorldAxis(scene, 20);
     GetAnalyzerCubeRender(DVER, camera);
     await DVER.$SCENEINIT({ scene: scene });
-    DVER.renderManager.setBaseLevel(0.1);
-    DVER.renderManager.setSunLevel(1);
+    DVER.render.setBaseLevel(0.1);
+    DVER.render.setSunLevel(1);
     runRenderLoop(engine, scene, camera, DVER);
 };
 RunInit(init);

@@ -1,5 +1,5 @@
 import { SetUpEngine, SetUpCanvas, SetUpDefaultCamera, SetUpDefaultSkybox, runRenderLoop, SetUpDarkScene, } from "../Shared/Babylon/index.js";
-import { RunInit, SetUpWorkers, SyncWithGraphicsSettings, } from "../Shared/Create/index.js";
+import { RunInit, SetUpWorkers, } from "../Shared/Create/index.js";
 import { DVER } from "../../out/Render/DivineVoxelEngineRender.js";
 import { RegisterTexutres } from "../Shared/Functions/RegisterTextures.js";
 import { GetRenderPlayer } from "../Shared/Player/Render/RenderPlayer.js";
@@ -22,7 +22,6 @@ await DVER.$INIT({
         autoSunLight: false,
     },
 });
-SyncWithGraphicsSettings(DVER);
 const init = async () => {
     const canvas = SetUpCanvas();
     const engine = SetUpEngine(canvas);
@@ -30,7 +29,7 @@ const init = async () => {
     const camera = SetUpDefaultCamera(scene, canvas, { x: 0, y: 1, z: 0 });
     SetUpDefaultSkybox(scene);
     await DVER.$SCENEINIT({ scene: scene });
-    DVER.renderManager.setBaseLevel(0);
+    DVER.render.setBaseLevel(0);
     GetRenderPlayer(false, scene, canvas, DVER);
     runRenderLoop(engine, scene, camera);
 };

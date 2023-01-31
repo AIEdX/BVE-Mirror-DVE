@@ -1,4 +1,5 @@
-import type { LocationData } from "Meta/Data/CommonTypes";
+import type { LocationData } from "Libs/voxelSpaces/Types/VoxelSpaces.types.js";
+
 import { ThreadComm } from "../../Libs/ThreadComm/ThreadComm.js";
 //data
 import { WorldRegister } from "../../Data/World/WorldRegister.js";
@@ -12,35 +13,68 @@ import { RegionDataTool } from "../../Tools/Data/WorldData/RegionDataTool.js";
 import { ColumnDataTool } from "../../Tools/Data/WorldData/ColumnDataTool.js";
 import { ChunkDataTool } from "../../Tools/Data/WorldData/ChunkDataTool.js";
 import { RegionHeaderRegister } from "../../Data/World/Region/RegionHeaderRegister.js";
+import { DataLoaderTool } from "../../Tools/Data/DataLoaderTool.js";
+import { WorldSpaces } from "../../Data/World/WorldSpaces.js";
 
 const regionTool = new RegionDataTool();
 const columnTool = new ColumnDataTool();
 const chunkTool = new ChunkDataTool();
+const dataLoaderTool = new DataLoaderTool();
 
+const loadInMap: Map<string, boolean> = new Map();
 export const WorldTasks = {
- addChunk: ThreadComm.registerTasks("add-chunk", (data: LocationData) => {
-  const chunk = WorldRegister.chunk.get(data[0], data[1], data[2], data[3]);
+ addChunk: ThreadComm.registerTasks("add-chunk", (location: LocationData) => {
+  const chunk = WorldRegister.chunk.get(location);
+  if (chunk) {
+   DataSync.chunk.sync(location);
+   return;
+  }
+  if (dataLoaderTool.isEnabled()) {
+
+   WorldSpaces.column.getPositionLocation(location);
+   const columnLocation = WorldSpaces.column.getLocation();
+   if (loadInMap.has(columnLocation.toString())) return;
+   loadInMap.set(columnLocation.toString(), true);
+
+   dataLoaderTool
+    .setLocation(columnLocation)
+    .loadIfExists((success) => {
+     loadInMap.delete(columnLocation.toString());
+     if (success) {
+      DataSync.chunk.sync(location);
+      return;
+     }
+     WorldRegister.chunk.add(location, WorldDataGenerator.chunk.create());
+    });
+   return;
+  }
+
   if (!chunk) {
-   const chunkData = WorldDataGenerator.chunk.create();
-   WorldRegister.chunk.add(data[0], data[1], data[2], data[3], chunkData);
-  } else {
-   DataSync.chunk.sync(data[0], data[1], data[2], data[3]);
+   WorldRegister.chunk.add(location, WorldDataGenerator.chunk.create());
   }
  }),
+ unLoad: {
+  unLoadColumn: ThreadComm.registerTasks<LocationData>(
+   "unload-column",
+   (data) => {
+    DataSync.column.unSync(data);
+    WorldRegister.column.remove(data);
+    const region = WorldRegister.region.get(data);
+    if (region && region.columns.size == 0) {
+     WorldRegister.region.remove(data);
+     DataSync.region.unSync(data);
+    }
+   }
+  ),
+ },
  load: {
   loadRegino: ThreadComm.registerTasks<LoadWorldDataTasks>(
    "load-region",
    (data) => {
     regionTool.setBuffer(data[0]);
     const location = regionTool.getLocationData();
-    WorldRegister.region.add(
-     location[0],
-     location[1],
-     location[2],
-     location[3],
-     data[0]
-    );
-    DataSync.region.sync(location[0], location[1], location[2], location[3]);
+    WorldRegister.region.add(location, data[0]);
+    DataSync.region.sync(location);
    }
   ),
   loadReginoHeader: ThreadComm.registerTasks<LoadRegionHeadertasks>(
@@ -48,13 +82,7 @@ export const WorldTasks = {
    (data) => {
     RegionHeaderRegister.add(data[0], data[1]);
     const location = data[0];
-    DataSync.regionHeader.sync(
-     location[0],
-     location[1],
-     location[2],
-     location[3]
-    );
-
+    DataSync.regionHeader.sync(location);
    }
   ),
   loadColumn: ThreadComm.registerTasks<LoadWorldDataTasks>(
@@ -62,14 +90,8 @@ export const WorldTasks = {
    (data) => {
     columnTool.setBuffer(data[0]);
     const location = columnTool.getLocationData();
-    WorldRegister.column.add(
-     location[0],
-     location[1],
-     location[3],
-     location[2],
-     data[0]
-    );
-    DataSync.column.sync(location[0], location[1], location[3], location[2]);
+    WorldRegister.column.add(location, data[0]);
+    DataSync.column.sync(location);
    }
   ),
   loadChunk: ThreadComm.registerTasks<LoadWorldDataTasks>(
@@ -77,14 +99,8 @@ export const WorldTasks = {
    (data) => {
     chunkTool.setBuffer(data[0]);
     const location = chunkTool.getLocationData();
-    WorldRegister.chunk.add(
-     location[0],
-     location[1],
-     location[2],
-     location[3],
-     data[0]
-    );
-    DataSync.chunk.sync(location[0], location[1], location[2], location[3]);
+    WorldRegister.chunk.add(location, data[0]);
+    DataSync.chunk.sync(location);
    }
   ),
  },

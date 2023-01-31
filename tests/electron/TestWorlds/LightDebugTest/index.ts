@@ -46,7 +46,7 @@ doRGBLight : true,
   maxY: 128,
  },
 });
-SyncWithGraphicsSettings(DVER);
+
 const init = async () => {
  const canvas = SetUpCanvas();
  const engine = SetUpEngine(canvas);
@@ -56,7 +56,7 @@ const init = async () => {
  CreateWorldAxis(scene, 10);
 
  await DVER.$SCENEINIT({ scene: scene });
- DVER.renderManager.setSunLevel(.5);
+ DVER.render.setSunLevel(.5);
 
  runRenderLoop(engine, scene, camera, DVER);
 };

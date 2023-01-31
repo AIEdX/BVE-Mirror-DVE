@@ -5,6 +5,7 @@ import { WorldBounds } from "../World/WorldBounds.js";
  * Handles common settings for all contexts
  */
 export declare const EngineSettings: {
+    enviorment: "node" | "browser";
     settings: EngineSettingsData;
     getSettings(): EngineSettingsData;
     syncSettings(data: EngineSettingsData): void;
@@ -20,4 +21,7 @@ export declare const EngineSettings: {
     doRGBPropagation(): boolean;
     doLight(): boolean;
     doFlow(): boolean;
+    saveWorldData(): boolean;
+    isServer(): boolean;
+    isClient(): boolean;
 };

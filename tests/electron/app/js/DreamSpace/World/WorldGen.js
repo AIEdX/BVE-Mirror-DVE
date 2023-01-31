@@ -1,5 +1,5 @@
 import { DVEW } from "../../../out/World/DivineVoxelEngineWorld.js";
-import { VoxelMath } from "../../../out/Libs/Math/VoxelMath.js";
+import { VoxelMath } from "../../../out/Math/VoxelMath.js";
 import { PerlinNoise3d } from "../../Shared/Noise/Perlin.js";
 const perlin = new PerlinNoise3d();
 const perlin2 = new PerlinNoise3d();
@@ -33,7 +33,7 @@ export const WorldGen = {
     chunkHeight: 128,
     generateTree(x, y, z) {
         brush.setId("dve_dream-log");
-        if (dataTool.loadIn(x, y - 1, z)) {
+        if (dataTool.loadInAt(x, y - 1, z)) {
             if (!dataTool.isRenderable())
                 return;
         }
@@ -60,7 +60,7 @@ export const WorldGen = {
             for (let z = zp; z < 16 + zp; z++) {
                 for (let y = 0; y < +200; y++) {
                     brush.setXYZ(x, y, z);
-                    if (dataTool.loadIn(x, y, z)) {
+                    if (dataTool.loadInAt(x, y, z)) {
                         if (dataTool.isRenderable())
                             continue;
                     }
@@ -171,7 +171,7 @@ export const WorldGen = {
                         continue;
                 }
                 if (noDestory) {
-                    if (dataTool.loadIn(ix, y, iz)) {
+                    if (dataTool.loadInAt(ix, y, iz)) {
                         if (dataTool.isRenderable())
                             continue;
                     }

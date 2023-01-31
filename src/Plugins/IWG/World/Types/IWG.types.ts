@@ -7,4 +7,6 @@ export type IWGData = {
   | Int16Array;
  renderDistance: number;
  generateDistance: number;
+ maxDistance?: number;
+ anaylzerDistance?: number;
 };
