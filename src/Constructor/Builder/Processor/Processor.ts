@@ -1,11 +1,8 @@
 //types
-import type {
- DirectionNames,
- EngineSettingsData,
- VoxelShape,
- VoxelSubstanceType,
-} from "Meta/index.js";
-import type { FullVoxelSubstanceTemplate } from "Meta/Constructor/VoxelTemplate.types.js";
+import type { DirectionNames } from "Meta/Util.types.js";
+import type { VoxelShape } from "Meta/Constructor/VoxelShape.types.js";
+import type { EngineSettingsData } from "Meta/Data/Settings/EngineSettings.types.js";
+import type { VoxelTemplate } from "Meta/Constructor/VoxelTemplate.types.js";
 import type { VoxelConstructor } from "Meta/Constructor/Voxel.types.js";
 import type { FaceDataOverride } from "Meta/Constructor/OverRide.types";
 import type { TextureRotations } from "Meta/Constructor/Geometry/Geometry.types.js";
@@ -71,49 +68,18 @@ export const Processor = {
   currentVoxel: mDT,
   neighborVoxel: nDT,
  },
- template: <FullVoxelSubstanceTemplate>{
-  solid: {
-   positionTemplate: [],
-   faceTemplate: [],
-   uvTemplate: [],
-   overlayUVTemplate: [],
-   shapeStateTemplate: [],
-   colorTemplate: [],
-   lightTemplate: [],
+ template: <Record<string, VoxelTemplate>>{},
+ getVoxelTemplate() {
+  return <VoxelTemplate>{
    aoTemplate: [],
-  },
-  flora: {
-   positionTemplate: [],
-   faceTemplate: [],
-   uvTemplate: [],
-   overlayUVTemplate: [],
-   shapeStateTemplate: [],
    colorTemplate: [],
-   lightTemplate: [],
-   aoTemplate: [],
-  },
-  liquid: {
-   positionTemplate: [],
    faceTemplate: [],
-   uvTemplate: [],
-   overlayUVTemplate: [],
-   shapeStateTemplate: [],
-   colorTemplate: [],
-   lightTemplate: [],
-   aoTemplate: [],
    flowTemplate: [],
-  },
-  magma: {
-   positionTemplate: [],
-   faceTemplate: [],
-   uvTemplate: [],
-   overlayUVTemplate: [],
-   shapeStateTemplate: [],
-   colorTemplate: [],
    lightTemplate: [],
-   aoTemplate: [],
-   flowTemplate: [],
-  },
+   overlayUVTemplate: [],
+   positionTemplate: [],
+   uvTemplate: [],
+  };
  },
 
  $INIT() {
@@ -126,7 +92,7 @@ export const Processor = {
   face: DirectionNames,
   voxelObject: VoxelConstructor,
   voxelShape: VoxelShape,
-  voxelSubstance: VoxelSubstanceType,
+  voxelSubstance: string,
   faceBit: number
  ) {
   const voxelExists = this.nDataTool.loadIn();
@@ -233,11 +199,12 @@ export const Processor = {
 
   if (faceBit == 0) return;
 
-  let baseTemplate;
-  if (voxelSubstance == "transparent") {
-   baseTemplate = this.template["solid"];
-  } else {
-   baseTemplate = this.template[voxelSubstance];
+  let baseTemplate =
+   this.template[SubstanceRules.getSubstanceParent(voxelSubstance)];
+  if (!baseTemplate) {
+   baseTemplate = this.getVoxelTemplate();
+   this.template[SubstanceRules.getSubstanceParent(voxelSubstance)] =
+    baseTemplate;
   }
   VoxelTemplater._template = baseTemplate;
 
@@ -255,7 +222,7 @@ export const Processor = {
 
   if (
    this.exposedFaces[0] &&
-   (voxelSubstance == "liquid" || voxelSubstance == "magma")
+   (voxelSubstance == "#dve_liquid" || voxelSubstance == "#dve_magma")
   ) {
    this.calculatFlow(
     this.faceStates[0] == 1,
@@ -270,7 +237,7 @@ export const Processor = {
  makeAllChunkTemplates(
   location: LocationData,
   LOD = 1
- ): FullVoxelSubstanceTemplate {
+ ): Record<string, VoxelTemplate> {
   heightMapTool.chunk.loadInAtLocation(location);
   this.nDataTool.setDimension(location[0]);
   this.mDataTool.setDimension(location[0]);
@@ -310,11 +277,6 @@ export const Processor = {
  },
 
  flush() {
-  for (const substance of Object.keys(this.template)) {
-   //@ts-ignore
-   for (const templateKey of Object.keys(this.template[substance])) {
-    (this as any).template[substance][templateKey] = [];
-   }
-  }
+  this.template = {};
  },
 };

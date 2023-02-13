@@ -1,4 +1,8 @@
-import type { RawVoxelData, VoxelSubstanceType, VoxelTemplateSubstanceType } from "Meta/index.js";
+import type {
+ RawVoxelData,
+ VoxelSubstanceType,
+ VoxelTemplateSubstanceType,
+} from "Meta/Data/Voxels/Voxel.types.js";
 import { DimensionsRegister } from "../../Data/World/Dimensions/DimensionsRegister.js";
 import { VoxelReader } from "../../Data/Voxel/VoxelReader.js";
 import { VoxelTags } from "../../Data/Voxel/VoxelTags.js";
@@ -155,7 +159,7 @@ export class DataTool extends DataToolBase {
 
  isOpaque() {
   const substance = this.getSubstance();
-  if (substance == "solid") return true;
+  if (substance == "#dve_solid") return true;
  }
 
  getLevel() {
@@ -208,12 +212,14 @@ export class DataTool extends DataToolBase {
  }
  getSubstance() {
   const vID = this.getId(true);
-  if (vID < 2) return "transparent";
+  if (vID < 2) return "#dve_transparent";
   VoxelTags.setVoxel(vID);
-  const s =  <VoxelSubstanceType>Register.stringMaps.getStringMapValue(
-   "voxel",
-   VoxelTagIDs.substance,
-   VoxelTags.getTag(VoxelTagIDs.substance)
+  const s = <VoxelSubstanceType>(
+   Register.stringMaps.getStringMapValue(
+    "voxel",
+    VoxelTagIDs.substance,
+    VoxelTags.getTag(VoxelTagIDs.substance)
+   )
   );
   return s;
  }
@@ -253,8 +259,8 @@ export class DataTool extends DataToolBase {
 
  getTemplateSubstance(): VoxelTemplateSubstanceType {
   let substance = this.getSubstance();
-  if (substance == "transparent") {
-   substance = "solid";
+  if (substance == "#dve_transparent") {
+   substance = "#dve_solid";
   }
   return <VoxelTemplateSubstanceType>substance;
  }

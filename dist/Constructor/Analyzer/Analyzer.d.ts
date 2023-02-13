@@ -3,7 +3,7 @@ import type { LocationData } from "Libs/voxelSpaces/Types/VoxelSpaces.types.js";
 export declare const Analyzer: {
     updater: {
         _voxels: Map<string, (locaton: import("../../Meta/Data/CommonTypes.js").LocationData, deltaTime: number, anayzer: any, DVEC: {
-            environment: "node" | "browser";
+            environment: "browser" | "node";
             __settingsHaveBeenSynced: boolean;
             UTIL: {
                 createPromiseCheck: (data: {
@@ -13,7 +13,7 @@ export declare const Analyzer: {
                     failTimeOut?: number | undefined;
                     onFail?: (() => any) | undefined;
                 }) => Promise<boolean>;
-                getEnviorment(): "node" | "browser";
+                getEnviorment(): "browser" | "node";
                 getAQueue<T>(): import("../../Global/Util/Queue.js").Queue<T>;
                 merge<T_1, K>(target: T_1, newObject: K): T_1 & K;
                 degtoRad(degrees: number): number;
@@ -22,10 +22,10 @@ export declare const Analyzer: {
                 converSABToBuffer(buffer: SharedArrayBuffer): ArrayBuffer;
             };
             settings: {
-                enviorment: "node" | "browser";
-                settings: import("../../Meta/index.js").EngineSettingsData;
-                getSettings(): import("../../Meta/index.js").EngineSettingsData;
-                syncSettings(data: import("../../Meta/index.js").EngineSettingsData): void;
+                enviorment: "browser" | "node";
+                settings: import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData;
+                getSettings(): import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData;
+                syncSettings(data: import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
                 __syncWithObjects(): void;
                 syncWithWorldBounds(worldBounds: {
                     bounds: {
@@ -60,7 +60,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -80,13 +82,13 @@ export declare const Analyzer: {
                                 };
                             };
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                             queue: [x: number, y: number, z: number][];
                             map: import("../../Global/Util/VisistedMap.js").VisitedMap;
@@ -113,7 +115,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -133,13 +137,13 @@ export declare const Analyzer: {
                                 };
                             };
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                         };
                         start(): any;
@@ -162,7 +166,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -182,13 +188,13 @@ export declare const Analyzer: {
                                 };
                             };
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                         };
                         start(): any;
@@ -213,7 +219,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -221,7 +229,7 @@ export declare const Analyzer: {
                         buildQueue: string;
                         originThread: string;
                         queues: {
-                            sun: [x: number, y: number, z: number][];
+                            sun: number[];
                         };
                         start(): any;
                         stop(): any;
@@ -245,7 +253,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -254,13 +264,13 @@ export declare const Analyzer: {
                         originThread: string;
                         queues: {
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                         };
                         start(): any;
@@ -283,7 +293,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -292,13 +304,13 @@ export declare const Analyzer: {
                         originThread: string;
                         queues: {
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                         };
                         start(): any;
@@ -323,7 +335,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -332,13 +346,13 @@ export declare const Analyzer: {
                         originThread: string;
                         queues: {
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                         };
                         start(): any;
@@ -361,7 +375,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -370,13 +386,13 @@ export declare const Analyzer: {
                         originThread: string;
                         queues: {
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                         };
                         start(): any;
@@ -403,10 +419,10 @@ export declare const Analyzer: {
                         attempts: number;
                         dimension: string;
                         chunks: Map<string, [x: number, y: number, z: number]>;
-                        voxels: [x: number, y: number, z: number, data: import("../../Meta/index.js").RawVoxelData][];
+                        voxels: [x: number, y: number, z: number, data: import("../../Meta/Data/Voxels/Voxel.types.js").RawVoxelData][];
                     }>;
                     registerRequest(dimension: string, x: number, y: number, z: number): string;
-                    addToRequest(registerId: string, location: LocationData, rawData: import("../../Meta/index.js").RawVoxelData): void;
+                    addToRequest(registerId: string, location: LocationData, rawData: import("../../Meta/Data/Voxels/Voxel.types.js").RawVoxelData): void;
                     attemptRequestFullFill(registerId: string): boolean;
                 };
                 worldBounds: {
@@ -431,23 +447,21 @@ export declare const Analyzer: {
             builder: {
                 textureManager: {
                     textureDataHasBeenSet: boolean;
-                    uvTextureMap: Record<string, Record<string, number>>;
-                    overlayUVTextureMap: Record<string, Record<string, number>>;
+                    data: import("../../Meta/Render/Textures/Texture.types.js").TextureTypeUVMap;
                     getTextureUV(data: import("../../Meta/Constructor/Constructor.types.js").ConstructorTextureData, overlay?: boolean): number;
-                    setUVTextureMap(data: Record<import("../../Meta/index.js").TextureTypes, Record<string, number>>): void;
-                    setOverlayUVTextureMap(data: Record<import("../../Meta/index.js").TextureTypes, Record<string, number>>): void;
+                    setUVTextureMap(data: import("../../Meta/Render/Textures/Texture.types.js").TextureTypeUVMap): void;
                     releaseTextureData(): void;
                     isReady(): boolean;
                 };
                 shapeManager: {
-                    shapes: Map<string, import("../../Meta/index.js").VoxelShape>;
+                    shapes: Map<string, import("../../Meta/Constructor/VoxelShape.types.js").VoxelShape>;
                     shapeCount: number;
-                    registerShape(shapeObject: import("../../Meta/index.js").VoxelShape): void;
-                    getShape(shapeId: string): import("../../Meta/index.js").VoxelShape;
+                    registerShape(shapeObject: import("../../Meta/Constructor/VoxelShape.types.js").VoxelShape): void;
+                    getShape(shapeId: string): import("../../Meta/Constructor/VoxelShape.types.js").VoxelShape;
                 };
                 chunkMesher: {
-                    voxelBuildOrder: import("../../Meta/index.js").VoxelTemplateSubstanceType[];
-                    buildChunkMesh(location: LocationData, template: import("../../Meta/Constructor/VoxelTemplate.types.js").FullVoxelSubstanceTemplate, LOD?: number): void;
+                    voxelBuildOrder: string[];
+                    buildChunkMesh(location: LocationData, template: Record<string, import("../../Meta/Constructor/VoxelTemplate.types.js").VoxelTemplate>, LOD?: number): void;
                 };
                 processor: {
                     LOD: number;
@@ -523,24 +537,27 @@ export declare const Analyzer: {
                         composedEntity: number;
                     };
                     faceDataOverride: import("../../Meta/Constructor/OverRide.types.js").FaceDataOverride;
-                    template: import("../../Meta/Constructor/VoxelTemplate.types.js").FullVoxelSubstanceTemplate;
+                    template: Record<string, import("../../Meta/Constructor/VoxelTemplate.types.js").VoxelTemplate>;
+                    getVoxelTemplate(): import("../../Meta/Constructor/VoxelTemplate.types.js").VoxelTemplate;
                     $INIT(): void;
-                    cullCheck(face: import("../../Meta/Util.types.js").DirectionNames, voxelObject: import("../../Meta/Constructor/Voxel.types.js").VoxelConstructor, voxelShape: import("../../Meta/index.js").VoxelShape, voxelSubstance: import("../../Meta/index.js").VoxelSubstanceType, faceBit: number): number;
+                    cullCheck(face: import("../../Meta/Util.types.js").DirectionNames, voxelObject: import("../../Meta/Constructor/Voxel.types.js").VoxelConstructor, voxelShape: import("../../Meta/Constructor/VoxelShape.types.js").VoxelShape, voxelSubstance: string, faceBit: number): number;
                     faceStateCheck(face: import("../../Meta/Util.types.js").DirectionNames, faceBit: number): number;
                     _process(doSecondCheck?: boolean): void;
-                    makeAllChunkTemplates(location: LocationData, LOD?: number): import("../../Meta/Constructor/VoxelTemplate.types.js").FullVoxelSubstanceTemplate;
-                    syncSettings(settings: import("../../Meta/index.js").EngineSettingsData): void;
+                    makeAllChunkTemplates(location: LocationData, LOD?: number): Record<string, import("../../Meta/Constructor/VoxelTemplate.types.js").VoxelTemplate>;
+                    syncSettings(settings: import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
                     flush(): void;
                 };
                 substanceRules: {
                     rules: Map<string, Map<string, boolean>>;
-                    registerSubstance(id: string, substanceCulls?: string[] | undefined): void;
+                    parents: Map<string, string>;
+                    registerSubstance(id: string, substanceCulls?: string[] | undefined, parentId?: string | undefined): void;
                     $INIT(): void;
-                    exposedCheck(subject: import("../../Meta/index.js").VoxelSubstanceType, neightborVoxel: import("../../Meta/index.js").VoxelSubstanceType): boolean;
+                    exposedCheck(subject: string, neightborVoxel: string): boolean;
+                    getSubstanceParent(id: string): string;
                 };
                 dimension: number;
                 $INIT(): Promise<void>;
-                syncSettings(settings: import("../../Meta/index.js").EngineSettingsData): void;
+                syncSettings(settings: import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
                 buildChunk(location: LocationData, LOD?: number): true | undefined;
                 constructEntity(): void;
             };
@@ -738,7 +755,7 @@ export declare const Analyzer: {
                         };
                     }): void;
                 } & {
-                    $INIT(settings: import("../../Meta/index.js").EngineSettingsData): void;
+                    $INIT(settings: import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
                 };
                 register: {
                     stringMaps: {
@@ -783,7 +800,7 @@ export declare const Analyzer: {
             TC: {
                 threadNumber: number;
                 threadName: string;
-                environment: "node" | "browser";
+                environment: "browser" | "node";
                 _comms: Record<string, import("../../Libs/ThreadComm/Comm/Comm.js").CommBase>;
                 _commManageras: Record<string, import("../../Libs/ThreadComm/Manager/CommManager.js").CommManager>;
                 _tasks: Record<string, import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<any>>;
@@ -859,23 +876,21 @@ export declare const Analyzer: {
             hooks: {
                 texturesRegistered: import("../../Libs/Hooks/Classes/SyncHook.js").SyncHook<{
                     textureDataHasBeenSet: boolean;
-                    uvTextureMap: Record<string, Record<string, number>>;
-                    overlayUVTextureMap: Record<string, Record<string, number>>;
+                    data: import("../../Meta/Render/Textures/Texture.types.js").TextureTypeUVMap;
                     getTextureUV(data: import("../../Meta/Constructor/Constructor.types.js").ConstructorTextureData, overlay?: boolean): number;
-                    setUVTextureMap(data: Record<import("../../Meta/index.js").TextureTypes, Record<string, number>>): void;
-                    setOverlayUVTextureMap(data: Record<import("../../Meta/index.js").TextureTypes, Record<string, number>>): void;
+                    setUVTextureMap(data: import("../../Meta/Render/Textures/Texture.types.js").TextureTypeUVMap): void;
                     releaseTextureData(): void;
                     isReady(): boolean;
                 }, void>;
             };
-            syncSettings(data: import("../../Meta/index.js").EngineSettingsData): void;
+            syncSettings(data: import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
             reStart(): void;
             isReady(): boolean;
             $INIT(): Promise<void>;
             getDataTool(): import("../../Meta/Constructor/Constructor.types.js").ConstructorDataTool;
         }) => void>;
         registerVoxel(id: string, run: (locaton: import("../../Meta/Data/CommonTypes.js").LocationData, deltaTime: number, anayzer: any, DVEC: {
-            environment: "node" | "browser";
+            environment: "browser" | "node";
             __settingsHaveBeenSynced: boolean;
             UTIL: {
                 createPromiseCheck: (data: {
@@ -885,7 +900,7 @@ export declare const Analyzer: {
                     failTimeOut?: number | undefined;
                     onFail?: (() => any) | undefined;
                 }) => Promise<boolean>;
-                getEnviorment(): "node" | "browser";
+                getEnviorment(): "browser" | "node";
                 getAQueue<T>(): import("../../Global/Util/Queue.js").Queue<T>;
                 merge<T_1, K>(target: T_1, newObject: K): T_1 & K;
                 degtoRad(degrees: number): number;
@@ -894,10 +909,10 @@ export declare const Analyzer: {
                 converSABToBuffer(buffer: SharedArrayBuffer): ArrayBuffer;
             };
             settings: {
-                enviorment: "node" | "browser";
-                settings: import("../../Meta/index.js").EngineSettingsData;
-                getSettings(): import("../../Meta/index.js").EngineSettingsData;
-                syncSettings(data: import("../../Meta/index.js").EngineSettingsData): void;
+                enviorment: "browser" | "node";
+                settings: import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData;
+                getSettings(): import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData;
+                syncSettings(data: import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
                 __syncWithObjects(): void;
                 syncWithWorldBounds(worldBounds: {
                     bounds: {
@@ -932,7 +947,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -952,13 +969,13 @@ export declare const Analyzer: {
                                 };
                             };
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                             queue: [x: number, y: number, z: number][];
                             map: import("../../Global/Util/VisistedMap.js").VisitedMap;
@@ -985,7 +1002,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -1005,13 +1024,13 @@ export declare const Analyzer: {
                                 };
                             };
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                         };
                         start(): any;
@@ -1034,7 +1053,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -1054,13 +1075,13 @@ export declare const Analyzer: {
                                 };
                             };
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                         };
                         start(): any;
@@ -1085,7 +1106,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -1093,7 +1116,7 @@ export declare const Analyzer: {
                         buildQueue: string;
                         originThread: string;
                         queues: {
-                            sun: [x: number, y: number, z: number][];
+                            sun: number[];
                         };
                         start(): any;
                         stop(): any;
@@ -1117,7 +1140,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -1126,13 +1151,13 @@ export declare const Analyzer: {
                         originThread: string;
                         queues: {
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                         };
                         start(): any;
@@ -1155,7 +1180,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -1164,13 +1191,13 @@ export declare const Analyzer: {
                         originThread: string;
                         queues: {
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                         };
                         start(): any;
@@ -1195,7 +1222,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -1204,13 +1233,13 @@ export declare const Analyzer: {
                         originThread: string;
                         queues: {
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                         };
                         start(): any;
@@ -1233,7 +1262,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -1242,13 +1273,13 @@ export declare const Analyzer: {
                         originThread: string;
                         queues: {
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                         };
                         start(): any;
@@ -1275,10 +1306,10 @@ export declare const Analyzer: {
                         attempts: number;
                         dimension: string;
                         chunks: Map<string, [x: number, y: number, z: number]>;
-                        voxels: [x: number, y: number, z: number, data: import("../../Meta/index.js").RawVoxelData][];
+                        voxels: [x: number, y: number, z: number, data: import("../../Meta/Data/Voxels/Voxel.types.js").RawVoxelData][];
                     }>;
                     registerRequest(dimension: string, x: number, y: number, z: number): string;
-                    addToRequest(registerId: string, location: LocationData, rawData: import("../../Meta/index.js").RawVoxelData): void;
+                    addToRequest(registerId: string, location: LocationData, rawData: import("../../Meta/Data/Voxels/Voxel.types.js").RawVoxelData): void;
                     attemptRequestFullFill(registerId: string): boolean;
                 };
                 worldBounds: {
@@ -1303,23 +1334,21 @@ export declare const Analyzer: {
             builder: {
                 textureManager: {
                     textureDataHasBeenSet: boolean;
-                    uvTextureMap: Record<string, Record<string, number>>;
-                    overlayUVTextureMap: Record<string, Record<string, number>>;
+                    data: import("../../Meta/Render/Textures/Texture.types.js").TextureTypeUVMap;
                     getTextureUV(data: import("../../Meta/Constructor/Constructor.types.js").ConstructorTextureData, overlay?: boolean): number;
-                    setUVTextureMap(data: Record<import("../../Meta/index.js").TextureTypes, Record<string, number>>): void;
-                    setOverlayUVTextureMap(data: Record<import("../../Meta/index.js").TextureTypes, Record<string, number>>): void;
+                    setUVTextureMap(data: import("../../Meta/Render/Textures/Texture.types.js").TextureTypeUVMap): void;
                     releaseTextureData(): void;
                     isReady(): boolean;
                 };
                 shapeManager: {
-                    shapes: Map<string, import("../../Meta/index.js").VoxelShape>;
+                    shapes: Map<string, import("../../Meta/Constructor/VoxelShape.types.js").VoxelShape>;
                     shapeCount: number;
-                    registerShape(shapeObject: import("../../Meta/index.js").VoxelShape): void;
-                    getShape(shapeId: string): import("../../Meta/index.js").VoxelShape;
+                    registerShape(shapeObject: import("../../Meta/Constructor/VoxelShape.types.js").VoxelShape): void;
+                    getShape(shapeId: string): import("../../Meta/Constructor/VoxelShape.types.js").VoxelShape;
                 };
                 chunkMesher: {
-                    voxelBuildOrder: import("../../Meta/index.js").VoxelTemplateSubstanceType[];
-                    buildChunkMesh(location: LocationData, template: import("../../Meta/Constructor/VoxelTemplate.types.js").FullVoxelSubstanceTemplate, LOD?: number): void;
+                    voxelBuildOrder: string[];
+                    buildChunkMesh(location: LocationData, template: Record<string, import("../../Meta/Constructor/VoxelTemplate.types.js").VoxelTemplate>, LOD?: number): void;
                 };
                 processor: {
                     LOD: number;
@@ -1395,24 +1424,27 @@ export declare const Analyzer: {
                         composedEntity: number;
                     };
                     faceDataOverride: import("../../Meta/Constructor/OverRide.types.js").FaceDataOverride;
-                    template: import("../../Meta/Constructor/VoxelTemplate.types.js").FullVoxelSubstanceTemplate;
+                    template: Record<string, import("../../Meta/Constructor/VoxelTemplate.types.js").VoxelTemplate>;
+                    getVoxelTemplate(): import("../../Meta/Constructor/VoxelTemplate.types.js").VoxelTemplate;
                     $INIT(): void;
-                    cullCheck(face: import("../../Meta/Util.types.js").DirectionNames, voxelObject: import("../../Meta/Constructor/Voxel.types.js").VoxelConstructor, voxelShape: import("../../Meta/index.js").VoxelShape, voxelSubstance: import("../../Meta/index.js").VoxelSubstanceType, faceBit: number): number;
+                    cullCheck(face: import("../../Meta/Util.types.js").DirectionNames, voxelObject: import("../../Meta/Constructor/Voxel.types.js").VoxelConstructor, voxelShape: import("../../Meta/Constructor/VoxelShape.types.js").VoxelShape, voxelSubstance: string, faceBit: number): number;
                     faceStateCheck(face: import("../../Meta/Util.types.js").DirectionNames, faceBit: number): number;
                     _process(doSecondCheck?: boolean): void;
-                    makeAllChunkTemplates(location: LocationData, LOD?: number): import("../../Meta/Constructor/VoxelTemplate.types.js").FullVoxelSubstanceTemplate;
-                    syncSettings(settings: import("../../Meta/index.js").EngineSettingsData): void;
+                    makeAllChunkTemplates(location: LocationData, LOD?: number): Record<string, import("../../Meta/Constructor/VoxelTemplate.types.js").VoxelTemplate>;
+                    syncSettings(settings: import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
                     flush(): void;
                 };
                 substanceRules: {
                     rules: Map<string, Map<string, boolean>>;
-                    registerSubstance(id: string, substanceCulls?: string[] | undefined): void;
+                    parents: Map<string, string>;
+                    registerSubstance(id: string, substanceCulls?: string[] | undefined, parentId?: string | undefined): void;
                     $INIT(): void;
-                    exposedCheck(subject: import("../../Meta/index.js").VoxelSubstanceType, neightborVoxel: import("../../Meta/index.js").VoxelSubstanceType): boolean;
+                    exposedCheck(subject: string, neightborVoxel: string): boolean;
+                    getSubstanceParent(id: string): string;
                 };
                 dimension: number;
                 $INIT(): Promise<void>;
-                syncSettings(settings: import("../../Meta/index.js").EngineSettingsData): void;
+                syncSettings(settings: import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
                 buildChunk(location: LocationData, LOD?: number): true | undefined;
                 constructEntity(): void;
             };
@@ -1610,7 +1642,7 @@ export declare const Analyzer: {
                         };
                     }): void;
                 } & {
-                    $INIT(settings: import("../../Meta/index.js").EngineSettingsData): void;
+                    $INIT(settings: import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
                 };
                 register: {
                     stringMaps: {
@@ -1655,7 +1687,7 @@ export declare const Analyzer: {
             TC: {
                 threadNumber: number;
                 threadName: string;
-                environment: "node" | "browser";
+                environment: "browser" | "node";
                 _comms: Record<string, import("../../Libs/ThreadComm/Comm/Comm.js").CommBase>;
                 _commManageras: Record<string, import("../../Libs/ThreadComm/Manager/CommManager.js").CommManager>;
                 _tasks: Record<string, import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<any>>;
@@ -1731,23 +1763,21 @@ export declare const Analyzer: {
             hooks: {
                 texturesRegistered: import("../../Libs/Hooks/Classes/SyncHook.js").SyncHook<{
                     textureDataHasBeenSet: boolean;
-                    uvTextureMap: Record<string, Record<string, number>>;
-                    overlayUVTextureMap: Record<string, Record<string, number>>;
+                    data: import("../../Meta/Render/Textures/Texture.types.js").TextureTypeUVMap;
                     getTextureUV(data: import("../../Meta/Constructor/Constructor.types.js").ConstructorTextureData, overlay?: boolean): number;
-                    setUVTextureMap(data: Record<import("../../Meta/index.js").TextureTypes, Record<string, number>>): void;
-                    setOverlayUVTextureMap(data: Record<import("../../Meta/index.js").TextureTypes, Record<string, number>>): void;
+                    setUVTextureMap(data: import("../../Meta/Render/Textures/Texture.types.js").TextureTypeUVMap): void;
                     releaseTextureData(): void;
                     isReady(): boolean;
                 }, void>;
             };
-            syncSettings(data: import("../../Meta/index.js").EngineSettingsData): void;
+            syncSettings(data: import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
             reStart(): void;
             isReady(): boolean;
             $INIT(): Promise<void>;
             getDataTool(): import("../../Meta/Constructor/Constructor.types.js").ConstructorDataTool;
         }) => void): void;
         getVoxel(id: string): false | ((locaton: import("../../Meta/Data/CommonTypes.js").LocationData, deltaTime: number, anayzer: any, DVEC: {
-            environment: "node" | "browser";
+            environment: "browser" | "node";
             __settingsHaveBeenSynced: boolean;
             UTIL: {
                 createPromiseCheck: (data: {
@@ -1757,7 +1787,7 @@ export declare const Analyzer: {
                     failTimeOut?: number | undefined;
                     onFail?: (() => any) | undefined;
                 }) => Promise<boolean>;
-                getEnviorment(): "node" | "browser";
+                getEnviorment(): "browser" | "node";
                 getAQueue<T>(): import("../../Global/Util/Queue.js").Queue<T>;
                 merge<T_1, K>(target: T_1, newObject: K): T_1 & K;
                 degtoRad(degrees: number): number;
@@ -1766,10 +1796,10 @@ export declare const Analyzer: {
                 converSABToBuffer(buffer: SharedArrayBuffer): ArrayBuffer;
             };
             settings: {
-                enviorment: "node" | "browser";
-                settings: import("../../Meta/index.js").EngineSettingsData;
-                getSettings(): import("../../Meta/index.js").EngineSettingsData;
-                syncSettings(data: import("../../Meta/index.js").EngineSettingsData): void;
+                enviorment: "browser" | "node";
+                settings: import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData;
+                getSettings(): import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData;
+                syncSettings(data: import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
                 __syncWithObjects(): void;
                 syncWithWorldBounds(worldBounds: {
                     bounds: {
@@ -1804,7 +1834,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -1824,13 +1856,13 @@ export declare const Analyzer: {
                                 };
                             };
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                             queue: [x: number, y: number, z: number][];
                             map: import("../../Global/Util/VisistedMap.js").VisitedMap;
@@ -1857,7 +1889,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -1877,13 +1911,13 @@ export declare const Analyzer: {
                                 };
                             };
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                         };
                         start(): any;
@@ -1906,7 +1940,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -1926,13 +1962,13 @@ export declare const Analyzer: {
                                 };
                             };
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                         };
                         start(): any;
@@ -1957,7 +1993,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -1965,7 +2003,7 @@ export declare const Analyzer: {
                         buildQueue: string;
                         originThread: string;
                         queues: {
-                            sun: [x: number, y: number, z: number][];
+                            sun: number[];
                         };
                         start(): any;
                         stop(): any;
@@ -1989,7 +2027,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -1998,13 +2038,13 @@ export declare const Analyzer: {
                         originThread: string;
                         queues: {
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                         };
                         start(): any;
@@ -2027,7 +2067,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -2036,13 +2078,13 @@ export declare const Analyzer: {
                         originThread: string;
                         queues: {
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                         };
                         start(): any;
@@ -2067,7 +2109,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -2076,13 +2120,13 @@ export declare const Analyzer: {
                         originThread: string;
                         queues: {
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                         };
                         start(): any;
@@ -2105,7 +2149,9 @@ export declare const Analyzer: {
                         priority: import("Meta/Tasks/Tasks.types.js").Priorities;
                         LOD: number;
                         syncQueue: LocationData[];
+                        aSyncQueue: LocationData[];
                         buildMode: "async" | "sync";
+                        buildTasks: import("Meta/Tasks/Tasks.types.js").PriorityTask<import("Meta/Tasks/Tasks.types.js").BuildTasks>;
                         rebuildTasks: import("Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                         tasksType: string;
                         origin: LocationData;
@@ -2114,13 +2160,13 @@ export declare const Analyzer: {
                         originThread: string;
                         queues: {
                             rgb: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                             };
                             sun: {
-                                update: [x: number, y: number, z: number][];
-                                rmeove: [x: number, y: number, z: number][];
+                                update: number[];
+                                rmeove: number[];
                             };
                         };
                         start(): any;
@@ -2147,10 +2193,10 @@ export declare const Analyzer: {
                         attempts: number;
                         dimension: string;
                         chunks: Map<string, [x: number, y: number, z: number]>;
-                        voxels: [x: number, y: number, z: number, data: import("../../Meta/index.js").RawVoxelData][];
+                        voxels: [x: number, y: number, z: number, data: import("../../Meta/Data/Voxels/Voxel.types.js").RawVoxelData][];
                     }>;
                     registerRequest(dimension: string, x: number, y: number, z: number): string;
-                    addToRequest(registerId: string, location: LocationData, rawData: import("../../Meta/index.js").RawVoxelData): void;
+                    addToRequest(registerId: string, location: LocationData, rawData: import("../../Meta/Data/Voxels/Voxel.types.js").RawVoxelData): void;
                     attemptRequestFullFill(registerId: string): boolean;
                 };
                 worldBounds: {
@@ -2175,23 +2221,21 @@ export declare const Analyzer: {
             builder: {
                 textureManager: {
                     textureDataHasBeenSet: boolean;
-                    uvTextureMap: Record<string, Record<string, number>>;
-                    overlayUVTextureMap: Record<string, Record<string, number>>;
+                    data: import("../../Meta/Render/Textures/Texture.types.js").TextureTypeUVMap;
                     getTextureUV(data: import("../../Meta/Constructor/Constructor.types.js").ConstructorTextureData, overlay?: boolean): number;
-                    setUVTextureMap(data: Record<import("../../Meta/index.js").TextureTypes, Record<string, number>>): void;
-                    setOverlayUVTextureMap(data: Record<import("../../Meta/index.js").TextureTypes, Record<string, number>>): void;
+                    setUVTextureMap(data: import("../../Meta/Render/Textures/Texture.types.js").TextureTypeUVMap): void;
                     releaseTextureData(): void;
                     isReady(): boolean;
                 };
                 shapeManager: {
-                    shapes: Map<string, import("../../Meta/index.js").VoxelShape>;
+                    shapes: Map<string, import("../../Meta/Constructor/VoxelShape.types.js").VoxelShape>;
                     shapeCount: number;
-                    registerShape(shapeObject: import("../../Meta/index.js").VoxelShape): void;
-                    getShape(shapeId: string): import("../../Meta/index.js").VoxelShape;
+                    registerShape(shapeObject: import("../../Meta/Constructor/VoxelShape.types.js").VoxelShape): void;
+                    getShape(shapeId: string): import("../../Meta/Constructor/VoxelShape.types.js").VoxelShape;
                 };
                 chunkMesher: {
-                    voxelBuildOrder: import("../../Meta/index.js").VoxelTemplateSubstanceType[];
-                    buildChunkMesh(location: LocationData, template: import("../../Meta/Constructor/VoxelTemplate.types.js").FullVoxelSubstanceTemplate, LOD?: number): void;
+                    voxelBuildOrder: string[];
+                    buildChunkMesh(location: LocationData, template: Record<string, import("../../Meta/Constructor/VoxelTemplate.types.js").VoxelTemplate>, LOD?: number): void;
                 };
                 processor: {
                     LOD: number;
@@ -2267,24 +2311,27 @@ export declare const Analyzer: {
                         composedEntity: number;
                     };
                     faceDataOverride: import("../../Meta/Constructor/OverRide.types.js").FaceDataOverride;
-                    template: import("../../Meta/Constructor/VoxelTemplate.types.js").FullVoxelSubstanceTemplate;
+                    template: Record<string, import("../../Meta/Constructor/VoxelTemplate.types.js").VoxelTemplate>;
+                    getVoxelTemplate(): import("../../Meta/Constructor/VoxelTemplate.types.js").VoxelTemplate;
                     $INIT(): void;
-                    cullCheck(face: import("../../Meta/Util.types.js").DirectionNames, voxelObject: import("../../Meta/Constructor/Voxel.types.js").VoxelConstructor, voxelShape: import("../../Meta/index.js").VoxelShape, voxelSubstance: import("../../Meta/index.js").VoxelSubstanceType, faceBit: number): number;
+                    cullCheck(face: import("../../Meta/Util.types.js").DirectionNames, voxelObject: import("../../Meta/Constructor/Voxel.types.js").VoxelConstructor, voxelShape: import("../../Meta/Constructor/VoxelShape.types.js").VoxelShape, voxelSubstance: string, faceBit: number): number;
                     faceStateCheck(face: import("../../Meta/Util.types.js").DirectionNames, faceBit: number): number;
                     _process(doSecondCheck?: boolean): void;
-                    makeAllChunkTemplates(location: LocationData, LOD?: number): import("../../Meta/Constructor/VoxelTemplate.types.js").FullVoxelSubstanceTemplate;
-                    syncSettings(settings: import("../../Meta/index.js").EngineSettingsData): void;
+                    makeAllChunkTemplates(location: LocationData, LOD?: number): Record<string, import("../../Meta/Constructor/VoxelTemplate.types.js").VoxelTemplate>;
+                    syncSettings(settings: import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
                     flush(): void;
                 };
                 substanceRules: {
                     rules: Map<string, Map<string, boolean>>;
-                    registerSubstance(id: string, substanceCulls?: string[] | undefined): void;
+                    parents: Map<string, string>;
+                    registerSubstance(id: string, substanceCulls?: string[] | undefined, parentId?: string | undefined): void;
                     $INIT(): void;
-                    exposedCheck(subject: import("../../Meta/index.js").VoxelSubstanceType, neightborVoxel: import("../../Meta/index.js").VoxelSubstanceType): boolean;
+                    exposedCheck(subject: string, neightborVoxel: string): boolean;
+                    getSubstanceParent(id: string): string;
                 };
                 dimension: number;
                 $INIT(): Promise<void>;
-                syncSettings(settings: import("../../Meta/index.js").EngineSettingsData): void;
+                syncSettings(settings: import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
                 buildChunk(location: LocationData, LOD?: number): true | undefined;
                 constructEntity(): void;
             };
@@ -2482,7 +2529,7 @@ export declare const Analyzer: {
                         };
                     }): void;
                 } & {
-                    $INIT(settings: import("../../Meta/index.js").EngineSettingsData): void;
+                    $INIT(settings: import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
                 };
                 register: {
                     stringMaps: {
@@ -2527,7 +2574,7 @@ export declare const Analyzer: {
             TC: {
                 threadNumber: number;
                 threadName: string;
-                environment: "node" | "browser";
+                environment: "browser" | "node";
                 _comms: Record<string, import("../../Libs/ThreadComm/Comm/Comm.js").CommBase>;
                 _commManageras: Record<string, import("../../Libs/ThreadComm/Manager/CommManager.js").CommManager>;
                 _tasks: Record<string, import("../../Libs/ThreadComm/Tasks/Tasks.js").Task<any>>;
@@ -2603,16 +2650,14 @@ export declare const Analyzer: {
             hooks: {
                 texturesRegistered: import("../../Libs/Hooks/Classes/SyncHook.js").SyncHook<{
                     textureDataHasBeenSet: boolean;
-                    uvTextureMap: Record<string, Record<string, number>>;
-                    overlayUVTextureMap: Record<string, Record<string, number>>;
+                    data: import("../../Meta/Render/Textures/Texture.types.js").TextureTypeUVMap;
                     getTextureUV(data: import("../../Meta/Constructor/Constructor.types.js").ConstructorTextureData, overlay?: boolean): number;
-                    setUVTextureMap(data: Record<import("../../Meta/index.js").TextureTypes, Record<string, number>>): void;
-                    setOverlayUVTextureMap(data: Record<import("../../Meta/index.js").TextureTypes, Record<string, number>>): void;
+                    setUVTextureMap(data: import("../../Meta/Render/Textures/Texture.types.js").TextureTypeUVMap): void;
                     releaseTextureData(): void;
                     isReady(): boolean;
                 }, void>;
             };
-            syncSettings(data: import("../../Meta/index.js").EngineSettingsData): void;
+            syncSettings(data: import("../../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
             reStart(): void;
             isReady(): boolean;
             $INIT(): Promise<void>;

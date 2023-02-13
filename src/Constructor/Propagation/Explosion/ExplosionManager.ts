@@ -99,10 +99,10 @@ export const ExplosionManager = {
        const l = nDataTool.getLight();
        if (l > 0) {
         if (LightData.getS(l) > 0) {
-         tasks.queues.sun.rmeove.push([nx, ny, nz]);
+         tasks.queues.sun.rmeove.push(nx, ny, nz);
         }
         if (LightData.hasRGBLight(l)) {
-         tasks.queues.rgb.rmeove.push([nx, ny, nz]);
+         tasks.queues.rgb.rmeove.push(nx, ny, nz);
         }
        }
       }
@@ -111,8 +111,8 @@ export const ExplosionManager = {
      tasks.addNeighborsToRebuildQueue(x, y, z);
      if (
       dataTool.getHardness() > 10_000 ||
-      substance == "liquid" ||
-      substance == "magma"
+      substance == "#dve_liquid" ||
+      substance == "#dve_magma"
      ) {
       continue;
      }

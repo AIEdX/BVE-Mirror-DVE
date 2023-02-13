@@ -1,20 +1,24 @@
 export function RegisterFogShaders(builder) {
-    builder.createFunction("ExponentialFog", {
+    builder.functions.create("ExponentialFog", {
+        setID: "#dve_fog",
         inputs: [],
         output: "float",
+        arguments: {},
         body: {
-            GLSL: `
+            GLSL: () => `
    float fogCoeff = 1.0;
    //float fogDensity = fogOptions.y;
    //fogCoeff = 1.0 / pow(E, fFogDistance * fogDensity);
    return clamp(fogCoeff, 0.0, 1.0);`,
         },
     });
-    builder.createFunction("VolumetricFog", {
+    builder.functions.create("VolumetricFog", {
+        setID: "#dve_fog",
         inputs: [],
         output: "float",
+        arguments: {},
         body: {
-            GLSL: `
+            GLSL: () => `
    float fogDensity = fogOptions.y;
    vec3 fogOrigin = cameraPOS;
    vec3 fogDirection = normalize(worldPOS - fogOrigin);
@@ -28,11 +32,13 @@ export function RegisterFogShaders(builder) {
    return fogFactor;`,
         },
     });
-    builder.createFunction("AnimatedVolumetricFog", {
+    builder.functions.create("AnimatedVolumetricFog", {
+        setID: "#dve_fog",
         inputs: [],
         output: "float",
+        arguments: {},
         body: {
-            GLSL: `
+            GLSL: () => `
    float fogDensity = fogOptions.y;
    float fogTime = time * .5;
    vec3 fogOrigin = cameraPOS;
@@ -50,5 +56,4 @@ export function RegisterFogShaders(builder) {
    return fogFactor;`,
         },
     });
-    return ["ExponentialFog", "VolumetricFog", "AnimatedVolumetricFog"];
 }

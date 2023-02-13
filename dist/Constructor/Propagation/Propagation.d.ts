@@ -6,7 +6,9 @@ export declare const Propagation: {
             priority: import("../../Meta/Tasks/Tasks.types.js").Priorities;
             LOD: number;
             syncQueue: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
+            aSyncQueue: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
             buildMode: "async" | "sync";
+            buildTasks: import("../../Meta/Tasks/Tasks.types.js").PriorityTask<import("../../Meta/Tasks/Tasks.types.js").BuildTasks>;
             rebuildTasks: import("../../Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
             tasksType: string;
             origin: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData;
@@ -26,13 +28,13 @@ export declare const Propagation: {
                     };
                 };
                 rgb: {
-                    update: [x: number, y: number, z: number][];
-                    rmeove: [x: number, y: number, z: number][];
+                    update: number[];
+                    rmeove: number[];
                     map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                 };
                 sun: {
-                    update: [x: number, y: number, z: number][];
-                    rmeove: [x: number, y: number, z: number][];
+                    update: number[];
+                    rmeove: number[];
                 };
                 queue: [x: number, y: number, z: number][];
                 map: import("../../Global/Util/VisistedMap.js").VisitedMap;
@@ -59,7 +61,9 @@ export declare const Propagation: {
             priority: import("../../Meta/Tasks/Tasks.types.js").Priorities;
             LOD: number;
             syncQueue: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
+            aSyncQueue: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
             buildMode: "async" | "sync";
+            buildTasks: import("../../Meta/Tasks/Tasks.types.js").PriorityTask<import("../../Meta/Tasks/Tasks.types.js").BuildTasks>;
             rebuildTasks: import("../../Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
             tasksType: string;
             origin: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData;
@@ -79,13 +83,13 @@ export declare const Propagation: {
                     };
                 };
                 rgb: {
-                    update: [x: number, y: number, z: number][];
-                    rmeove: [x: number, y: number, z: number][];
+                    update: number[];
+                    rmeove: number[];
                     map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                 };
                 sun: {
-                    update: [x: number, y: number, z: number][];
-                    rmeove: [x: number, y: number, z: number][];
+                    update: number[];
+                    rmeove: number[];
                 };
             };
             start(): any;
@@ -108,7 +112,9 @@ export declare const Propagation: {
             priority: import("../../Meta/Tasks/Tasks.types.js").Priorities;
             LOD: number;
             syncQueue: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
+            aSyncQueue: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
             buildMode: "async" | "sync";
+            buildTasks: import("../../Meta/Tasks/Tasks.types.js").PriorityTask<import("../../Meta/Tasks/Tasks.types.js").BuildTasks>;
             rebuildTasks: import("../../Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
             tasksType: string;
             origin: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData;
@@ -128,13 +134,13 @@ export declare const Propagation: {
                     };
                 };
                 rgb: {
-                    update: [x: number, y: number, z: number][];
-                    rmeove: [x: number, y: number, z: number][];
+                    update: number[];
+                    rmeove: number[];
                     map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                 };
                 sun: {
-                    update: [x: number, y: number, z: number][];
-                    rmeove: [x: number, y: number, z: number][];
+                    update: number[];
+                    rmeove: number[];
                 };
             };
             start(): any;
@@ -159,7 +165,9 @@ export declare const Propagation: {
             priority: import("../../Meta/Tasks/Tasks.types.js").Priorities;
             LOD: number;
             syncQueue: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
+            aSyncQueue: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
             buildMode: "async" | "sync";
+            buildTasks: import("../../Meta/Tasks/Tasks.types.js").PriorityTask<import("../../Meta/Tasks/Tasks.types.js").BuildTasks>;
             rebuildTasks: import("../../Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
             tasksType: string;
             origin: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData;
@@ -167,7 +175,7 @@ export declare const Propagation: {
             buildQueue: string;
             originThread: string;
             queues: {
-                sun: [x: number, y: number, z: number][];
+                sun: number[];
             };
             start(): any;
             stop(): any;
@@ -191,7 +199,9 @@ export declare const Propagation: {
             priority: import("../../Meta/Tasks/Tasks.types.js").Priorities;
             LOD: number;
             syncQueue: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
+            aSyncQueue: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
             buildMode: "async" | "sync";
+            buildTasks: import("../../Meta/Tasks/Tasks.types.js").PriorityTask<import("../../Meta/Tasks/Tasks.types.js").BuildTasks>;
             rebuildTasks: import("../../Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
             tasksType: string;
             origin: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData;
@@ -200,13 +210,13 @@ export declare const Propagation: {
             originThread: string;
             queues: {
                 rgb: {
-                    update: [x: number, y: number, z: number][];
-                    rmeove: [x: number, y: number, z: number][];
+                    update: number[];
+                    rmeove: number[];
                     map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                 };
                 sun: {
-                    update: [x: number, y: number, z: number][];
-                    rmeove: [x: number, y: number, z: number][];
+                    update: number[];
+                    rmeove: number[];
                 };
             };
             start(): any;
@@ -229,7 +239,9 @@ export declare const Propagation: {
             priority: import("../../Meta/Tasks/Tasks.types.js").Priorities;
             LOD: number;
             syncQueue: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
+            aSyncQueue: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
             buildMode: "async" | "sync";
+            buildTasks: import("../../Meta/Tasks/Tasks.types.js").PriorityTask<import("../../Meta/Tasks/Tasks.types.js").BuildTasks>;
             rebuildTasks: import("../../Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
             tasksType: string;
             origin: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData;
@@ -238,13 +250,13 @@ export declare const Propagation: {
             originThread: string;
             queues: {
                 rgb: {
-                    update: [x: number, y: number, z: number][];
-                    rmeove: [x: number, y: number, z: number][];
+                    update: number[];
+                    rmeove: number[];
                     map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                 };
                 sun: {
-                    update: [x: number, y: number, z: number][];
-                    rmeove: [x: number, y: number, z: number][];
+                    update: number[];
+                    rmeove: number[];
                 };
             };
             start(): any;
@@ -269,7 +281,9 @@ export declare const Propagation: {
             priority: import("../../Meta/Tasks/Tasks.types.js").Priorities;
             LOD: number;
             syncQueue: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
+            aSyncQueue: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
             buildMode: "async" | "sync";
+            buildTasks: import("../../Meta/Tasks/Tasks.types.js").PriorityTask<import("../../Meta/Tasks/Tasks.types.js").BuildTasks>;
             rebuildTasks: import("../../Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
             tasksType: string;
             origin: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData;
@@ -278,13 +292,13 @@ export declare const Propagation: {
             originThread: string;
             queues: {
                 rgb: {
-                    update: [x: number, y: number, z: number][];
-                    rmeove: [x: number, y: number, z: number][];
+                    update: number[];
+                    rmeove: number[];
                     map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                 };
                 sun: {
-                    update: [x: number, y: number, z: number][];
-                    rmeove: [x: number, y: number, z: number][];
+                    update: number[];
+                    rmeove: number[];
                 };
             };
             start(): any;
@@ -307,7 +321,9 @@ export declare const Propagation: {
             priority: import("../../Meta/Tasks/Tasks.types.js").Priorities;
             LOD: number;
             syncQueue: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
+            aSyncQueue: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
             buildMode: "async" | "sync";
+            buildTasks: import("../../Meta/Tasks/Tasks.types.js").PriorityTask<import("../../Meta/Tasks/Tasks.types.js").BuildTasks>;
             rebuildTasks: import("../../Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
             tasksType: string;
             origin: import("../../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData;
@@ -316,13 +332,13 @@ export declare const Propagation: {
             originThread: string;
             queues: {
                 rgb: {
-                    update: [x: number, y: number, z: number][];
-                    rmeove: [x: number, y: number, z: number][];
+                    update: number[];
+                    rmeove: number[];
                     map: import("../../Global/Util/VisistedMap.js").VisitedMap;
                 };
                 sun: {
-                    update: [x: number, y: number, z: number][];
-                    rmeove: [x: number, y: number, z: number][];
+                    update: number[];
+                    rmeove: number[];
                 };
             };
             start(): any;

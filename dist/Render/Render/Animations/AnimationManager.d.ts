@@ -1,12 +1,14 @@
 /// <reference types="babylonjs" />
-import { ShaderDataTypes } from "Libs/Shaders/Types/ShaderData.types";
+import { DivineShader } from "Libs/Shaders/Classes/DivineShader";
 import { VoxelSubstanceType } from "Meta/Data/Voxels/Voxel.types";
-import { ShaderAnimationData } from "Meta/Render/Animations/Animation.types";
 export declare const AnimationManager: {
-    animatedMaterials: Record<VoxelSubstanceType | "Item", BABYLON.ShaderMaterial>;
+    animatedMaterials: Record<string, BABYLON.ShaderMaterial>;
     animCount: number;
+    animationUniforms: Map<string, Float32Array>;
+    overlayAnimationUniforms: Map<string, Float32Array>;
     animations: {
-        uniformShaderId: string;
+        uniformIndex: number;
+        overlay?: boolean | undefined;
         keys: number[];
         currentFrame: number;
         currentCount: number;
@@ -22,11 +24,7 @@ export declare const AnimationManager: {
      * @param animations
      * @returns
      */
-    registerAnimations(voxelSubstanceType: VoxelSubstanceType | "Item", animations: number[][], animationTimes: number[][], overlay?: boolean): ShaderAnimationData;
-    registerAnimationsN(voxelSubstanceType: VoxelSubstanceType | "Item", animations: number[][], animationTimes: number[][], overlay?: boolean): {
-        uniforms: [id: string, type: ShaderDataTypes][];
-        animationFunctionBody: string;
-    };
+    registerAnimations(voxelSubstanceType: VoxelSubstanceType | "Item", shader: DivineShader, animations: number[][], animationTimes: number[][], overlay?: boolean): Float32Array;
     registerMaterial(voxelSubstanceType: VoxelSubstanceType | "Item", material: BABYLON.ShaderMaterial): void;
     startAnimations(): void;
 };

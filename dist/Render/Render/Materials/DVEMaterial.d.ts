@@ -1,24 +1,22 @@
-/// <reference types="babylonjs" />
 import type { EngineSettingsData } from "Meta/Data/Settings/EngineSettings.types";
-import { VoxelTemplateSubstanceType } from "Meta/index.js";
-import { MaterialCreateData } from "Meta/Render/Materials/Material.types.js";
+import type { ShaderMaterial, Vector4 } from "babylonjs";
 declare type DVEMaterialOptions = {
     alphaTesting: boolean;
     alphaBlending: boolean;
     doEffects?: boolean;
 };
 export declare class DVEMaterial {
-    type: VoxelTemplateSubstanceType | "Item";
+    id: string;
     options: DVEMaterialOptions;
-    material: BABYLON.ShaderMaterial | null;
+    material: ShaderMaterial | null;
     time: number;
-    constructor(type: VoxelTemplateSubstanceType | "Item", options: DVEMaterialOptions);
-    getMaterial(): BABYLON.ShaderMaterial | null;
-    updateFogOptions(data: BABYLON.Vector4): void;
+    constructor(id: string, options: DVEMaterialOptions);
+    getMaterial(): ShaderMaterial | null;
+    updateFogOptions(data: Vector4): void;
     setSunLightLevel(level: number): void;
     setBaseLevel(level: number): void;
     updateMaterialSettings(settings: EngineSettingsData): void;
-    createMaterial(data: MaterialCreateData): BABYLON.ShaderMaterial;
+    createMaterial(): ShaderMaterial;
     overrideMaterial(material: any): void;
     runEffects(): void;
 }

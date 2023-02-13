@@ -59,16 +59,9 @@ export const ThreadComm = {
             return self;
         }
         if (this.environment == "node") {
-            try {
-                //@ts-ignore
-                const { parentPort } = require("worker_threads");
-                return parentPort;
-            }
-            catch (error) {
-                //@ts-ignore
-                const { parentPort } = await import("worker_threads");
-                return parentPort;
-            }
+            //@ts-ignore
+            const { parentPort } = require("worker_threads");
+            return parentPort;
         }
     },
     __handleInternalMessage(data, event) {
@@ -163,8 +156,11 @@ export const ThreadComm = {
         return sync;
     },
 };
+if (
 //@ts-ignore
-if (typeof process !== "undefined" && typeof Worker === "undefined") {
+typeof process !== "undefined" &&
+    typeof Worker === "undefined" &&
+    typeof window === "undefined") {
     ThreadComm.environment = "node";
 }
 const internal = {};

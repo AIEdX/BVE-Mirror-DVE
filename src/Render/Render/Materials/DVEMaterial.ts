@@ -1,7 +1,10 @@
 import type { EngineSettingsData } from "Meta/Data/Settings/EngineSettings.types";
-import { VoxelTemplateSubstanceType } from "Meta/index.js";
-import { MaterialCreateData } from "Meta/Render/Materials/Material.types.js";
+import type { ShaderMaterial, Vector4 } from "babylonjs";
+
+import { TextureManager } from "../../Textures/TextureManager.js";
 import { DVER } from "../../DivineVoxelEngineRender.js";
+import { EngineSettings } from "../../../Data/Settings/EngineSettings.js";
+import { DVEBabylon } from "../../Babylon/DVEBabylon.js";
 
 type DVEMaterialOptions = {
  alphaTesting: boolean;
@@ -10,12 +13,12 @@ type DVEMaterialOptions = {
 };
 
 export class DVEMaterial {
- material: BABYLON.ShaderMaterial | null = null;
+ material: ShaderMaterial | null = null;
 
  time = 0;
 
  constructor(
-  public type: VoxelTemplateSubstanceType | "Item" = "solid",
+  public id: string = "#dve_solid",
   public options: DVEMaterialOptions
  ) {}
 
@@ -23,7 +26,7 @@ export class DVEMaterial {
   return this.material;
  }
 
- updateFogOptions(data: BABYLON.Vector4) {
+ updateFogOptions(data: Vector4) {
   if (!this.material) return;
   this.material.setVector4("fogOptions", data);
  }
@@ -75,47 +78,27 @@ export class DVEMaterial {
   }
  }
 
- createMaterial(data: MaterialCreateData): BABYLON.ShaderMaterial {
-  const shader = DVER.render.shaders.createVoxelShader("solid");
-  const animData = DVER.render.animationManager.registerAnimationsN(
-   this.type,
-   data.animations,
-   data.animationTimes
-  );
-  shader.addUniform(animData.uniforms);
-  shader.addFunction("getUVFace", "vertex", {
-   inputs: [["uv", "float"]],
-   output: "float",
-   body: {
-    GLSL: animData.animationFunctionBody,
-   },
-  });
-  const overlayAnimData = DVER.render.animationManager.registerAnimationsN(
-   this.type,
-   data.overlayAnimations,
-   data.overlayAnimationTimes,
-   true
-  );
-  shader.setCodeBody("vertex", `@#dve_${this.type}_vertex`);
-  shader.setCodeBody("frag", `@#dve_${this.type}_frag`);
-  shader.addUniform(overlayAnimData.uniforms);
-  shader.addFunction("getOverlayUVFace", "vertex", {
-   inputs: [["uv", "float"]],
-   output: "float",
-   body: {
-    GLSL: overlayAnimData.animationFunctionBody,
-   },
-  });
+ createMaterial(): ShaderMaterial {
+  const type = TextureManager.getTextureType(this.id);
+  if (!type) {
+   throw new Error(`${this.id} is not a valid texture type`);
+  }
+  const scene = DVER.render.scene!;
+  const shader = DVER.render.shaders.createVoxelShader(this.id);
+  type.addToShader(shader);
+  shader.setCodeBody("vertex", `@${this.id}_vertex`);
+  shader.setCodeBody("frag", `@${this.id}_frag`);
   shader.compile();
-  BABYLON.Effect.ShadersStore[`${this.type}VertexShader`] =
+
+  DVEBabylon.system.Effect.ShadersStore[`${this.id}VertexShader`] =
    shader.compiled.vertex;
 
-  BABYLON.Effect.ShadersStore[`${this.type}FragmentShader`] =
+  DVEBabylon.system.Effect.ShadersStore[`${this.id}FragmentShader`] =
    shader.compiled.fragment;
-  const shaderMaterial = new BABYLON.ShaderMaterial(
-   this.type,
-   data.scene,
-   this.type,
+  const shaderMaterial = new DVEBabylon.system.ShaderMaterial(
+   this.id,
+   scene,
+   this.id,
    {
     attributes: shader.getAttributeList(),
     uniforms: shader.getUniformList(),
@@ -129,19 +112,17 @@ export class DVEMaterial {
   this.material.fogEnabled = true;
 
   if (this.options.alphaBlending) {
-   //shaderMaterial.separateCullingPass = fals;
+   shaderMaterial.separateCullingPass = true;
    shaderMaterial.backFaceCulling = false;
    shaderMaterial.forceDepthWrite = true;
    shaderMaterial.needDepthPrePass = true;
   }
 
-  shaderMaterial.setTextureArray("voxelTexture", data.texture);
-
-  shaderMaterial.setTextureArray("voxelOverlayTexture", data.overlayTexture);
+  type.addToMaterial(this);
 
   shaderMaterial.setFloat("sunLightLevel", 1);
   shaderMaterial.setFloat("baseLevel", 0.1);
-  shaderMaterial.setVector3("worldOrigin", BABYLON.Vector3.Zero());
+  shaderMaterial.setVector3("worldOrigin", DVEBabylon.system.Vector3.Zero());
 
   this.material.onBind = (mesh) => {
    if (!this.material) return;
@@ -159,9 +140,7 @@ export class DVEMaterial {
    effect.setColor3("vFogColor", scene.fogColor);
   };
 
-  this.updateMaterialSettings(data.settings);
-
-  DVER.render.animationManager.registerMaterial(this.type, this.material);
+  this.updateMaterialSettings(EngineSettings.getSettings());
 
   return this.material;
  }

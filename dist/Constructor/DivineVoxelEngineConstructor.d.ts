@@ -1,6 +1,6 @@
-import type { EngineSettingsData } from "Meta/index.js";
+import type { EngineSettingsData } from "Meta/Data/Settings/EngineSettings.types.js";
 export declare const DVEC: {
-    environment: "node" | "browser";
+    environment: "browser" | "node";
     __settingsHaveBeenSynced: boolean;
     UTIL: {
         createPromiseCheck: (data: {
@@ -10,7 +10,7 @@ export declare const DVEC: {
             failTimeOut?: number | undefined;
             onFail?: (() => any) | undefined;
         }) => Promise<boolean>;
-        getEnviorment(): "node" | "browser";
+        getEnviorment(): "browser" | "node";
         getAQueue<T>(): import("../Global/Util/Queue.js").Queue<T>;
         merge<T_1, K>(target: T_1, newObject: K): T_1 & K;
         degtoRad(degrees: number): number;
@@ -19,7 +19,7 @@ export declare const DVEC: {
         converSABToBuffer(buffer: SharedArrayBuffer): ArrayBuffer;
     };
     settings: {
-        enviorment: "node" | "browser";
+        enviorment: "browser" | "node";
         settings: EngineSettingsData;
         getSettings(): EngineSettingsData;
         syncSettings(data: EngineSettingsData): void;
@@ -57,7 +57,9 @@ export declare const DVEC: {
                 priority: import("../Meta/Tasks/Tasks.types.js").Priorities;
                 LOD: number;
                 syncQueue: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
+                aSyncQueue: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
                 buildMode: "async" | "sync";
+                buildTasks: import("../Meta/Tasks/Tasks.types.js").PriorityTask<import("../Meta/Tasks/Tasks.types.js").BuildTasks>;
                 rebuildTasks: import("../Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                 tasksType: string;
                 origin: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData;
@@ -77,13 +79,13 @@ export declare const DVEC: {
                         };
                     };
                     rgb: {
-                        update: [x: number, y: number, z: number][];
-                        rmeove: [x: number, y: number, z: number][];
+                        update: number[];
+                        rmeove: number[];
                         map: import("../Global/Util/VisistedMap.js").VisitedMap;
                     };
                     sun: {
-                        update: [x: number, y: number, z: number][];
-                        rmeove: [x: number, y: number, z: number][];
+                        update: number[];
+                        rmeove: number[];
                     };
                     queue: [x: number, y: number, z: number][];
                     map: import("../Global/Util/VisistedMap.js").VisitedMap;
@@ -110,7 +112,9 @@ export declare const DVEC: {
                 priority: import("../Meta/Tasks/Tasks.types.js").Priorities;
                 LOD: number;
                 syncQueue: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
+                aSyncQueue: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
                 buildMode: "async" | "sync";
+                buildTasks: import("../Meta/Tasks/Tasks.types.js").PriorityTask<import("../Meta/Tasks/Tasks.types.js").BuildTasks>;
                 rebuildTasks: import("../Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                 tasksType: string;
                 origin: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData;
@@ -130,13 +134,13 @@ export declare const DVEC: {
                         };
                     };
                     rgb: {
-                        update: [x: number, y: number, z: number][];
-                        rmeove: [x: number, y: number, z: number][];
+                        update: number[];
+                        rmeove: number[];
                         map: import("../Global/Util/VisistedMap.js").VisitedMap;
                     };
                     sun: {
-                        update: [x: number, y: number, z: number][];
-                        rmeove: [x: number, y: number, z: number][];
+                        update: number[];
+                        rmeove: number[];
                     };
                 };
                 start(): any;
@@ -159,7 +163,9 @@ export declare const DVEC: {
                 priority: import("../Meta/Tasks/Tasks.types.js").Priorities;
                 LOD: number;
                 syncQueue: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
+                aSyncQueue: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
                 buildMode: "async" | "sync";
+                buildTasks: import("../Meta/Tasks/Tasks.types.js").PriorityTask<import("../Meta/Tasks/Tasks.types.js").BuildTasks>;
                 rebuildTasks: import("../Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                 tasksType: string;
                 origin: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData;
@@ -179,13 +185,13 @@ export declare const DVEC: {
                         };
                     };
                     rgb: {
-                        update: [x: number, y: number, z: number][];
-                        rmeove: [x: number, y: number, z: number][];
+                        update: number[];
+                        rmeove: number[];
                         map: import("../Global/Util/VisistedMap.js").VisitedMap;
                     };
                     sun: {
-                        update: [x: number, y: number, z: number][];
-                        rmeove: [x: number, y: number, z: number][];
+                        update: number[];
+                        rmeove: number[];
                     };
                 };
                 start(): any;
@@ -210,7 +216,9 @@ export declare const DVEC: {
                 priority: import("../Meta/Tasks/Tasks.types.js").Priorities;
                 LOD: number;
                 syncQueue: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
+                aSyncQueue: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
                 buildMode: "async" | "sync";
+                buildTasks: import("../Meta/Tasks/Tasks.types.js").PriorityTask<import("../Meta/Tasks/Tasks.types.js").BuildTasks>;
                 rebuildTasks: import("../Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                 tasksType: string;
                 origin: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData;
@@ -218,7 +226,7 @@ export declare const DVEC: {
                 buildQueue: string;
                 originThread: string;
                 queues: {
-                    sun: [x: number, y: number, z: number][];
+                    sun: number[];
                 };
                 start(): any;
                 stop(): any;
@@ -242,7 +250,9 @@ export declare const DVEC: {
                 priority: import("../Meta/Tasks/Tasks.types.js").Priorities;
                 LOD: number;
                 syncQueue: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
+                aSyncQueue: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
                 buildMode: "async" | "sync";
+                buildTasks: import("../Meta/Tasks/Tasks.types.js").PriorityTask<import("../Meta/Tasks/Tasks.types.js").BuildTasks>;
                 rebuildTasks: import("../Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                 tasksType: string;
                 origin: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData;
@@ -251,13 +261,13 @@ export declare const DVEC: {
                 originThread: string;
                 queues: {
                     rgb: {
-                        update: [x: number, y: number, z: number][];
-                        rmeove: [x: number, y: number, z: number][];
+                        update: number[];
+                        rmeove: number[];
                         map: import("../Global/Util/VisistedMap.js").VisitedMap;
                     };
                     sun: {
-                        update: [x: number, y: number, z: number][];
-                        rmeove: [x: number, y: number, z: number][];
+                        update: number[];
+                        rmeove: number[];
                     };
                 };
                 start(): any;
@@ -280,7 +290,9 @@ export declare const DVEC: {
                 priority: import("../Meta/Tasks/Tasks.types.js").Priorities;
                 LOD: number;
                 syncQueue: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
+                aSyncQueue: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
                 buildMode: "async" | "sync";
+                buildTasks: import("../Meta/Tasks/Tasks.types.js").PriorityTask<import("../Meta/Tasks/Tasks.types.js").BuildTasks>;
                 rebuildTasks: import("../Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                 tasksType: string;
                 origin: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData;
@@ -289,13 +301,13 @@ export declare const DVEC: {
                 originThread: string;
                 queues: {
                     rgb: {
-                        update: [x: number, y: number, z: number][];
-                        rmeove: [x: number, y: number, z: number][];
+                        update: number[];
+                        rmeove: number[];
                         map: import("../Global/Util/VisistedMap.js").VisitedMap;
                     };
                     sun: {
-                        update: [x: number, y: number, z: number][];
-                        rmeove: [x: number, y: number, z: number][];
+                        update: number[];
+                        rmeove: number[];
                     };
                 };
                 start(): any;
@@ -320,7 +332,9 @@ export declare const DVEC: {
                 priority: import("../Meta/Tasks/Tasks.types.js").Priorities;
                 LOD: number;
                 syncQueue: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
+                aSyncQueue: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
                 buildMode: "async" | "sync";
+                buildTasks: import("../Meta/Tasks/Tasks.types.js").PriorityTask<import("../Meta/Tasks/Tasks.types.js").BuildTasks>;
                 rebuildTasks: import("../Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                 tasksType: string;
                 origin: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData;
@@ -329,13 +343,13 @@ export declare const DVEC: {
                 originThread: string;
                 queues: {
                     rgb: {
-                        update: [x: number, y: number, z: number][];
-                        rmeove: [x: number, y: number, z: number][];
+                        update: number[];
+                        rmeove: number[];
                         map: import("../Global/Util/VisistedMap.js").VisitedMap;
                     };
                     sun: {
-                        update: [x: number, y: number, z: number][];
-                        rmeove: [x: number, y: number, z: number][];
+                        update: number[];
+                        rmeove: number[];
                     };
                 };
                 start(): any;
@@ -358,7 +372,9 @@ export declare const DVEC: {
                 priority: import("../Meta/Tasks/Tasks.types.js").Priorities;
                 LOD: number;
                 syncQueue: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
+                aSyncQueue: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData[];
                 buildMode: "async" | "sync";
+                buildTasks: import("../Meta/Tasks/Tasks.types.js").PriorityTask<import("../Meta/Tasks/Tasks.types.js").BuildTasks>;
                 rebuildTasks: import("../Meta/Tasks/Tasks.types.js").AddToRebuildQueue;
                 tasksType: string;
                 origin: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData;
@@ -367,13 +383,13 @@ export declare const DVEC: {
                 originThread: string;
                 queues: {
                     rgb: {
-                        update: [x: number, y: number, z: number][];
-                        rmeove: [x: number, y: number, z: number][];
+                        update: number[];
+                        rmeove: number[];
                         map: import("../Global/Util/VisistedMap.js").VisitedMap;
                     };
                     sun: {
-                        update: [x: number, y: number, z: number][];
-                        rmeove: [x: number, y: number, z: number][];
+                        update: number[];
+                        rmeove: number[];
                     };
                 };
                 start(): any;
@@ -400,10 +416,10 @@ export declare const DVEC: {
                 attempts: number;
                 dimension: string;
                 chunks: Map<string, [x: number, y: number, z: number]>;
-                voxels: [x: number, y: number, z: number, data: import("Meta/index.js").RawVoxelData][];
+                voxels: [x: number, y: number, z: number, data: import("../Meta/Data/Voxels/Voxel.types.js").RawVoxelData][];
             }>;
             registerRequest(dimension: string, x: number, y: number, z: number): string;
-            addToRequest(registerId: string, location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData, rawData: import("Meta/index.js").RawVoxelData): void;
+            addToRequest(registerId: string, location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData, rawData: import("../Meta/Data/Voxels/Voxel.types.js").RawVoxelData): void;
             attemptRequestFullFill(registerId: string): boolean;
         };
         worldBounds: {
@@ -428,23 +444,21 @@ export declare const DVEC: {
     builder: {
         textureManager: {
             textureDataHasBeenSet: boolean;
-            uvTextureMap: Record<string, Record<string, number>>;
-            overlayUVTextureMap: Record<string, Record<string, number>>;
+            data: import("../Meta/Render/Textures/Texture.types.js").TextureTypeUVMap;
             getTextureUV(data: import("../Meta/Constructor/Constructor.types.js").ConstructorTextureData, overlay?: boolean): number;
-            setUVTextureMap(data: Record<import("Meta/index.js").TextureTypes, Record<string, number>>): void;
-            setOverlayUVTextureMap(data: Record<import("Meta/index.js").TextureTypes, Record<string, number>>): void;
+            setUVTextureMap(data: import("../Meta/Render/Textures/Texture.types.js").TextureTypeUVMap): void;
             releaseTextureData(): void;
             isReady(): boolean;
         };
         shapeManager: {
-            shapes: Map<string, import("Meta/index.js").VoxelShape>;
+            shapes: Map<string, import("../Meta/Constructor/VoxelShape.types.js").VoxelShape>;
             shapeCount: number;
-            registerShape(shapeObject: import("Meta/index.js").VoxelShape): void;
-            getShape(shapeId: string): import("Meta/index.js").VoxelShape;
+            registerShape(shapeObject: import("../Meta/Constructor/VoxelShape.types.js").VoxelShape): void;
+            getShape(shapeId: string): import("../Meta/Constructor/VoxelShape.types.js").VoxelShape;
         };
         chunkMesher: {
-            voxelBuildOrder: import("Meta/index.js").VoxelTemplateSubstanceType[];
-            buildChunkMesh(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData, template: import("../Meta/Constructor/VoxelTemplate.types.js").FullVoxelSubstanceTemplate, LOD?: number): void;
+            voxelBuildOrder: string[];
+            buildChunkMesh(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData, template: Record<string, import("../Meta/Constructor/VoxelTemplate.types.js").VoxelTemplate>, LOD?: number): void;
         };
         processor: {
             LOD: number;
@@ -453,18 +467,18 @@ export declare const DVEC: {
             faceByte: {
                 _rotationMap: Record<import("../Meta/Constructor/Geometry/Geometry.types.js").TextureRotations, number>;
                 _rotationReverseMap: Record<number, import("../Meta/Constructor/Geometry/Geometry.types.js").TextureRotations>;
-                _setFaceTextureState: Record<import("Meta/index.js").DirectionNames, (state: number, faceBit: number) => number>;
-                _getFaceTextureState: Record<import("Meta/index.js").DirectionNames, (faceBit: number) => number>;
-                _setFaceRotateState: Record<import("Meta/index.js").DirectionNames, (state: number, faceBit: number) => number>;
-                _getFaceRotateState: Record<import("Meta/index.js").DirectionNames, (faceBit: number) => number>;
-                _markExposedFace: Record<import("Meta/index.js").DirectionNames, (faceBit: number) => number>;
-                _checkExposedFace: Record<import("Meta/index.js").DirectionNames, (faceBit: number) => boolean>;
-                markFaceAsExposed(direction: import("Meta/index.js").DirectionNames, rawData: number): number;
-                isFaceExposed(direction: import("Meta/index.js").DirectionNames, rawData: number): boolean;
-                setFaceRotateState(direction: import("Meta/index.js").DirectionNames, state: number, rawData: number): number;
-                getFaceRotateState(direction: import("Meta/index.js").DirectionNames, rawData: number): number;
-                setFaceTextureState(direction: import("Meta/index.js").DirectionNames, rotation: import("../Meta/Constructor/Geometry/Geometry.types.js").TextureRotations, rawData: number): number;
-                getFaceTextureState(direction: import("Meta/index.js").DirectionNames, rawData: number): import("../Meta/Constructor/Geometry/Geometry.types.js").TextureRotations;
+                _setFaceTextureState: Record<import("../Meta/Util.types.js").DirectionNames, (state: number, faceBit: number) => number>;
+                _getFaceTextureState: Record<import("../Meta/Util.types.js").DirectionNames, (faceBit: number) => number>;
+                _setFaceRotateState: Record<import("../Meta/Util.types.js").DirectionNames, (state: number, faceBit: number) => number>;
+                _getFaceRotateState: Record<import("../Meta/Util.types.js").DirectionNames, (faceBit: number) => number>;
+                _markExposedFace: Record<import("../Meta/Util.types.js").DirectionNames, (faceBit: number) => number>;
+                _checkExposedFace: Record<import("../Meta/Util.types.js").DirectionNames, (faceBit: number) => boolean>;
+                markFaceAsExposed(direction: import("../Meta/Util.types.js").DirectionNames, rawData: number): number;
+                isFaceExposed(direction: import("../Meta/Util.types.js").DirectionNames, rawData: number): boolean;
+                setFaceRotateState(direction: import("../Meta/Util.types.js").DirectionNames, state: number, rawData: number): number;
+                getFaceRotateState(direction: import("../Meta/Util.types.js").DirectionNames, rawData: number): number;
+                setFaceTextureState(direction: import("../Meta/Util.types.js").DirectionNames, rotation: import("../Meta/Constructor/Geometry/Geometry.types.js").TextureRotations, rawData: number): number;
+                getFaceTextureState(direction: import("../Meta/Util.types.js").DirectionNames, rawData: number): import("../Meta/Constructor/Geometry/Geometry.types.js").TextureRotations;
             };
             lightData: {
                 SRS: number;
@@ -520,20 +534,23 @@ export declare const DVEC: {
                 composedEntity: number;
             };
             faceDataOverride: import("../Meta/Constructor/OverRide.types.js").FaceDataOverride;
-            template: import("../Meta/Constructor/VoxelTemplate.types.js").FullVoxelSubstanceTemplate;
+            template: Record<string, import("../Meta/Constructor/VoxelTemplate.types.js").VoxelTemplate>;
+            getVoxelTemplate(): import("../Meta/Constructor/VoxelTemplate.types.js").VoxelTemplate;
             $INIT(): void;
-            cullCheck(face: import("Meta/index.js").DirectionNames, voxelObject: import("../Meta/Constructor/Voxel.types.js").VoxelConstructor, voxelShape: import("Meta/index.js").VoxelShape, voxelSubstance: import("Meta/index.js").VoxelSubstanceType, faceBit: number): number;
-            faceStateCheck(face: import("Meta/index.js").DirectionNames, faceBit: number): number;
+            cullCheck(face: import("../Meta/Util.types.js").DirectionNames, voxelObject: import("../Meta/Constructor/Voxel.types.js").VoxelConstructor, voxelShape: import("../Meta/Constructor/VoxelShape.types.js").VoxelShape, voxelSubstance: string, faceBit: number): number;
+            faceStateCheck(face: import("../Meta/Util.types.js").DirectionNames, faceBit: number): number;
             _process(doSecondCheck?: boolean): void;
-            makeAllChunkTemplates(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData, LOD?: number): import("../Meta/Constructor/VoxelTemplate.types.js").FullVoxelSubstanceTemplate;
+            makeAllChunkTemplates(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData, LOD?: number): Record<string, import("../Meta/Constructor/VoxelTemplate.types.js").VoxelTemplate>;
             syncSettings(settings: EngineSettingsData): void;
             flush(): void;
         };
         substanceRules: {
             rules: Map<string, Map<string, boolean>>;
-            registerSubstance(id: string, substanceCulls?: string[] | undefined): void;
+            parents: Map<string, string>;
+            registerSubstance(id: string, substanceCulls?: string[] | undefined, parentId?: string | undefined): void;
             $INIT(): void;
-            exposedCheck(subject: import("Meta/index.js").VoxelSubstanceType, neightborVoxel: import("Meta/index.js").VoxelSubstanceType): boolean;
+            exposedCheck(subject: string, neightborVoxel: string): boolean;
+            getSubstanceParent(id: string): string;
         };
         dimension: number;
         $INIT(): Promise<void>;
@@ -780,7 +797,7 @@ export declare const DVEC: {
         registerVoxel(voxel: import("../Meta/Constructor/Voxel.types.js").VoxelConstructor | import("../Meta/Constructor/Voxel.types.js").VoxelConstructor[]): void;
         defaults: {
             box: {
-                simple(id: string, textures: import("../Meta/Constructor/Constructor.types.js").ConstructorTextureData | Record<import("Meta/index.js").DirectionNames, import("../Meta/Constructor/Constructor.types.js").ConstructorTextureData>): import("./Builder/Constructors/Voxel/classes/Box.constructor.js").BoxVoxelConstructor;
+                simple(id: string, textures: import("../Meta/Constructor/Constructor.types.js").ConstructorTextureData | Record<import("../Meta/Util.types.js").DirectionNames, import("../Meta/Constructor/Constructor.types.js").ConstructorTextureData>): import("./Builder/Constructors/Voxel/classes/Box.constructor.js").BoxVoxelConstructor;
                 pillar(id: string, textures: import("./Builder/Constructors/Voxel/classes/Box.constructor.js").PillarBoxVoxelConstructorData): import("./Builder/Constructors/Voxel/classes/Box.constructor.js").PillarBoxVoxelConstructor;
             };
             panel: {
@@ -794,7 +811,7 @@ export declare const DVEC: {
     TC: {
         threadNumber: number;
         threadName: string;
-        environment: "node" | "browser";
+        environment: "browser" | "node";
         _comms: Record<string, import("../Libs/ThreadComm/Comm/Comm.js").CommBase>;
         _commManageras: Record<string, import("../Libs/ThreadComm/Manager/CommManager.js").CommManager>;
         _tasks: Record<string, import("../Libs/ThreadComm/Tasks/Tasks.js").Task<any>>;
@@ -870,11 +887,9 @@ export declare const DVEC: {
     hooks: {
         texturesRegistered: import("../Libs/Hooks/Classes/SyncHook.js").SyncHook<{
             textureDataHasBeenSet: boolean;
-            uvTextureMap: Record<string, Record<string, number>>;
-            overlayUVTextureMap: Record<string, Record<string, number>>;
+            data: import("../Meta/Render/Textures/Texture.types.js").TextureTypeUVMap;
             getTextureUV(data: import("../Meta/Constructor/Constructor.types.js").ConstructorTextureData, overlay?: boolean): number;
-            setUVTextureMap(data: Record<import("Meta/index.js").TextureTypes, Record<string, number>>): void;
-            setOverlayUVTextureMap(data: Record<import("Meta/index.js").TextureTypes, Record<string, number>>): void;
+            setUVTextureMap(data: import("../Meta/Render/Textures/Texture.types.js").TextureTypeUVMap): void;
             releaseTextureData(): void;
             isReady(): boolean;
         }, void>;

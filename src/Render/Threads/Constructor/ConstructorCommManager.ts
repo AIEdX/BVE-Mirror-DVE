@@ -1,7 +1,8 @@
 //types
-import { ThreadComm } from "../../../Libs/ThreadComm/ThreadComm.js";
+import type { TextureTypeUVMap } from "Meta/Render/Textures/Texture.types.js";
 //objects
 import { DVER } from "../../DivineVoxelEngineRender.js";
+import { ThreadComm } from "../../../Libs/ThreadComm/ThreadComm.js";
 
 const CCMBase = ThreadComm.createCommManager({
  name: "constructor",
@@ -9,14 +10,12 @@ const CCMBase = ThreadComm.createCommManager({
 });
 
 const CCM = Object.assign(CCMBase, {
- $INIT() {
+ $INIT(dasta: TextureTypeUVMap) {
   const worldComm = ThreadComm.getComm("world");
+
   for (const constructor of CCM.__comms) {
    worldComm.connectToComm(constructor);
-   constructor.runTasks("sync-uv-texuture-data", [
-    DVER.textures.uvTextureMap,
-    DVER.textures.overlayUVTextureMap,
-   ]);
+   constructor.runTasks("sync-uv-texuture-data", dasta);
   }
  },
  createConstructors(path: string, numBuilders = 4) {

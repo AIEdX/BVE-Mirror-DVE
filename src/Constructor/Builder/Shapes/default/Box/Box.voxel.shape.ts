@@ -8,7 +8,7 @@ export const BoxVoxelShape: VoxelShape = {
  build(mesher) {
   mesher.quad.setDimensions(1, 1);
   let animationState = 0;
-  if (mesher.data.getSubstance() == "flora") {
+  if (mesher.data.getSubstance() == "#dve_flora") {
    animationState = 3;
   }
   if (mesher.templateData.loadIn("top").isExposed()) {
@@ -57,13 +57,13 @@ export const BoxVoxelShape: VoxelShape = {
 };
 
 //cull leaf faces
-const boxCullFunctions: Record<
+const BoxCullFunctions: Record<
  DirectionNames,
  (data: FaceDataOverride) => boolean
 > = {
  top: (data) => {
   if (
-   data.currentVoxel.getSubstance() == "flora" &&
+   data.currentVoxel.getSubstance() == "#dve_flora" &&
    data.currentVoxel.isSameVoxel(
     data.currentVoxel.location[1],
     data.currentVoxel.location[2] + 1,
@@ -81,7 +81,7 @@ const boxCullFunctions: Record<
  },
  bottom: (data) => {
   if (
-   data.currentVoxel.getSubstance() == "flora" &&
+   data.currentVoxel.getSubstance() == "#dve_flora" &&
    data.currentVoxel.isSameVoxel(
     data.currentVoxel.location[1],
     data.currentVoxel.location[2] - 1,
@@ -99,7 +99,7 @@ const boxCullFunctions: Record<
  },
  east: (data) => {
   if (
-   data.currentVoxel.getSubstance() == "flora" &&
+   data.currentVoxel.getSubstance() == "#dve_flora" &&
    data.currentVoxel.isSameVoxel(
     data.currentVoxel.location[1] + 1,
     data.currentVoxel.location[2],
@@ -117,7 +117,7 @@ const boxCullFunctions: Record<
  },
  west: (data) => {
   if (
-   data.currentVoxel.getSubstance() == "flora" &&
+   data.currentVoxel.getSubstance() == "#dve_flora" &&
    data.currentVoxel.isSameVoxel(
     data.currentVoxel.location[1] - 1,
     data.currentVoxel.location[2],
@@ -135,7 +135,7 @@ const boxCullFunctions: Record<
  },
  north: (data) => {
   if (
-   data.currentVoxel.getSubstance() == "flora" &&
+   data.currentVoxel.getSubstance() == "#dve_flora" &&
    data.currentVoxel.isSameVoxel(
     data.currentVoxel.location[1],
     data.currentVoxel.location[2],
@@ -153,7 +153,7 @@ const boxCullFunctions: Record<
  },
  south: (data) => {
   if (
-   data.currentVoxel.getSubstance() == "flora" &&
+   data.currentVoxel.getSubstance() == "#dve_flora" &&
    data.currentVoxel.isSameVoxel(
     data.currentVoxel.location[1],
     data.currentVoxel.location[2],
@@ -172,31 +172,40 @@ const boxCullFunctions: Record<
 };
 
 //cullface
-OverrideManager.registerOverride("CullFace", "Box", "Box", (data) => {
-
- return boxCullFunctions[data.face](data);
+OverrideManager.registerOverride("CullFace", "#dve_box", "#dve_box", (data) => {
+ return BoxCullFunctions[data.face](data);
 });
-OverrideManager.registerOverride("CullFace", "Box", "Panel", (data) => {
+OverrideManager.registerOverride("CullFace", "#dve_box", "Panel", (data) => {
  return true;
 });
-OverrideManager.registerOverride("CullFace", "Box", "HalfBox", (data) => {
- if (data.face == "top") {
-  if (data.neighborVoxel.getShapeState() == 0) {
-   return true;
+OverrideManager.registerOverride(
+ "CullFace",
+ "#dve_box",
+ "#dve_halfbox",
+ (data) => {
+  if (data.face == "top") {
+   if (data.neighborVoxel.getShapeState() == 0) {
+    return true;
+   }
+   return false;
   }
-  return false;
+  return true;
  }
- return true;
-});
-OverrideManager.registerOverride("CullFace", "Box", "Stair", (data) => {
- stairCullFunctions[data.face](data);
- return true;
-});
+);
+OverrideManager.registerOverride(
+ "CullFace",
+ "#dve_box",
+ "#dve_stair",
+ (data) => {
+  StairCullFunctions[data.face](data);
+  return true;
+ }
+);
 //ao
-OverrideManager.registerOverride("AO", "Box", "Panel", (data) => {
+OverrideManager.registerOverride("AO", "#dve_box", "Panel", (data) => {
  return false;
 });
-OverrideManager.registerOverride("AO", "Box", "HalfBox", (data) => {
+OverrideManager.registerOverride("AO", "#dve_box", "#dve_half_box", (data) => {
  if (data.face == "top") {
   if (data.neighborVoxel.getShapeState() == 0) {
    return true;
@@ -206,7 +215,7 @@ OverrideManager.registerOverride("AO", "Box", "HalfBox", (data) => {
  return true;
 });
 
-const stairCullFunctions: Record<
+const StairCullFunctions: Record<
  DirectionNames,
  (data: FaceDataOverride) => boolean
 > = {

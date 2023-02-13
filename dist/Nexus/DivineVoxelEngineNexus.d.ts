@@ -1,4 +1,4 @@
-import type { EngineSettingsData } from "Meta/index.js";
+import { EngineSettingsData } from "../Meta/Data/Settings/EngineSettings.types.js";
 export declare const DVEN: {
     environment: "node" | "browser";
     TC: {
@@ -309,19 +309,6 @@ export declare const DVEN: {
     };
     worldComm: import("../Libs/ThreadComm/Comm/Comm.js").CommBase;
     parentComm: import("../Libs/ThreadComm/Comm/Comm.js").CommBase;
-    nexusEntites: {
-        entityTemplate: Record<string, {
-            template: import("Meta/index.js").NexusEntity;
-            data: import("Meta/index.js").NexusEntityData;
-        }>;
-        loaedEntities: Record<import("Meta/index.js").EntityTypes, Record<string, import("Meta/index.js").NexusEntityInterface>>;
-        registerEntity(id: string, entityData: import("Meta/index.js").NexusEntityData, nexusEntity: import("Meta/index.js").NexusEntity): void;
-        _getID(): string;
-        _unqiueId(): string;
-        _generateUUI(): string;
-        spawnEntity(entityId: string, position: import("Meta/index.js").Vector3, otherData?: any, identiferId?: string | undefined): void;
-        ddSepawnEntity(entityId: string, identiferId: string): void;
-    };
     $INIT(): Promise<void>;
     isReady(): boolean;
     syncSettings(data: EngineSettingsData): void;

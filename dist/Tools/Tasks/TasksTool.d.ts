@@ -1,6 +1,6 @@
-import { Priorities } from "Meta/Tasks/Tasks.types.js";
-import { RawVoxelData } from "Meta/index.js";
+import { BuildTasks, Priorities } from "Meta/Tasks/Tasks.types.js";
 import { LocationData } from "Libs/voxelSpaces/Types/VoxelSpaces.types.js";
+import type { RawVoxelData } from "Meta/Data/Voxels/Voxel.types.js";
 declare class TasksBase {
     _data: {
         dimension: string;
@@ -51,10 +51,16 @@ declare class TasksBase {
     };
     build: {
         chunk: {
-            _s: TasksBase;
-            add(x: number, y: number, z: number): void;
-            run(onDone: Function): void;
-            runAndAwait(): Promise<void>;
+            deferred: {
+                _s: TasksBase;
+                run(buildTasks: BuildTasks, onDone: (data: any) => void): void;
+            };
+            async: {
+                _s: TasksBase;
+                add(x: number, y: number, z: number): void;
+                run(onDone: Function): void;
+                runAndAwait(): Promise<void>;
+            };
         };
         column: {
             async: {};

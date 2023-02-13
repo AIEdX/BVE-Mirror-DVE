@@ -1,11 +1,11 @@
-import type { EngineSettingsData } from "Meta/index.js";
+import type { EngineSettingsData } from "Meta/Data/Settings/EngineSettings.types.js";
 export declare const DVERW: {
-    environment: "node" | "browser";
+    environment: "browser" | "node";
     __settingsHaveBeenSynced: boolean;
     TC: {
         threadNumber: number;
         threadName: string;
-        environment: "node" | "browser";
+        environment: "browser" | "node";
         _comms: Record<string, import("../Libs/ThreadComm/Comm/Comm.js").CommBase>;
         _commManageras: Record<string, import("../Libs/ThreadComm/Manager/CommManager.js").CommManager>;
         _tasks: Record<string, import("../Libs/ThreadComm/Tasks/Tasks.js").Task<any>>;
@@ -53,7 +53,7 @@ export declare const DVERW: {
             failTimeOut?: number | undefined;
             onFail?: (() => any) | undefined;
         }) => Promise<boolean>;
-        getEnviorment(): "node" | "browser";
+        getEnviorment(): "browser" | "node";
         getAQueue<T_3>(): import("../Global/Util/Queue.js").Queue<T_3>;
         merge<T_4, K_1>(target: T_4, newObject: K_1): T_4 & K_1;
         degtoRad(degrees: number): number;
@@ -62,7 +62,7 @@ export declare const DVERW: {
         converSABToBuffer(buffer: SharedArrayBuffer): ArrayBuffer;
     };
     settings: {
-        enviorment: "node" | "browser";
+        enviorment: "browser" | "node";
         settings: EngineSettingsData;
         getSettings(): EngineSettingsData;
         syncSettings(data: EngineSettingsData): void;
@@ -120,9 +120,9 @@ export declare const DVERW: {
         };
     };
     voxelManager: {
-        voxelData: Map<string, import("Meta/index.js").VoxelData>;
-        getVoxelData(id: string): import("Meta/index.js").VoxelData;
-        registerVoxelData(data: import("Meta/index.js").VoxelData | import("Meta/index.js").VoxelData[]): void;
+        voxelData: Map<string, import("../Meta/Data/Voxels/Voxel.types.js").VoxelData>;
+        getVoxelData(id: string): import("../Meta/Data/Voxels/Voxel.types.js").VoxelData;
+        registerVoxelData(data: import("../Meta/Data/Voxels/Voxel.types.js").VoxelData | import("../Meta/Data/Voxels/Voxel.types.js").VoxelData[]): void;
     };
     syncSettings(data: EngineSettingsData): void;
     reStart(): void;

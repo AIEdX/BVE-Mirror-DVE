@@ -8,13 +8,15 @@ import {
  GenerateTasks,
  PaintTasks,
  Priorities,
+ PriorityTask,
  UpdateTasks,
  UpdateTasksO,
  WorldSunTask,
 } from "Meta/Tasks/Tasks.types.js";
-import { RawVoxelData } from "Meta/index.js";
+
 import { WorldSpaces } from "../../Data/World/WorldSpaces.js";
 import { LocationData } from "Libs/voxelSpaces/Types/VoxelSpaces.types.js";
+import type { RawVoxelData } from "Meta/Data/Voxels/Voxel.types.js";
 
 class TasksBase {
  _data = {
@@ -25,7 +27,8 @@ class TasksBase {
  _thread = "";
  _priority: Priorities = 0;
  constructor() {
-  this.build.chunk._s = this;
+  this.build.chunk.async._s = this;
+  this.build.chunk.deferred._s = this;
   this.build.column.deferred._s = this;
   this.light.rgb.update._s = this;
   this.light.rgb.remove._s = this;
@@ -182,22 +185,40 @@ class TasksBase {
  };
  build = {
   chunk: {
-   _s: <TasksBase>{},
-   add(x: number, y: number, z: number) {
-    CQ.build.chunk.add(
-     {
-      data: [[this._s._data.dimension, x, y, z], 1],
-      priority: this._s._priority,
-     },
-     this._s._data.queue
-    );
+   deferred: {
+    _s: <TasksBase>{},
+    run(buildTasks: BuildTasks, onDone: (data: any) => void) {
+     const requestsKey = buildTasks.toString();
+     CCM.runPromiseTasks<PriorityTask<BuildTasks>>(
+      ConstructorTasks.buildChunk,
+      requestsKey,
+      onDone,
+      {
+       data: buildTasks,
+       priority: this._s._priority,
+      }
+     );
+    },
    },
-   run(onDone: Function) {
-    CQ.build.chunk.run(this._s._data.queue);
-    CQ.build.chunk.onDone(this._s._data.queue, onDone);
-   },
-   async runAndAwait() {
-    await CQ.build.chunk.runAndAwait(this._s._data.queue);
+
+   async: {
+    _s: <TasksBase>{},
+    add(x: number, y: number, z: number) {
+     CQ.build.chunk.add(
+      {
+       data: [[this._s._data.dimension, x, y, z], 1],
+       priority: this._s._priority,
+      },
+      this._s._data.queue
+     );
+    },
+    run(onDone: Function) {
+     CQ.build.chunk.run(this._s._data.queue);
+     CQ.build.chunk.onDone(this._s._data.queue, onDone);
+    },
+    async runAndAwait() {
+     await CQ.build.chunk.runAndAwait(this._s._data.queue);
+    },
    },
   },
   column: {

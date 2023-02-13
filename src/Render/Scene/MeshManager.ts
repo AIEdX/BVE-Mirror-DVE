@@ -1,4 +1,6 @@
 import type { VoxelSubstanceType } from "Meta/Data/Voxels/Voxel.types";
+import type { Mesh, Scene } from "babylonjs";
+
 import { DVER } from "../DivineVoxelEngineRender.js";
 import {
  RemoveChunkMeshTasks,
@@ -9,31 +11,21 @@ import { MeshRegister } from "./MeshRegister.js";
 import { LocationData } from "Libs/voxelSpaces/Types/VoxelSpaces.types.js";
 
 export const MeshManager = {
- scene: <BABYLON.Scene>{},
+ scene: <Scene>{},
  runningUpdate: false,
-
- meshes: <
-  Record<VoxelSubstanceType, Record<string, Record<string, BABYLON.Mesh>>>
- >{
-  solid: {},
-  transparent: {},
-  flora: {},
-  liquid: {},
-  magma: {},
- },
 
  meshMakers: <Record<VoxelSubstanceType, DVEMesh>>{},
 
- $INIT(scene: BABYLON.Scene) {
+ $INIT(scene: Scene) {
   this.scene = scene;
   scene.freeActiveMeshes();
-  //@ts-ignore
+
   this.meshMakers = {
-   solid: DVER.render.solidMesh,
-   transparent: DVER.render.solidMesh,
-   liquid: DVER.render.liquidMesh,
-   flora: DVER.render.floraMesh,
-   magma: DVER.render.magmaMesh,
+   "#dve_solid": DVER.render.solidMesh,
+   "#dve_transparent": DVER.render.solidMesh,
+   "#dve_liquid": DVER.render.liquidMesh,
+   "#dve_flora": DVER.render.floraMesh,
+   "#dve_magma": DVER.render.liquidMesh,
   };
  },
 
@@ -59,7 +51,7 @@ export const MeshManager = {
      continue;
     }
     let chunk = MeshRegister.chunk.get(location, substance);
-    let mesh: BABYLON.Mesh;
+    let mesh: Mesh;
     if (!chunk) {
      mesh = MeshManager.meshMakers[substance].createTemplateMesh(
       MeshManager.scene

@@ -82,15 +82,9 @@ export const ThreadComm = {
 			return self;
 		}
 		if (this.environment == "node") {
-			try {
-				//@ts-ignore
-				const { parentPort } = require("worker_threads");
-				return parentPort;
-			} catch (error) {
-				//@ts-ignore
-				const { parentPort } = await import("worker_threads");
-				return parentPort;
-			}
+			//@ts-ignore
+			const { parentPort } = require("worker_threads");
+			return parentPort;
 		}
 	},
 	__handleInternalMessage(data: any[], event: any) {
@@ -181,7 +175,7 @@ export const ThreadComm = {
 		//remove tasks id
 		const dataTypeId = data.shift();
 		const dataSync = this._onDataSync[dataTypeId];
-	
+
 		//get the sync data
 		const syncData = data.shift();
 		if (action == TCDataSyncMessages.SyncData) {
@@ -192,7 +186,7 @@ export const ThreadComm = {
 		}
 	},
 	__isDataSync(data: any[]) {
-		return data[0] == TCMessageHeaders.dataSync
+		return data[0] == TCMessageHeaders.dataSync;
 	},
 
 	onDataSync<T, K>(
@@ -211,8 +205,12 @@ export const ThreadComm = {
 		return sync;
 	},
 };
-//@ts-ignore
-if (typeof process !== "undefined" && typeof Worker === "undefined") {
+if (
+	//@ts-ignore
+	typeof process !== "undefined" &&
+	typeof Worker === "undefined" &&
+	typeof window === "undefined"
+) {
 	ThreadComm.environment = "node";
 }
 

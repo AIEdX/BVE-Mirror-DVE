@@ -35,11 +35,11 @@ export const Analyzer = {
             const substance = mainDT.getSubstance();
             if (options.light) {
                 if (mainDT.isLightSource()) {
-                    tasks.queues.rgb.update.push([x, y, z]);
+                    tasks.queues.rgb.update.push(x, y, z);
                 }
             }
             if (options.flow) {
-                if (substance == "liquid" || substance == "magma") {
+                if (substance == "#dve_liquid" || substance == "#dve_magma") {
                     let add = false;
                     for (const check of this._flowChecks) {
                         if (secondaryDT.loadInAt(x + check[0], y + check[1], z + check[2])) {

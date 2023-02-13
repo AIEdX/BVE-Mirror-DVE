@@ -1,7 +1,7 @@
 import type { VoxelSubstanceType } from "Meta/Data/Voxels/Voxel.types";
+import type { VoxelShape } from "Meta/Constructor/VoxelShape.types.js";
 import { Processor } from "../Processor.js";
 import { DirectionNames } from "Meta/Util.types.js";
-import { VoxelShape } from "Meta/index.js";
 import { $3dCardinalNeighbors } from "../../../../Data/Constants/Util/CardinalNeighbors.js";
 import { FaceMap } from "../../../../Data/Constants/Util/Faces.js";
 import { LightData } from "../../../../Data/Light/LightByte.js";
@@ -300,7 +300,7 @@ const currentVoxelData = <
 >{
  light: 0,
  isLightSource: false,
- voxelSubstance: "solid",
+ voxelSubstance: "#dve_solid",
  shapeState: 0,
  currentShape: {},
 };
@@ -434,10 +434,10 @@ const doAO = (face: DirectionNames, vertex: Vertexes) => {
  let finalResult = false;
  let substanceRuleResult = true;
  const voxelSubstance = currentVoxelData.voxelSubstance;
- if (voxelSubstance == "transparent" || voxelSubstance == "solid") {
+ if (voxelSubstance == "#dve_transparent" || voxelSubstance == "#dve_solid") {
   if (
-   neighborVoxelSubstance != "solid" &&
-   neighborVoxelSubstance != "transparent"
+   neighborVoxelSubstance != "#dve_solid" &&
+   neighborVoxelSubstance != "#dve_transparent"
   ) {
    substanceRuleResult = false;
   }
