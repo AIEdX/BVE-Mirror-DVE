@@ -4,7 +4,6 @@ import { DataTool } from "../../../Tools/Data/DataTool.js";
 import { $3dCardinalNeighbors } from "../../../Data/Constants/Util/CardinalNeighbors.js";
 import { BrushTool } from "../../../Tools/Brush/Brush.js";
 import { TasksRequest } from "../TasksRequest.js";
-import { LocationDataDistanceSort } from "../../../Math/Functions/DistnaceSort.js";
 const dataTool = new DataTool();
 const nDataTool = new DataTool();
 const brushTool = new BrushTool();
@@ -40,8 +39,7 @@ export async function EreaseAndUpdate(data) {
     tasks
         .setPriority(0)
         .start()
-        .setBuldMode("sync")
-        .addNeighborsToRebuildQueue(x, y, z);
+        .setBuldMode("sync").addToRebuildQueue(x, y, z);
     tasks.setBuldMode("async");
     if (ES.doFlow()) {
         const substance = dataTool.getSubstance();
@@ -59,7 +57,7 @@ export async function EreaseAndUpdate(data) {
         .commit(2);
     if (ES.doLight()) {
         if (ES.doRGBPropagation() && isLightSource) {
-            tasks.queues.rgb.rmeove.push(x, y, z);
+            tasks.queues.rgb.remove.push(x, y, z);
             Propagation.rgb.remove(tasks);
         }
         updateLightTask(tasks);
@@ -70,7 +68,7 @@ export async function EreaseAndUpdate(data) {
             Propagation.sun.update(tasks);
         }
     }
-    LocationDataDistanceSort(tasks.origin, tasks.syncQueue);
+    // LocationDataDistanceSort(tasks.origin, tasks.syncQueue);
     tasks.runRebuildQueue();
     tasks.stop();
     return true;
@@ -84,8 +82,7 @@ export async function PaintAndUpdate(data) {
     tasks
         .start()
         .setPriority(0)
-        .setBuldMode("sync")
-        .addNeighborsToRebuildQueue(x, y, z);
+        .setBuldMode("sync").addToRebuildQueue(x, y, z);
     tasks.setBuldMode("async");
     brushTool.setLocation(data[0]).setRaw(raw);
     nDataTool.loadInRaw(raw);
@@ -98,18 +95,53 @@ export async function PaintAndUpdate(data) {
             break lighttest;
         if (doSun) {
             if (dataTool.hasSunLight()) {
-                tasks.queues.sun.rmeove.push(x, y, z);
+                tasks.queues.sun.remove.push(x, y, z);
                 Propagation.sun.remove(tasks);
             }
         }
         if (doRGB) {
             if (dataTool.hasRGBLight() && isOpaque) {
-                tasks.queues.rgb.rmeove.push(x, y, z);
+                tasks.queues.rgb.remove.push(x, y, z);
                 Propagation.rgb.remove(tasks);
             }
         }
     }
     brushTool.paint();
+    if (ES.doLight()) {
+        updateLightTask(tasks);
+        if (doRGB) {
+            tasks.queues.rgb.update.push(x, y, z);
+            Propagation.rgb.update(tasks);
+        }
+        if (doSun) {
+            Propagation.sun.update(tasks);
+        }
+    }
+    if (ES.doFlow()) {
+        const substance = brushTool._dt.getSubstance();
+        if (substance == "#dve_liquid" || substance == "#dve_magma") {
+            Propagation.flow.update(tasks);
+        }
+    }
+    tasks.runRebuildQueue();
+    tasks.stop();
+    return;
+}
+export async function VoxelUpdate(data) {
+    if (!dataTool.setLocation(data[0]).loadIn())
+        return false;
+    const [dimension, x, y, z] = data[0];
+    const tasks = TasksRequest.getVoxelUpdateRequests(data[0], data[2], data[3]);
+    tasks
+        .setPriority(0)
+        .start()
+        .setBuldMode("sync")
+        .addToRebuildQueue(x, y, z);
+    tasks.setBuldMode("async");
+    dataTool.loadInRaw(data[1]);
+    dataTool.commit();
+    let doRGB = ES.doRGBPropagation();
+    let doSun = ES.doSunPropagation();
     if (ES.doLight()) {
         updateLightTask(tasks);
         if (doRGB) {

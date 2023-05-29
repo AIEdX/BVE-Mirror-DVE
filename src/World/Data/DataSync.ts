@@ -1,13 +1,13 @@
 //types
-import type { LocationData } from "Libs/voxelSpaces/Types/VoxelSpaces.types.js";
+import type { LocationData } from "voxelspaces";
 import type { DimensionData } from "Meta/Data/DimensionData.types.js";
-import type { CommBase } from "Libs/ThreadComm/Comm/Comm.js";
-import type { CommManager } from "Libs/ThreadComm/Manager/CommManager.js";
+import type { CommBase, CommManager } from "threadcomm";
+
 import type {
  RegisterStringMapSync,
  WorldDataSync,
 } from "Meta/Data/DataSync.types.js";
-import type { RemoteTagManagerInitData } from "Libs/DivineBinaryTags/Types/Util.types.js";
+import type { RemoteTagManagerInitData } from "divine-binary-tags";
 //objects
 import { VoxelDataGenerator } from "./Generators/VoxelDataGenerator.js";
 import { WorldRegister } from "../../Data/World/WorldRegister.js";
@@ -87,6 +87,8 @@ export const DataSync = {
  commOptions: <Record<string, CommSyncOptions>>{},
  _ready: false,
  $INIT() {
+
+
   this.voxelDataCreator.$generateVoxelData();
   VoxelTagBuilder.$SYNC();
   InitalizeChunkTags();
@@ -119,9 +121,12 @@ export const DataSync = {
  loopThroughComms(
   func: (comm: CommBase | CommManager, options: CommSyncOptions) => void
  ) {
+
   for (const commKey of Object.keys(DataSync.comms)) {
    const comm = DataSync.comms[commKey];
+
    const options = DataSync.commOptions[commKey];
+
    if (!comm.isReady()) continue;
    func(comm, options);
   }
@@ -142,7 +147,12 @@ export const DataSync = {
   getUnSyncData: () => true,
  }),
 
- chunk: new DataSyncNode<LocationData, WorldDataSync, LocationData, boolean>({
+ chunk: new DataSyncNode<
+  LocationData,
+  WorldDataSync,
+  LocationData,
+  LocationData
+ >({
   dataSyncType: DataSyncTypes.chunk,
   commCheck: (options) => options.worldData,
   getSyncData: (input) => {
@@ -150,10 +160,15 @@ export const DataSync = {
    if (!chunk) return false;
    return [input, chunk.buffer];
   },
-  getUnSyncData: () => true,
+  getUnSyncData: (input) => input,
  }),
 
- column: new DataSyncNode<LocationData, WorldDataSync, LocationData, boolean>({
+ column: new DataSyncNode<
+  LocationData,
+  WorldDataSync,
+  LocationData,
+  LocationData
+ >({
   dataSyncType: DataSyncTypes.column,
   commCheck: (options) => options.worldData,
   getSyncData: (input) => {
@@ -161,10 +176,15 @@ export const DataSync = {
    if (!column) return false;
    return [input, column.buffer];
   },
-  getUnSyncData: () => true,
+  getUnSyncData: (input) => input,
  }),
 
- region: new DataSyncNode<LocationData, WorldDataSync, LocationData, boolean>({
+ region: new DataSyncNode<
+  LocationData,
+  WorldDataSync,
+  LocationData,
+  LocationData
+ >({
   dataSyncType: DataSyncTypes.region,
   commCheck: (options) => options.worldData,
   getSyncData: (input) => {
@@ -172,7 +192,7 @@ export const DataSync = {
    if (!region) return false;
    return [input, region.buffer];
   },
-  getUnSyncData: () => true,
+  getUnSyncData: (input) => input,
  }),
 
  regionHeader: new DataSyncNode<

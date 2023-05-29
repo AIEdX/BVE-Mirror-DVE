@@ -2,10 +2,11 @@ import type {
  RemoveChunkMeshTasks,
  RemoveChunksOutsideDistance,
  SetChunkMeshTask,
+ SetNodeMesh,
 } from "Meta/Tasks/RenderTasks.types";
-import type { LocationData } from "Libs/voxelSpaces/Types/VoxelSpaces.types.js";
+import type { LocationData } from "voxelspaces";
 import { Distance3D } from "../../Math/Functions/Distance3d.js";
-import { ThreadComm } from "../../Libs/ThreadComm/ThreadComm.js";
+import { ThreadComm } from "threadcomm";
 import { MeshManager } from "../Scene/MeshManager.js";
 import { MeshRegister } from "../../Render/Scene/MeshRegister.js";
 
@@ -25,23 +26,18 @@ export const RenderTasks = {
    MeshManager.chunks.removeColumn(data);
   }
  ),
+ clearAll: ThreadComm.registerTasks<LocationData>("clear-all", (data) => {
+  MeshRegister.clearAll();
+ }),
  removeColumnsOutsideRadius:
   ThreadComm.registerTasks<RemoveChunksOutsideDistance>(
    "remove-column-outside-radius",
    (data) => {
-    const [dimesnionId, x, y, z] = data[0];
-    const maxRadius = data[1];
-    const dimension = MeshRegister.dimensions.get(dimesnionId);
-    if (!dimension) return;
-    dimension.forEach((region) => {
-     region.columns.forEach((column) => {
-      const location = column.location;
-      const distnace = Distance3D(location[1], 0, location[3], x, 0, z);
-      if (distnace > maxRadius) {
-       MeshManager.chunks.removeColumn(location);
-      }
-     });
-    });
+    MeshManager.removeColumnsOutsideRadius(data[0], data[1]);
    }
   ),
+ setNodeMesh: ThreadComm.registerTasks<SetNodeMesh>(
+  "set-node-mesh",
+  (data) => {}
+ ),
 };

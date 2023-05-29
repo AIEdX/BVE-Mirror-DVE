@@ -1,2 +1,12 @@
-import type { VoxelShape } from "Meta/Constructor/VoxelShape.types";
-export declare const LiquidVoxelShape: VoxelShape;
+export declare const LiquidVoxelShape: {
+    id: string;
+    start(): void;
+    add: {
+        top(): void;
+        bottom(): void;
+        north(): void;
+        south(): void;
+        east(): void;
+        west(): void;
+    };
+};

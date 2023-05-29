@@ -1,5 +1,5 @@
 {
- "name": "divine-voxel-engine",
+ "name": "divine-voxel-engine-dev",
  "version": "1.2.45",
  "main": "dist/index.js",
  "type": "module",
@@ -11,7 +11,6 @@
   "babylon.js"
  ],
  "scripts": {
-  "build": "rollup -c",
   "test": "echo \"Error: no test specified\" && exit 1"
  },
  "repository": {
@@ -24,6 +23,12 @@
   "@types/node": "^16.11.7"
  },
  "dependencies": {
-  "babylonjs": "^5.46.0"
+  "@babylonjs/core": "^5.47.1",
+  "divine-binary-object": "^0.0.45",
+  "divine-binary-tags": "^0.0.61",
+  "divine-hooks": "^0.0.4",
+  "divine-shaders": "^0.0.0",
+  "threadcomm": "^0.0.91",
+  "voxelspaces": "^1.0.11"
  }
 }

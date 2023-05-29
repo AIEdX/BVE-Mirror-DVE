@@ -1,4 +1,4 @@
-import type { PaintTasks, UpdateTasks } from "Meta/Tasks/Tasks.types.js";
+import type { VoxelUpdateTasks, UpdateTasks } from "Meta/Tasks/Tasks.types.js";
 import { Propagation } from "../../Propagation/Propagation.js";
 import { EngineSettings as ES } from "../../../Data/Settings/EngineSettings.js";
 import { DataTool } from "../../../Tools/Data/DataTool.js";
@@ -43,12 +43,11 @@ export async function EreaseAndUpdate(data: UpdateTasks) {
  tasks
   .setPriority(0)
   .start()
-  .setBuldMode("sync")
-  .addNeighborsToRebuildQueue(x, y, z);
+  .setBuldMode("sync").addToRebuildQueue(x,y,z);
 
  tasks.setBuldMode("async");
  if (ES.doFlow()) {
-const substance = dataTool.getSubstance();
+  const substance = dataTool.getSubstance();
   if (substance == "#dve_liquid" || substance == "#dve_magma") {
    await Propagation.flow.remove(tasks);
    tasks.stop();
@@ -64,7 +63,7 @@ const substance = dataTool.getSubstance();
   .commit(2);
  if (ES.doLight()) {
   if (ES.doRGBPropagation() && isLightSource) {
-   tasks.queues.rgb.rmeove.push(x, y, z);
+   tasks.queues.rgb.remove.push(x, y, z);
    Propagation.rgb.remove(tasks);
   }
   updateLightTask(tasks);
@@ -76,13 +75,13 @@ const substance = dataTool.getSubstance();
   }
  }
 
- LocationDataDistanceSort(tasks.origin, tasks.syncQueue);
+// LocationDataDistanceSort(tasks.origin, tasks.syncQueue);
  tasks.runRebuildQueue();
  tasks.stop();
  return true;
 }
 
-export async function PaintAndUpdate(data: PaintTasks) {
+export async function PaintAndUpdate(data: VoxelUpdateTasks) {
  if (!dataTool.setLocation(data[0]).loadIn()) return false;
  const [dimension, x, y, z] = data[0];
  const raw = data[1];
@@ -90,8 +89,7 @@ export async function PaintAndUpdate(data: PaintTasks) {
  tasks
   .start()
   .setPriority(0)
-  .setBuldMode("sync")
-  .addNeighborsToRebuildQueue(x, y, z);
+  .setBuldMode("sync").addToRebuildQueue(x,y,z);
  tasks.setBuldMode("async");
  brushTool.setLocation(data[0]).setRaw(raw);
  nDataTool.loadInRaw(raw);
@@ -104,19 +102,59 @@ export async function PaintAndUpdate(data: PaintTasks) {
   if (light <= 0) break lighttest;
   if (doSun) {
    if (dataTool.hasSunLight()) {
-    tasks.queues.sun.rmeove.push(x, y, z);
+    tasks.queues.sun.remove.push(x, y, z);
     Propagation.sun.remove(tasks);
    }
   }
   if (doRGB) {
    if (dataTool.hasRGBLight() && isOpaque) {
-    tasks.queues.rgb.rmeove.push(x, y, z);
+    tasks.queues.rgb.remove.push(x, y, z);
     Propagation.rgb.remove(tasks);
    }
   }
  }
 
  brushTool.paint();
+
+ if (ES.doLight()) {
+  updateLightTask(tasks);
+  if (doRGB) {
+   tasks.queues.rgb.update.push(x, y, z);
+   Propagation.rgb.update(tasks);
+  }
+  if (doSun) {
+   Propagation.sun.update(tasks);
+  }
+ }
+
+ if (ES.doFlow()) {
+  const substance = brushTool._dt.getSubstance();
+  if (substance == "#dve_liquid" || substance == "#dve_magma") {
+   Propagation.flow.update(tasks);
+  }
+ }
+
+ tasks.runRebuildQueue();
+ tasks.stop();
+ return;
+}
+
+export async function VoxelUpdate(data: VoxelUpdateTasks) {
+ if (!dataTool.setLocation(data[0]).loadIn()) return false;
+ const [dimension, x, y, z] = data[0];
+ const tasks = TasksRequest.getVoxelUpdateRequests(data[0], data[2], data[3]);
+ tasks
+  .setPriority(0)
+  .start()
+  .setBuldMode("sync")
+  .addToRebuildQueue(x, y, z);
+ tasks.setBuldMode("async");
+
+ dataTool.loadInRaw(data[1])
+ dataTool.commit();
+
+ let doRGB = ES.doRGBPropagation();
+ let doSun = ES.doSunPropagation();
 
  if (ES.doLight()) {
   updateLightTask(tasks);

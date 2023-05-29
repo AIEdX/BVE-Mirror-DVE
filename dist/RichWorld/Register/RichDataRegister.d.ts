@@ -1,7 +1,8 @@
-import type { RichChunk, RichColumn, RichRegion, RichWorldDimensions } from "Meta/Data/RichWorldData.types.js";
-import type { LocationData } from "Libs/voxelSpaces/Types/VoxelSpaces.types.js";
+import type { RichColumn, RichRegion, RichWorldDimensions } from "Meta/Data/RichWorldData.types.js";
+import type { LocationData } from "voxelspaces";
 export declare const RichDataRegister: {
     _dimensions: RichWorldDimensions;
+    releaeeAll(): void;
     dimensions: {
         get(dimensionId: string): false | Map<string, RichRegion>;
         add(dimensionId: string): Map<any, any>;
@@ -16,12 +17,8 @@ export declare const RichDataRegister: {
         _getColumnData(): RichColumn;
         add(location: LocationData): RichColumn;
         get(location: LocationData): false | RichColumn;
+        update(location: LocationData, data: any): false | undefined;
         remove(location: LocationData): false | RichColumn;
     };
-    chunk: {
-        _getChunkData(): RichChunk;
-        add(location: LocationData): import("../../Libs/DivineBinaryObject/Classes/TypedNode.js").TypedNode<{}>;
-        get(location: LocationData): false | import("../../Libs/DivineBinaryObject/Classes/TypedNode.js").TypedNode<import("Meta/Data/RichWorldData.types.js").RichDataSchema>;
-        remove(location: LocationData): false | import("../../Libs/DivineBinaryObject/Classes/TypedNode.js").TypedNode<import("Meta/Data/RichWorldData.types.js").RichDataSchema>;
-    };
+    getKey(location: LocationData): string;
 };

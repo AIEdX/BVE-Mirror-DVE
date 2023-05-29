@@ -1,55 +1,31 @@
-import type { EngineSettingsData } from "Meta/Data/Settings/EngineSettings.types.js";
-//objects
-import { DVEC } from "../DivineVoxelEngineConstructor.js";
-import { ShapeManager } from "./Shapes/ShapeManager.js";
-import { TextureManager } from "./Textures/TextureManager.js";
-import { Processor } from "./Processor/Processor.js";
-import { ChunkMesher } from "./Mesher/ChunkMesher.js";
+import { ConstructorHooks } from "../Hooks/ConstructorHooks.js";
+import { LocationData } from "voxelspaces";
+import { VoxelConstructors } from "./Constructors/Voxel/VoxelConstructors.js";
+import { ChunkProcessor } from "./Processors/ChunkProcessor.js";
+import { OverrideManager } from "./Rules/Overrides/OverridesManager.js";
 import { SubstanceRules } from "./Rules/SubstanceRules.js";
-//functions
-import { InitBuilder } from "./Init/InitBuilder.js";
-import { LocationData } from "Libs/voxelSpaces/Types/VoxelSpaces.types.js";
+import { RenderedSubstances } from "./Substances/RenderedSubstances.js";
+import { TextureManager } from "./Textures/TextureManager.js";
+import { TextureProcessor } from "./Processors/TextureProcessor.js";
 
 export const Builder = {
+ constructors: VoxelConstructors,
  textureManager: TextureManager,
- shapeManager: ShapeManager,
- chunkMesher: ChunkMesher,
- processor: Processor,
- substanceRules: SubstanceRules,
+ chunkProcessor: ChunkProcessor,
+ textureProcessor: TextureProcessor,
+ overrides: OverrideManager,
+ renderedSubstances: RenderedSubstances,
 
- dimension: 0,
-
- async $INIT() {
-  InitBuilder(this);
+ $INIT() {
+  SubstanceRules.$INIT();
+  ConstructorHooks.texturesRegistered.addToRun((manager) => {
+   this.constructors.constructors._map.forEach((_) => {
+    _.onTexturesRegistered(manager);
+   });
+  });
  },
-
- syncSettings(settings: EngineSettingsData) {
-  this.processor.syncSettings(settings);
- },
-
  buildChunk(location: LocationData, LOD = 1) {
-  let chunk = DVEC.data.worldRegister.chunk.get(location);
-  if (!chunk) {
-   console.warn(`${location.toString()}could not be loaded`);
-   return;
-  }
-  DVEC.data.worldRegister.cache.enable();
-  const template = this.processor.makeAllChunkTemplates(location, LOD);
-  this.chunkMesher.buildChunkMesh(location, template, LOD);
-  this.processor.flush();
-  DVEC.data.worldRegister.cache.disable();
+  this.chunkProcessor.build(location);
   return true;
- },
-
- constructEntity() {
-  /*   const template = this.processor.constructEntity();
-  this.entityMesher.buildEntityMesh(
-   this.entityConstructor.pos.x,
-   this.entityConstructor.pos.y,
-   this.entityConstructor.pos.z,
-   template.solid
-  );
-  this.entityConstructor.clearEntityData();
-  this.processor.flush(); */
  },
 };

@@ -1,5 +1,5 @@
 //threads
-import { ParentComm, NexusComm, RichWorldComm, DataComm, FXComm, CCM, } from "./Threads/Threads.js";
+import { ParentComm, NexusComm, RichWorldComm, DataComm, FXComm, CCM, } from "./Threads/WorldThreads.js";
 //queues
 import { ConstructorQueues } from "../Common/Queues/ConstructorQueues.js";
 //tasks
@@ -21,24 +21,22 @@ import { GetAdvancedBrushTool } from "../Tools/Brush/AdvancedBrushTool.js";
 import { ChunkDataTool } from "../Tools/Data/WorldData/ChunkDataTool.js";
 import { ColumnDataTool } from "../Tools/Data/WorldData/ColumnDataTool.js";
 import { DataTool } from "../Tools/Data/DataTool.js";
-import { TasksTool } from "../Tools/Tasks/TasksTool.js";
+import { TaskTool } from "../Tools/Tasks/TasksTool.js";
 import { HeightMapTool } from "../Tools/Data/WorldData/HeightMapTool.js";
 import { RegionDataTool } from "../Tools/Data/WorldData/RegionDataTool.js";
-import { DataLoaderTool } from "../Tools/Data/DataLoaderTool.js";
+import { DataLoaderTool } from "../Tools/Loader/DataLoaderTool.js";
 //functions
 import { InitWorldWorker } from "./Init/InitWorldWorker.js";
-import { ThreadComm } from "../Libs/ThreadComm/ThreadComm.js";
+import { ThreadComm } from "threadcomm";
 import { ChunkDataTags } from "./Data/Tags/ChunkTags.js";
 import { WorldTasks } from "./Tasks/WorldTasks.js";
+import { RichDataTool } from "../Tools/Data/RichDataTool.js";
 /**# Divine Voxel Engine World
  * ---
  * This handles everything in the world worker context.
  */
 export const DVEW = {
     environment: "browser",
-    __settingsHaveBeenSynced: false,
-    __renderIsDone: false,
-    __serverIsDone: false,
     TC: ThreadComm,
     UTIL: Util,
     settings: EngineSettings,
@@ -61,15 +59,6 @@ export const DVEW = {
     tags: {
         voxels: VoxelTagBuilder,
         chunks: ChunkDataTags,
-    },
-    isReady() {
-        return (DVEW.ccm.isReady() &&
-            DVEW.__settingsHaveBeenSynced &&
-            (DVEW.__renderIsDone || DVEW.__serverIsDone));
-    },
-    syncSettings(data) {
-        this.settings.syncSettings(data);
-        this.__settingsHaveBeenSynced = true;
     },
     async $INIT() {
         await InitWorldWorker(this);
@@ -108,10 +97,13 @@ export const DVEW = {
         return new HeightMapTool();
     },
     getTasksTool() {
-        return TasksTool();
+        return new TaskTool();
     },
     getDataLoaderTool() {
         return new DataLoaderTool();
+    },
+    getRichDataTool() {
+        return new RichDataTool();
     },
 };
 DVEW.environment = Util.getEnviorment();

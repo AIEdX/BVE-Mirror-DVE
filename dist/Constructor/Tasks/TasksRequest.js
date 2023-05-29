@@ -1,6 +1,6 @@
 import { ConstructorRemoteThreadTasks } from "../../Common/Threads/Contracts/ConstructorRemoteThreadTasks.js";
 import { EngineSettings } from "../../Data/Settings/EngineSettings.js";
-import { ThreadComm } from "../../Libs/ThreadComm/ThreadComm.js";
+import { ThreadComm } from "threadcomm";
 import { $3dMooreNeighborhood } from "../../Data/Constants/Util/CardinalNeighbors.js";
 import { WorldSpaces } from "../../Data/World/WorldSpaces.js";
 import { WorldRegister } from "../../Data/World/WorldRegister.js";
@@ -134,12 +134,14 @@ const getLightQueues = () => {
     return {
         rgb: {
             update: [],
-            rmeove: [],
+            remove: [],
             map: new VisitedMap(),
         },
         sun: {
             update: [],
-            rmeove: [],
+            remove: [],
+            updateMap: new VisitedMap(),
+            remvoeMap: new VisitedMap(),
         },
     };
 };
@@ -149,7 +151,7 @@ const getFlowQueues = () => {
             queue: [],
             map: new VisitedMap(),
         },
-        rmeove: {
+        remove: {
             queue: [],
             map: new VisitedMap(),
             noRemoveMap: new VisitedMap(),

@@ -1,4 +1,4 @@
-import { Hooks } from "../Libs/Hooks/Hooks.js";
+import { Hooks } from "divine-hooks";
 export const DataHooks = {
     dimension: {
         onRegisterDimension: Hooks.getSyncHook(),
@@ -25,4 +25,5 @@ export const DataHooks = {
         onAddToRGBUpdate: Hooks.getSyncHook(),
         onRichVoxelPaint: Hooks.getSyncHook(),
     },
+    settingsSynced: Hooks.getSyncHook(),
 };

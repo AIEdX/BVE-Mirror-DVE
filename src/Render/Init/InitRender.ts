@@ -1,7 +1,9 @@
-import type { Scene } from "babylonjs";
+import type { Scene } from "@babylonjs/core";
 import type { DivineVoxelEngineRender } from "Render/DivineVoxelEngineRender";
-import { TextureCreator } from "../Textures/TextureCreator.js";
-import { TextureManager } from "../Textures/TextureManager.js";
+import { NodeManager } from "../../Render/Nodes/NodeManager.js";
+import { TextureCreator } from "../Nodes/Textures/TextureCreator.js";
+import { TextureManager } from "../Nodes/Textures/TextureManager.js";
+import { RenderManager } from "../Scene/RenderManager.js";
 
 export async function $INITFunction(
  DVER: DivineVoxelEngineRender,
@@ -10,18 +12,23 @@ export async function $INITFunction(
  DVER.render.$INIT(scene);
  await TextureCreator.setUpImageCreation();
  await TextureManager.$INIT();
- DVER.constructorCommManager.$INIT(TextureManager.getTextureUVMap());
+ DVER.constructorCommManager.syncTextureData(
+  TextureManager.generateTextureUVMap()
+ );
 
- DVER.render.solidMaterial.createMaterial();
- DVER.render.floraMaterial.createMaterial();
- DVER.render.liquidMaterial.createMaterial();
-
+ NodeManager.init();
+ NodeManager.materials.materials._map.forEach((m)=>{
+    m.getMaterial()!.setFloats("lightGradient",NodeManager.materials.unifrosm.lightGradient)    
+ })
  scene.registerBeforeRender(() => {
-  DVER.render.solidMaterial.runEffects();
-  DVER.render.floraMaterial.runEffects();
-  DVER.render.liquidMaterial.runEffects();
-  DVER.render.skyBoxMaterial.runEffects();
+  NodeManager.materials.materials._map.forEach((_) => {
+   _.updateUniforms();
+  });
  });
-
+ setInterval(() => {
+  NodeManager.materials.materials._map.forEach((_) => {
+   _.runEffects();
+  });
+ }, 20);
  TextureManager.$START_ANIMATIONS();
 }

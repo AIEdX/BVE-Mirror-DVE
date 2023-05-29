@@ -1,6 +1,6 @@
-import { LocationData } from "Libs/voxelSpaces/Types/VoxelSpaces.types";
-import { VoxelTemplateSubstanceType } from "Meta/Data/Voxels/Voxel.types";
-
+import type { LocationData } from "voxelspaces";
+import type { VoxelTemplateSubstanceType } from "Meta/Data/Voxels/Voxel.types";
+import type { MeshAttributes } from "../../Constructor/Builder/Types/MeshData.types";
 
 export type SetChunkMeshTask = [
  location: LocationData,
@@ -9,16 +9,15 @@ export type SetChunkMeshTask = [
 
 export type ChunkMeshData = [
  substanceType: VoxelTemplateSubstanceType,
- positions: Float32Array,
- normals: Float32Array,
- indicies: Uint16Array,
- faceData: Float32Array,
- AOColors: Float32Array,
- lightColors: Float32Array,
- colors: Float32Array,
- uvs: Float32Array,
- overlayUVs: Float32Array
+ meshData : SetNodeMesh
 ];
+
+export type SetNodeMesh = [
+ location: LocationData,
+  attributes: MeshAttributes
+];
+
+export type BuildNodeMesh = [location: LocationData, type: string, data: any];
 
 type RemoveChunkTasks = [
  substanceType: VoxelTemplateSubstanceType,

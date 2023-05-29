@@ -1,5 +1,5 @@
 import type { UpdateTasksO } from "Meta/Tasks/Tasks.types.js";
-import type { LocationData } from "Libs/voxelSpaces/Types/VoxelSpaces.types.js";
+import type { LocationData } from "voxelspaces";
 //propagation
 import { FlowUpdate } from "../Propagation/Flow/Functions/FlowUpdate.js";
 import { Propagation } from "../Propagation/Propagation.js";
@@ -9,11 +9,11 @@ import { DVEC } from "../../Constructor/DivineVoxelEngineConstructor.js";
 import { AnalyzerProcessor } from "./AnalyzerProcessor.js";
 import { AnalyzerUpdater } from "./AnalyzerUpdater.js";
 import { TasksRequest } from "../Tasks/TasksRequest.js";
+import { DataTool } from "../../Tools/Data/DataTool.js";
 //tools
-import { GetConstructorDataTool } from "../Tools/Data/ConstructorDataTool.js";
 
-const mainDT = GetConstructorDataTool();
-const secondaryDT = GetConstructorDataTool();
+const mainDT = new DataTool();
+const secondaryDT = new DataTool();
 export const Analyzer = {
  updater: AnalyzerUpdater,
  processor: AnalyzerProcessor,
@@ -32,6 +32,7 @@ export const Analyzer = {
   mainDT.setDimension(data[0][0]);
   secondaryDT.setDimension(data[0][0]);
   const tasks = TasksRequest.getVoxelUpdateRequests(data[0], "none", "self");
+  tasks.start();
   this.processor.goThroughColumn(data[0], (x, y, z) => {
    if (!mainDT.loadInAt(x, y, z)) return;
    const substance = mainDT.getSubstance();
@@ -57,7 +58,6 @@ export const Analyzer = {
     }
    }
   });
-  tasks.start();
   Propagation.rgb.update(tasks);
   const dimension = data[0][0];
   for (const flowUpdate of tasks.queues.flow.update.queue) {

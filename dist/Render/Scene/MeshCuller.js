@@ -1,5 +1,5 @@
-import { DVEBabylon } from "../Babylon/DVEBabylon.js";
-import { FOManager } from "../Render/FloatingOrigin/FoManager.js";
+import { DVEBabylon } from "../Nodes/DVEBabylon.js";
+import { FOManager } from "./FloatingOrigin/FoManager.js";
 /*
      const dimensions = MeshRegister._dimensions;
    dimensions.forEach((dimensions) => {
@@ -48,6 +48,8 @@ export const MeshCuller = {
             const meshesLength = scene.meshes.length;
             for (let i = 0; i < meshesLength; i++) {
                 const mesh = scene.meshes[i];
+                if (!mesh.alwaysSelectAsActiveMesh)
+                    continue;
                 if (mesh.type == "chunk") {
                     const position = mesh.position;
                     mesh._worldMatrix.setRow(3, world.set(mesh.position.x + node.position.x, mesh.position.y + node.position.y, mesh.position.z + node.position.z, 1));

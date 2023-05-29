@@ -1,39 +1,35 @@
-import type { DataHandler } from "Meta/Interfaces/DataLoader/DataHandler.type.js";
-import type { EngineSettingsData } from "Meta/Data/Settings/EngineSettings.types.js";
+import { RichDataTool } from "../Tools/Data/RichDataTool.js";
+import { DataTool } from "../Tools/Data/DataTool.js";
+import { DataHandler } from "./DataHandler/DataHandlerBaes.js";
 export declare const DVEDL: {
     environment: "node" | "browser";
-    __settingsHaveBeenSynced: boolean;
     TC: {
         threadNumber: number;
         threadName: string;
         environment: "node" | "browser";
-        _comms: Record<string, import("../Libs/ThreadComm/Comm/Comm.js").CommBase>;
-        _commManageras: Record<string, import("../Libs/ThreadComm/Manager/CommManager.js").CommManager>;
-        _tasks: Record<string, import("../Libs/ThreadComm/Tasks/Tasks.js").Task<any>>;
-        _queues: Map<string, Map<string, import("../Libs/ThreadComm/Queue/SyncedQueue.js").SyncedQueue>>;
-        _onDataSync: Record<string, import("../Libs/ThreadComm/Data/DataSync.js").DataSync<any, any>>;
-        parent: import("../Libs/ThreadComm/Comm/Comm.js").CommBase;
-        __internal: Record<number, Record<number, (data: any, event: any) => void>>;
+        _comms: Record<string, import("threadcomm").CommBase>;
+        _commManageras: Record<string, import("threadcomm").CommManager>;
+        _queues: Map<string, Map<string, import("threadcomm/Queue/SyncedQueue.js").SyncedQueue>>;
+        parent: import("threadcomm").CommBase;
+        internal: {
+            _tasks: Map<number, Map<number, import("threadcomm/Meta/Util.types.js").MessageFunction>>;
+            registerTasks(headID: number, taskId: number, run: import("threadcomm/Meta/Util.types.js").MessageFunction): void;
+            isInternal(data: any): boolean;
+            runInternal(data: any, event: any): false | undefined;
+        };
         __initalized: boolean;
         __expectedPorts: Record<string, boolean>;
-        $INIT(threadName: string): Promise<void>;
-        getSyncedQueue(threadId: string, queueId: string): import("../Libs/ThreadComm/Queue/SyncedQueue.js").SyncedQueue | undefined;
-        addComm(comm: import("../Libs/ThreadComm/Comm/Comm.js").CommBase): void;
-        createComm<T>(name: string, mergeObject?: T): T & import("../Libs/ThreadComm/Comm/Comm.js").CommBase;
-        createCommManager(data: import("../Libs/ThreadComm/Meta/Manager/Manager.types.js").CommManagerData): import("../Libs/ThreadComm/Manager/CommManager.js").CommManager;
-        getComm(id: string): import("../Libs/ThreadComm/Comm/Comm.js").CommBase;
-        getCommManager(id: string): import("../Libs/ThreadComm/Manager/CommManager.js").CommManager;
-        __throwError(message: string): never;
+        crypto: Crypto;
+        $INIT(threadName: string, threadParentName: string): Promise<void>;
+        getSyncedQueue(threadId: string, queueId: string): import("threadcomm/Queue/SyncedQueue.js").SyncedQueue | undefined;
+        addComm(comm: import("threadcomm").CommBase): void;
+        createComm<T>(name: string, mergeObject?: T | undefined): T & import("threadcomm").CommBase;
+        createCommManager(data: import("threadcomm/Meta/Manager/Manager.types.js").CommManagerData): import("threadcomm").CommManager;
+        getComm(id: string): import("threadcomm").CommBase;
+        getCommManager(id: string): import("threadcomm").CommManager;
         getWorkerPort(): Promise<any>;
-        __handleInternalMessage(data: any[], event: any): void;
-        __isInternalMessage(data: any[]): boolean;
-        __handleTasksDone(tasksId: string, mode: number, threadId: string, tid: string, tasksData: any): void;
-        __handleTasksMessage(data: any[]): Promise<void>;
-        __isTasks(data: any[]): boolean;
-        registerTasks<T_1>(id: string | number, run: (data: T_1, onDone?: Function | undefined) => void, mode?: "async" | "deffered"): import("../Libs/ThreadComm/Tasks/Tasks.js").Task<T_1>;
-        __hanldeDataSyncMessage(data: any[]): Promise<void>;
-        __isDataSync(data: any[]): boolean;
-        onDataSync<T_2, K>(dataType: string | number, onSync?: ((data: T_2) => void) | undefined, onUnSync?: ((data: K) => void) | undefined): import("../Libs/ThreadComm/Data/DataSync.js").DataSync<T_2, K>;
+        registerTasks<T_1>(id: string | number, run: (data: T_1, onDone?: ((data?: any, transfers?: any) => void) | undefined) => void, mode?: "async" | "deferred" | undefined): void;
+        onDataSync<T_2, K>(dataType: string | number, onSync?: ((data: T_2) => void) | undefined, onUnSync?: ((data: K) => void) | undefined): import("threadcomm").DataSync<T_2, K>;
     };
     UTIL: {
         createPromiseCheck: (data: {
@@ -53,9 +49,9 @@ export declare const DVEDL: {
     };
     settings: {
         enviorment: "node" | "browser";
-        settings: EngineSettingsData;
-        getSettings(): EngineSettingsData;
-        syncSettings(data: EngineSettingsData): void;
+        settings: import("../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData;
+        getSettings(): import("../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData;
+        syncSettings(data: import("../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
         __syncWithObjects(): void;
         syncWithWorldBounds(worldBounds: {
             bounds: {
@@ -85,17 +81,17 @@ export declare const DVEDL: {
     dataSyncNode: {
         _states: Record<string, boolean>;
         isReady(): boolean;
-        voxelPalette: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Meta/Data/DataSync.types.js").VoxelPaletteSyncData, any>;
-        voxelData: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Meta/Data/DataSync.types.js").VoxelDataSync, any>;
-        dimension: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Meta/Data/DimensionData.types.js").DimensionData, void>;
-        chunk: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Meta/Data/DataSync.types.js").WorldDataSync, import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData>;
-        column: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Meta/Data/DataSync.types.js").WorldDataSync, import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData>;
-        region: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Meta/Data/DataSync.types.js").WorldDataSync, import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData>;
-        regionHeader: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Meta/Data/DataSync.types.js").WorldDataSync, import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData>;
-        chunkTags: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Libs/DivineBinaryTags/Types/Util.types.js").RemoteTagManagerInitData, void>;
-        columnTags: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Libs/DivineBinaryTags/Types/Util.types.js").RemoteTagManagerInitData, void>;
-        regionTags: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Libs/DivineBinaryTags/Types/Util.types.js").RemoteTagManagerInitData[], void>;
-        stringMap: import("../Libs/ThreadComm/Data/DataSync.js").DataSync<import("../Meta/Data/DataSync.types.js").RegisterStringMapSync, void>;
+        voxelPalette: import("threadcomm").DataSync<import("../Meta/Data/DataSync.types.js").VoxelPaletteSyncData, any>;
+        voxelData: import("threadcomm").DataSync<import("../Meta/Data/DataSync.types.js").VoxelDataSync, any>;
+        dimension: import("threadcomm").DataSync<import("../Meta/Data/DimensionData.types.js").DimensionData, void>;
+        chunk: import("threadcomm").DataSync<import("../Meta/Data/DataSync.types.js").WorldDataSync, import("voxelspaces").LocationData>;
+        column: import("threadcomm").DataSync<import("../Meta/Data/DataSync.types.js").WorldDataSync, import("voxelspaces").LocationData>;
+        region: import("threadcomm").DataSync<import("../Meta/Data/DataSync.types.js").WorldDataSync, import("voxelspaces").LocationData>;
+        regionHeader: import("threadcomm").DataSync<import("../Meta/Data/DataSync.types.js").WorldDataSync, import("voxelspaces").LocationData>;
+        chunkTags: import("threadcomm").DataSync<import("divine-binary-tags").RemoteTagManagerInitData, void>;
+        columnTags: import("threadcomm").DataSync<import("divine-binary-tags").RemoteTagManagerInitData, void>;
+        regionTags: import("threadcomm").DataSync<import("divine-binary-tags").RemoteTagManagerInitData[], void>;
+        stringMap: import("threadcomm").DataSync<import("../Meta/Data/DataSync.types.js").RegisterStringMapSync, void>;
     };
     data: {
         dimensions: {
@@ -114,15 +110,15 @@ export declare const DVEDL: {
             id: string;
             sync(voxelMap: Uint16Array): void;
             setVoxel(id: number): void;
-            initData: import("../Libs/DivineBinaryTags/Types/Util.types.js").RemoteTagManagerInitData;
-            $INIT(data: import("../Libs/DivineBinaryTags/Types/Util.types.js").RemoteTagManagerInitData): void;
+            initData: import("divine-binary-tags").RemoteTagManagerInitData;
+            $INIT(data: import("divine-binary-tags").RemoteTagManagerInitData): void;
             byteOffSet: number;
             tagSize: number;
             tagIndexes: number;
             data: DataView;
             indexMap: Map<string, number>;
             index: DataView;
-            setBuffer(data: DataView | import("../Libs/DivineBinaryTags/Types/Util.types.js").BufferTypes): void;
+            setBuffer(data: DataView | import("divine-binary-tags").BufferTypes): void;
             getBuffer(): ArrayBuffer;
             setTagIndex(index: number): void;
             getTag(id: string): number;
@@ -137,10 +133,10 @@ export declare const DVEDL: {
         world: {
             _currentionDimension: string;
             paint: {
-                _dt: import("../Tools/Data/DataTool.js").DataTool;
-                voxel(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData, data: import("../Meta/Data/WorldData.types.js").AddVoxelData, update?: boolean): void;
-                __paint(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData, data: import("../Meta/Data/WorldData.types.js").AddVoxelData, update?: boolean): false | undefined;
-                erase(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): void;
+                _dt: DataTool;
+                voxel(location: import("voxelspaces").LocationData, data: import("../Meta/Data/WorldData.types.js").AddVoxelData, update?: boolean): void;
+                __paint(location: import("voxelspaces").LocationData, data: import("../Meta/Data/WorldData.types.js").AddVoxelData, update?: boolean): false | undefined;
+                erase(location: import("voxelspaces").LocationData): void;
             };
         };
         worldRegister: {
@@ -161,31 +157,31 @@ export declare const DVEDL: {
                 get(id: string | number): Map<string, import("../Meta/Data/WorldData.types.js").Region> | undefined;
             };
             region: {
-                add(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData, sab: SharedArrayBuffer): import("../Meta/Data/WorldData.types.js").Region;
+                add(location: import("voxelspaces").LocationData, sab: SharedArrayBuffer): import("../Meta/Data/WorldData.types.js").Region;
                 _getRegionData(sab: SharedArrayBuffer): import("../Meta/Data/WorldData.types.js").Region;
-                get(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): false | import("../Meta/Data/WorldData.types.js").Region;
-                remove(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): boolean;
+                get(location: import("voxelspaces").LocationData): false | import("../Meta/Data/WorldData.types.js").Region;
+                remove(location: import("voxelspaces").LocationData): boolean;
             };
             column: {
-                add(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData, sab: SharedArrayBuffer): import("../Meta/Data/WorldData.types.js").Column | undefined;
+                add(location: import("voxelspaces").LocationData, sab: SharedArrayBuffer): import("../Meta/Data/WorldData.types.js").Column | undefined;
                 _getColumnData(sab: SharedArrayBuffer): import("../Meta/Data/WorldData.types.js").Column;
-                get(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): false | import("../Meta/Data/WorldData.types.js").Column;
-                remove(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): boolean;
-                fill(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): void;
+                get(location: import("voxelspaces").LocationData): false | import("../Meta/Data/WorldData.types.js").Column;
+                remove(location: import("voxelspaces").LocationData): boolean;
+                fill(location: import("voxelspaces").LocationData): void;
                 height: {
-                    getRelative(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): number;
-                    getAbsolute(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): number;
+                    getRelative(location: import("voxelspaces").LocationData): number;
+                    getAbsolute(location: import("voxelspaces").LocationData): number;
                 };
             };
             chunk: {
-                add(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData, sab: SharedArrayBuffer): import("../Meta/Data/WorldData.types.js").ChunkData | undefined;
+                add(location: import("voxelspaces").LocationData, sab: SharedArrayBuffer): import("../Meta/Data/WorldData.types.js").ChunkData | undefined;
                 _getChunkData(sab: SharedArrayBuffer): import("../Meta/Data/WorldData.types.js").ChunkData;
                 addFromServer(chunkBuffer: ArrayBuffer): import("../Meta/Data/WorldData.types.js").ChunkData | undefined;
-                get(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): false | import("../Meta/Data/WorldData.types.js").ChunkData | undefined;
-                remove(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): boolean;
+                get(location: import("voxelspaces").LocationData): false | import("../Meta/Data/WorldData.types.js").ChunkData | undefined;
+                remove(location: import("voxelspaces").LocationData): boolean;
             };
         };
-        columnTags: import("../Libs/DivineBinaryTags/RemoteTagManager.js").RemoteTagManager;
+        columnTags: import("divine-binary-tags").RemoteTagManager;
         worldBounds: {
             bounds: {
                 MinZ: number;
@@ -198,7 +194,7 @@ export declare const DVEDL: {
             setWorldBounds(minX: number, maxX: number, minZ: number, maxZ: number, minY: number, maxY: number): void;
         };
         spaces: {
-            region: import("../Libs/voxelSpaces/Classes/VoxelSpace.js").VoxelSpace & {
+            region: import("voxelspaces/Classes/VoxelSpace.js").VoxelSpace & {
                 chunkBounds: {
                     x: number;
                     y: number;
@@ -212,8 +208,8 @@ export declare const DVEDL: {
                 getChunkVolume(): number;
                 getColumnVolume(): number;
             };
-            column: import("../Libs/voxelSpaces/Classes/VoxelSpace.js").VoxelSpace;
-            chunk: import("../Libs/voxelSpaces/Classes/VoxelSpace.js").VoxelSpace & {
+            column: import("voxelspaces/Classes/VoxelSpace.js").VoxelSpace;
+            chunk: import("voxelspaces/Classes/VoxelSpace.js").VoxelSpace & {
                 _regionPosition: {
                     x: number;
                     y: number;
@@ -256,7 +252,7 @@ export declare const DVEDL: {
                 getRegionIndex(): number;
                 getRegionIndexXYZ(x: number, y: number, z: number): number;
             };
-            voxel: import("../Libs/voxelSpaces/Classes/VoxelSpace.js").VoxelSpace;
+            voxel: import("voxelspaces/Classes/VoxelSpace.js").VoxelSpace;
             setDimensions(data: {
                 regions: {
                     x: number;
@@ -275,7 +271,7 @@ export declare const DVEDL: {
                 };
             }): void;
         } & {
-            $INIT(settings: EngineSettingsData): void;
+            $INIT(settings: import("../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
         };
         register: {
             stringMaps: {
@@ -284,63 +280,61 @@ export declare const DVEDL: {
                 getStringMapValue(segment: string, id: string, index: number): string;
             };
         };
-        chunkTags: import("../Libs/DivineBinaryTags/RemoteTagManager.js").RemoteTagManager;
-        regionTags: import("../Libs/DivineBinaryTags/RemoteTagManager.js").RemoteTagManager;
+        chunkTags: import("divine-binary-tags").RemoteTagManager;
+        regionTags: import("divine-binary-tags").RemoteTagManager;
         regionHeaderReigster: {
             _headers: Map<string, Map<string, {
                 data: DataView;
                 buffer: SharedArrayBuffer;
             }>>;
-            remove(location: import("../Meta/Data/CommonTypes.js").LocationData): boolean;
-            add(location: import("../Meta/Data/CommonTypes.js").LocationData, buffer: SharedArrayBuffer): void;
-            get(location: import("../Meta/Data/CommonTypes.js").LocationData): false | {
+            remove(location: import("voxelspaces").LocationData): boolean;
+            add(location: import("voxelspaces").LocationData, buffer: SharedArrayBuffer): void;
+            get(location: import("voxelspaces").LocationData): false | {
                 data: DataView;
                 buffer: SharedArrayBuffer;
             } | undefined;
-            isStored(location: import("../Meta/Data/CommonTypes.js").LocationData): 0 | 1 | -1;
+            isStored(location: import("voxelspaces").LocationData): 0 | 1 | -1;
         };
     };
-    worldComm: import("../Libs/ThreadComm/Comm/Comm.js").CommBase;
-    parentComm: import("../Libs/ThreadComm/Comm/Comm.js").CommBase;
+    worldComm: import("threadcomm").CommBase;
+    parentComm: import("threadcomm").CommBase;
     tasks: {
-        saveRegion: import("../Libs/ThreadComm/Tasks/Tasks.js").Task<import("../Meta/Data/CommonTypes.js").LocationData>;
-        loadRegion: import("../Libs/ThreadComm/Tasks/Tasks.js").Task<import("../Meta/Data/CommonTypes.js").LocationData>;
-        loadRegionHeader: import("../Libs/ThreadComm/Tasks/Tasks.js").Task<import("../Meta/Data/CommonTypes.js").LocationData>;
-        saveColumn: import("../Libs/ThreadComm/Tasks/Tasks.js").Task<import("../Meta/Data/CommonTypes.js").LocationData>;
-        loadColumn: import("../Libs/ThreadComm/Tasks/Tasks.js").Task<import("../Meta/Data/CommonTypes.js").LocationData>;
-        unLoadColumn: import("../Libs/ThreadComm/Tasks/Tasks.js").Task<import("../Meta/Data/CommonTypes.js").LocationData>;
-        setPath: import("../Libs/ThreadComm/Tasks/Tasks.js").Task<[id: string]>;
-        columnExists: import("../Libs/ThreadComm/Tasks/Tasks.js").Task<import("../Meta/Data/CommonTypes.js").LocationData>;
-        columnTimestamp: import("../Libs/ThreadComm/Tasks/Tasks.js").Task<import("../Meta/Data/CommonTypes.js").LocationData>;
+        loadRegionHeader: void;
+        saveColumn: void;
+        loadColumn: void;
+        unLoadColumn: void;
+        setPath: void;
+        columnExists: void;
+        columnTimestamp: void;
     };
     serializer: {
         regions: import("../Tools/Data/WorldData/RegionDataTool.js").RegionDataTool;
         columns: import("../Tools/Data/WorldData/ColumnDataTool.js").ColumnDataTool;
         chunks: import("../Tools/Data/WorldData/ChunkDataTool.js").ChunkDataTool;
-        serializeRegion(location: import("../Meta/Data/CommonTypes.js").LocationData): false | [location: import("../Meta/Data/CommonTypes.js").LocationData, buffer: ArrayBuffer][];
-        serializeColumn(location: import("../Meta/Data/CommonTypes.js").LocationData): false | Uint8Array;
+        serializeRegion(location: import("voxelspaces").LocationData): false | [location: import("voxelspaces").LocationData, buffer: ArrayBuffer][];
+        serializeColumn(location: import("voxelspaces").LocationData): false | Uint8Array;
         deSerializeRegion(regionBuffers: SharedArrayBuffer[] | ArrayBuffer[]): void;
-        deSerializeColumn(columnBuffer: ArrayBuffer | SharedArrayBuffer): {
+        deSerializeColumn(columnBuffer: SharedArrayBuffer | ArrayBuffer): {
             column: SharedArrayBuffer;
             chunks: SharedArrayBuffer[];
         };
-        _readDataIntoBuffer(offset: number, target: Uint8Array, source: ArrayBuffer | SharedArrayBuffer, sourceOffset?: number, sourceLength?: number): number;
+        _readDataIntoBuffer(offset: number, target: Uint8Array, source: SharedArrayBuffer | ArrayBuffer, sourceOffset?: number, sourceLength?: number): number;
     };
     dataHandler: {
+        mode: import("./DataHandler/DataHandlerBaes.js").DataLoaderModes;
         handler: DataHandler;
+        richData: RichDataTool;
         $INIT(handler: DataHandler): void;
-        loadRegionHeader(location: import("../Meta/Data/CommonTypes.js").LocationData): Promise<boolean>;
-        saveColumn(location: import("../Meta/Data/CommonTypes.js").LocationData): Promise<false | undefined>;
-        loadColumn(location: import("../Meta/Data/CommonTypes.js").LocationData): Promise<boolean>;
+        loadRegionHeader(location: import("voxelspaces").LocationData): Promise<boolean>;
+        saveColumn(location: import("voxelspaces").LocationData): Promise<boolean | undefined>;
+        loadColumn(location: import("voxelspaces").LocationData): Promise<boolean>;
+        unLoadColumn(location: import("voxelspaces").LocationData): Promise<true | undefined>;
         setPath(id: string): Promise<boolean>;
-        columnExists(location: import("../Meta/Data/CommonTypes.js").LocationData): Promise<boolean>;
-        columnTimestamp(location: import("../Meta/Data/CommonTypes.js").LocationData): Promise<number>;
-        saveRegion(location: import("../Meta/Data/CommonTypes.js").LocationData): Promise<boolean>;
-        loadRegion(location: import("../Meta/Data/CommonTypes.js").LocationData): Promise<boolean>;
+        columnExists(location: import("voxelspaces").LocationData): Promise<boolean>;
+        columnTimestamp(location: import("voxelspaces").LocationData): Promise<number>;
     };
-    syncSettings(data: EngineSettingsData): void;
-    reStart(): void;
-    isReady(): boolean;
     $INIT(dataHanlder: DataHandler): Promise<void>;
+    getRichDataTool(): RichDataTool;
+    getDataTool(): DataTool;
 };
-export declare type DivineVoxelEngineData = typeof DVEDL;
+export type DivineVoxelEngineData = typeof DVEDL;

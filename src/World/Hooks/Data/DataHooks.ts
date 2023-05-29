@@ -1,4 +1,4 @@
-import type { DataLoaderTool } from "Tools/Data/DataLoaderTool.js";
+import type { DataLoaderTool } from "Tools/Loader/DataLoaderTool.js";
 import { DataHooks } from "../../../Data/DataHooks.js";
 import { WorldDataGenerator } from "../../Data/Generators/WorldDataGenerator.js";
 import { DataSync } from "../../Data/DataSync.js";
@@ -69,9 +69,6 @@ export const RegisterDataHooks = () => {
  /*
 [paint]
 */
- DataHooks.paint.onAddToRGBUpdate.addToRun((data) => {
-  tasks.light.rgb.update.add(data[1], data[2], data[3], "main");
- });
  DataHooks.paint.onRichVoxelPaint.addToRun((data) => {
  // DVEW.richWorldComm.setInitalData(data);
  });

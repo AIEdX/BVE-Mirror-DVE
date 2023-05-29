@@ -1,38 +1,45 @@
-import type { EngineSettingsData } from "Meta/Data/Settings/EngineSettings.types.js";
+import { RichDataTool } from "./Tools/RichDataTool.js";
+import { DataTool } from "../Tools/Data/DataTool.js";
 export declare const DVERW: {
-    environment: "browser" | "node";
+    environment: "node" | "browser";
     __settingsHaveBeenSynced: boolean;
+    tasks: {
+        hasData: void;
+        getData: void;
+        setData: void;
+        removeData: void;
+        removeColumn: void;
+        getColumn: void;
+        setColumn: void;
+        releaseAllData: void;
+    };
     TC: {
         threadNumber: number;
         threadName: string;
-        environment: "browser" | "node";
-        _comms: Record<string, import("../Libs/ThreadComm/Comm/Comm.js").CommBase>;
-        _commManageras: Record<string, import("../Libs/ThreadComm/Manager/CommManager.js").CommManager>;
-        _tasks: Record<string, import("../Libs/ThreadComm/Tasks/Tasks.js").Task<any>>;
-        _queues: Map<string, Map<string, import("../Libs/ThreadComm/Queue/SyncedQueue.js").SyncedQueue>>;
-        _onDataSync: Record<string, import("../Libs/ThreadComm/Data/DataSync.js").DataSync<any, any>>;
-        parent: import("../Libs/ThreadComm/Comm/Comm.js").CommBase;
-        __internal: Record<number, Record<number, (data: any, event: any) => void>>;
+        environment: "node" | "browser";
+        _comms: Record<string, import("threadcomm").CommBase>;
+        _commManageras: Record<string, import("threadcomm").CommManager>;
+        _queues: Map<string, Map<string, import("threadcomm/Queue/SyncedQueue.js").SyncedQueue>>;
+        parent: import("threadcomm").CommBase;
+        internal: {
+            _tasks: Map<number, Map<number, import("threadcomm/Meta/Util.types.js").MessageFunction>>;
+            registerTasks(headID: number, taskId: number, run: import("threadcomm/Meta/Util.types.js").MessageFunction): void;
+            isInternal(data: any): boolean;
+            runInternal(data: any, event: any): false | undefined;
+        };
         __initalized: boolean;
         __expectedPorts: Record<string, boolean>;
-        $INIT(threadName: string): Promise<void>;
-        getSyncedQueue(threadId: string, queueId: string): import("../Libs/ThreadComm/Queue/SyncedQueue.js").SyncedQueue | undefined;
-        addComm(comm: import("../Libs/ThreadComm/Comm/Comm.js").CommBase): void;
-        createComm<T>(name: string, mergeObject?: T): T & import("../Libs/ThreadComm/Comm/Comm.js").CommBase;
-        createCommManager(data: import("../Libs/ThreadComm/Meta/Manager/Manager.types.js").CommManagerData): import("../Libs/ThreadComm/Manager/CommManager.js").CommManager;
-        getComm(id: string): import("../Libs/ThreadComm/Comm/Comm.js").CommBase;
-        getCommManager(id: string): import("../Libs/ThreadComm/Manager/CommManager.js").CommManager;
-        __throwError(message: string): never;
+        crypto: Crypto;
+        $INIT(threadName: string, threadParentName: string): Promise<void>;
+        getSyncedQueue(threadId: string, queueId: string): import("threadcomm/Queue/SyncedQueue.js").SyncedQueue | undefined;
+        addComm(comm: import("threadcomm").CommBase): void;
+        createComm<T>(name: string, mergeObject?: T | undefined): T & import("threadcomm").CommBase;
+        createCommManager(data: import("threadcomm/Meta/Manager/Manager.types.js").CommManagerData): import("threadcomm").CommManager;
+        getComm(id: string): import("threadcomm").CommBase;
+        getCommManager(id: string): import("threadcomm").CommManager;
         getWorkerPort(): Promise<any>;
-        __handleInternalMessage(data: any[], event: any): void;
-        __isInternalMessage(data: any[]): boolean;
-        __handleTasksDone(tasksId: string, mode: number, threadId: string, tid: string, tasksData: any): void;
-        __handleTasksMessage(data: any[]): Promise<void>;
-        __isTasks(data: any[]): boolean;
-        registerTasks<T_1>(id: string | number, run: (data: T_1, onDone?: Function | undefined) => void, mode?: "async" | "deffered"): import("../Libs/ThreadComm/Tasks/Tasks.js").Task<T_1>;
-        __hanldeDataSyncMessage(data: any[]): Promise<void>;
-        __isDataSync(data: any[]): boolean;
-        onDataSync<T_2, K>(dataType: string | number, onSync?: ((data: T_2) => void) | undefined, onUnSync?: ((data: K) => void) | undefined): import("../Libs/ThreadComm/Data/DataSync.js").DataSync<T_2, K>;
+        registerTasks<T_1>(id: string | number, run: (data: T_1, onDone?: ((data?: any, transfers?: any) => void) | undefined) => void, mode?: "async" | "deferred" | undefined): void;
+        onDataSync<T_2, K>(dataType: string | number, onSync?: ((data: T_2) => void) | undefined, onUnSync?: ((data: K) => void) | undefined): import("threadcomm").DataSync<T_2, K>;
     };
     worldBounds: {
         bounds: {
@@ -53,7 +60,7 @@ export declare const DVERW: {
             failTimeOut?: number | undefined;
             onFail?: (() => any) | undefined;
         }) => Promise<boolean>;
-        getEnviorment(): "browser" | "node";
+        getEnviorment(): "node" | "browser";
         getAQueue<T_3>(): import("../Global/Util/Queue.js").Queue<T_3>;
         merge<T_4, K_1>(target: T_4, newObject: K_1): T_4 & K_1;
         degtoRad(degrees: number): number;
@@ -62,10 +69,10 @@ export declare const DVERW: {
         converSABToBuffer(buffer: SharedArrayBuffer): ArrayBuffer;
     };
     settings: {
-        enviorment: "browser" | "node";
-        settings: EngineSettingsData;
-        getSettings(): EngineSettingsData;
-        syncSettings(data: EngineSettingsData): void;
+        enviorment: "node" | "browser";
+        settings: import("../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData;
+        getSettings(): import("../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData;
+        syncSettings(data: import("../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
         __syncWithObjects(): void;
         syncWithWorldBounds(worldBounds: {
             bounds: {
@@ -92,41 +99,259 @@ export declare const DVERW: {
         isServer(): boolean;
         isClient(): boolean;
     };
-    worldComm: import("../Libs/ThreadComm/Comm/Comm.js").CommBase;
-    parentComm: import("../Libs/ThreadComm/Comm/Comm.js").CommBase;
+    worldComm: import("threadcomm").CommBase;
+    parentComm: import("threadcomm").CommBase;
+    nexusComm: import("threadcomm").CommBase;
+    constructorComm: import("threadcomm").CommManager;
+    fxComm: import("threadcomm").CommBase;
+    dataComm: import("threadcomm").CommBase;
     richData: {
         _dimensions: import("../Meta/Data/RichWorldData.types.js").RichWorldDimensions;
+        releaeeAll(): void;
         dimensions: {
             get(dimensionId: string): false | Map<string, import("../Meta/Data/RichWorldData.types.js").RichRegion>;
             add(dimensionId: string): Map<any, any>;
         };
         region: {
             _getRegionData(): import("../Meta/Data/RichWorldData.types.js").RichRegion;
-            add(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): import("../Meta/Data/RichWorldData.types.js").RichRegion;
-            get(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): false | import("../Meta/Data/RichWorldData.types.js").RichRegion;
-            remove(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): false | import("../Meta/Data/RichWorldData.types.js").RichRegion;
+            add(location: import("voxelspaces").LocationData): import("../Meta/Data/RichWorldData.types.js").RichRegion;
+            get(location: import("voxelspaces").LocationData): false | import("../Meta/Data/RichWorldData.types.js").RichRegion;
+            remove(location: import("voxelspaces").LocationData): false | import("../Meta/Data/RichWorldData.types.js").RichRegion;
         };
         column: {
             _getColumnData(): import("../Meta/Data/RichWorldData.types.js").RichColumn;
-            add(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): import("../Meta/Data/RichWorldData.types.js").RichColumn;
-            get(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): false | import("../Meta/Data/RichWorldData.types.js").RichColumn;
-            remove(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): false | import("../Meta/Data/RichWorldData.types.js").RichColumn;
+            add(location: import("voxelspaces").LocationData): import("../Meta/Data/RichWorldData.types.js").RichColumn;
+            get(location: import("voxelspaces").LocationData): false | import("../Meta/Data/RichWorldData.types.js").RichColumn;
+            update(location: import("voxelspaces").LocationData, data: any): false | undefined;
+            remove(location: import("voxelspaces").LocationData): false | import("../Meta/Data/RichWorldData.types.js").RichColumn;
         };
-        chunk: {
-            _getChunkData(): import("../Meta/Data/RichWorldData.types.js").RichDataSchema;
-            add(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): import("../Libs/DivineBinaryObject/Classes/TypedNode.js").TypedNode<{}>;
-            get(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): false | import("../Libs/DivineBinaryObject/Classes/TypedNode.js").TypedNode<import("../Meta/Data/RichWorldData.types.js").RichDataSchema>;
-            remove(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): false | import("../Libs/DivineBinaryObject/Classes/TypedNode.js").TypedNode<import("../Meta/Data/RichWorldData.types.js").RichDataSchema>;
+        getKey(location: import("voxelspaces").LocationData): string;
+    };
+    dataSyncNode: {
+        _states: Record<string, boolean>;
+        isReady(): boolean;
+        voxelPalette: import("threadcomm").DataSync<import("../Meta/Data/DataSync.types.js").VoxelPaletteSyncData, any>;
+        voxelData: import("threadcomm").DataSync<import("../Meta/Data/DataSync.types.js").VoxelDataSync, any>;
+        dimension: import("threadcomm").DataSync<import("../Meta/Data/DimensionData.types.js").DimensionData, void>;
+        chunk: import("threadcomm").DataSync<import("../Meta/Data/DataSync.types.js").WorldDataSync, import("voxelspaces").LocationData>;
+        column: import("threadcomm").DataSync<import("../Meta/Data/DataSync.types.js").WorldDataSync, import("voxelspaces").LocationData>;
+        region: import("threadcomm").DataSync<import("../Meta/Data/DataSync.types.js").WorldDataSync, import("voxelspaces").LocationData>;
+        regionHeader: import("threadcomm").DataSync<import("../Meta/Data/DataSync.types.js").WorldDataSync, import("voxelspaces").LocationData>;
+        chunkTags: import("threadcomm").DataSync<import("divine-binary-tags").RemoteTagManagerInitData, void>;
+        columnTags: import("threadcomm").DataSync<import("divine-binary-tags").RemoteTagManagerInitData, void>;
+        regionTags: import("threadcomm").DataSync<import("divine-binary-tags").RemoteTagManagerInitData[], void>;
+        stringMap: import("threadcomm").DataSync<import("../Meta/Data/DataSync.types.js").RegisterStringMapSync, void>;
+    };
+    data: {
+        dimensions: {
+            _count: number;
+            dimensionRecord: Record<string, number>;
+            dimensionMap: Record<number, string>;
+            __defaultDimensionOptions: import("../Meta/Data/DimensionData.types.js").DimensionOptions;
+            _dimensions: Record<string, import("../Meta/Data/DimensionData.types.js").DimensionData>;
+            registerDimension(id: string, option: import("../Meta/Data/DimensionData.types.js").DimensionOptions): void;
+            getDimension(id: string | number): import("../Meta/Data/DimensionData.types.js").DimensionData;
+            getDimensionStringId(id: string | number): string;
+            getDimensionNumericId(id: string | number): number;
+        };
+        voxelTags: {
+            voxelIndex: Uint16Array;
+            id: string;
+            sync(voxelMap: Uint16Array): void;
+            setVoxel(id: number): void;
+            initData: import("divine-binary-tags").RemoteTagManagerInitData;
+            $INIT(data: import("divine-binary-tags").RemoteTagManagerInitData): void;
+            byteOffSet: number;
+            tagSize: number;
+            tagIndexes: number;
+            data: DataView;
+            indexMap: Map<string, number>;
+            index: DataView;
+            setBuffer(data: DataView | import("divine-binary-tags").BufferTypes): void;
+            getBuffer(): ArrayBuffer;
+            setTagIndex(index: number): void;
+            getTag(id: string): number;
+            setTag(id: string, value: number): boolean;
+            getArrayTagValue(id: string, index: number): number;
+            getArrayTagByteIndex(id: string, index: number): number;
+            setArrayTagValue(id: string, index: number, value: number): number | void;
+            loopThroughTags(run: (id: string, value: number) => void): void;
+            loopThroughIndex(run: (data: number[]) => void): void;
+            loopThroughAllIndexTags(run: (id: string, value: number, index: number) => void): void;
+        };
+        world: {
+            _currentionDimension: string;
+            paint: {
+                _dt: DataTool;
+                voxel(location: import("voxelspaces").LocationData, data: import("../Meta/Data/WorldData.types.js").AddVoxelData, update?: boolean): void;
+                __paint(location: import("voxelspaces").LocationData, data: import("../Meta/Data/WorldData.types.js").AddVoxelData, update?: boolean): false | undefined;
+                erase(location: import("voxelspaces").LocationData): void;
+            };
+        };
+        worldRegister: {
+            _dimensions: import("../Meta/Data/WorldData.types.js").WorldDimensions;
+            _cacheOn: boolean;
+            _chunkCache: Map<string, import("../Meta/Data/WorldData.types.js").ChunkData>;
+            _columnCache: Map<string, import("../Meta/Data/WorldData.types.js").Column>;
+            cache: {
+                enable(): void;
+                disable(): void;
+                _addChunk(key: string, data: import("../Meta/Data/WorldData.types.js").ChunkData): void;
+                _addColumn(key: string, data: import("../Meta/Data/WorldData.types.js").Column): void;
+                _getChunk(key: string): import("../Meta/Data/WorldData.types.js").ChunkData | undefined;
+                _getColumn(key: string): import("../Meta/Data/WorldData.types.js").Column | undefined;
+            };
+            dimensions: {
+                add(id: string | number): Map<any, any>;
+                get(id: string | number): Map<string, import("../Meta/Data/WorldData.types.js").Region> | undefined;
+            };
+            region: {
+                add(location: import("voxelspaces").LocationData, sab: SharedArrayBuffer): import("../Meta/Data/WorldData.types.js").Region;
+                _getRegionData(sab: SharedArrayBuffer): import("../Meta/Data/WorldData.types.js").Region;
+                get(location: import("voxelspaces").LocationData): false | import("../Meta/Data/WorldData.types.js").Region;
+                remove(location: import("voxelspaces").LocationData): boolean;
+            };
+            column: {
+                add(location: import("voxelspaces").LocationData, sab: SharedArrayBuffer): import("../Meta/Data/WorldData.types.js").Column | undefined;
+                _getColumnData(sab: SharedArrayBuffer): import("../Meta/Data/WorldData.types.js").Column;
+                get(location: import("voxelspaces").LocationData): false | import("../Meta/Data/WorldData.types.js").Column;
+                remove(location: import("voxelspaces").LocationData): boolean;
+                fill(location: import("voxelspaces").LocationData): void;
+                height: {
+                    getRelative(location: import("voxelspaces").LocationData): number;
+                    getAbsolute(location: import("voxelspaces").LocationData): number;
+                };
+            };
+            chunk: {
+                add(location: import("voxelspaces").LocationData, sab: SharedArrayBuffer): import("../Meta/Data/WorldData.types.js").ChunkData | undefined;
+                _getChunkData(sab: SharedArrayBuffer): import("../Meta/Data/WorldData.types.js").ChunkData;
+                addFromServer(chunkBuffer: ArrayBuffer): import("../Meta/Data/WorldData.types.js").ChunkData | undefined;
+                get(location: import("voxelspaces").LocationData): false | import("../Meta/Data/WorldData.types.js").ChunkData | undefined;
+                remove(location: import("voxelspaces").LocationData): boolean;
+            };
+        };
+        columnTags: import("divine-binary-tags").RemoteTagManager;
+        worldBounds: {
+            bounds: {
+                MinZ: number;
+                MaxZ: number;
+                MinX: number;
+                MaxX: number;
+                MinY: number;
+                MaxY: number;
+            };
+            setWorldBounds(minX: number, maxX: number, minZ: number, maxZ: number, minY: number, maxY: number): void;
+        };
+        spaces: {
+            region: import("voxelspaces/Classes/VoxelSpace.js").VoxelSpace & {
+                chunkBounds: {
+                    x: number;
+                    y: number;
+                    z: number;
+                };
+                columnBounds: {
+                    x: number;
+                    y: number;
+                    z: number;
+                };
+                getChunkVolume(): number;
+                getColumnVolume(): number;
+            };
+            column: import("voxelspaces/Classes/VoxelSpace.js").VoxelSpace;
+            chunk: import("voxelspaces/Classes/VoxelSpace.js").VoxelSpace & {
+                _regionPosition: {
+                    x: number;
+                    y: number;
+                    z: number;
+                };
+                getRegionPositonx(): {
+                    x: number;
+                    y: number;
+                    z: number;
+                    copy(): any;
+                    copyTo(vec3: {
+                        x: number;
+                        y: number;
+                        z: number;
+                    }): void;
+                    toString(): string;
+                    multiply(vec3: {
+                        x: number;
+                        y: number;
+                        z: number;
+                    }): any;
+                };
+                getRegionPositonxXYZ(x: number, y: number, z: number): {
+                    x: number;
+                    y: number;
+                    z: number;
+                    copy(): any;
+                    copyTo(vec3: {
+                        x: number;
+                        y: number;
+                        z: number;
+                    }): void;
+                    toString(): string;
+                    multiply(vec3: {
+                        x: number;
+                        y: number;
+                        z: number;
+                    }): any;
+                };
+                getRegionIndex(): number;
+                getRegionIndexXYZ(x: number, y: number, z: number): number;
+            };
+            voxel: import("voxelspaces/Classes/VoxelSpace.js").VoxelSpace;
+            setDimensions(data: {
+                regions: {
+                    x: number;
+                    y: number;
+                    z: number;
+                };
+                columns: {
+                    x: number;
+                    y: number;
+                    z: number;
+                };
+                chunks: {
+                    x: number;
+                    y: number;
+                    z: number;
+                };
+            }): void;
+        } & {
+            $INIT(settings: import("../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
+        };
+        register: {
+            stringMaps: {
+                segments: Map<string, Map<string, string[]>>;
+                syncStringMap(data: import("../Meta/Data/DataSync.types.js").RegisterStringMapSync): void;
+                getStringMapValue(segment: string, id: string, index: number): string;
+            };
+        };
+        chunkTags: import("divine-binary-tags").RemoteTagManager;
+        regionTags: import("divine-binary-tags").RemoteTagManager;
+        regionHeaderReigster: {
+            _headers: Map<string, Map<string, {
+                data: DataView;
+                buffer: SharedArrayBuffer;
+            }>>;
+            remove(location: import("voxelspaces").LocationData): boolean;
+            add(location: import("voxelspaces").LocationData, buffer: SharedArrayBuffer): void;
+            get(location: import("voxelspaces").LocationData): false | {
+                data: DataView;
+                buffer: SharedArrayBuffer;
+            } | undefined;
+            isStored(location: import("voxelspaces").LocationData): 0 | 1 | -1;
         };
     };
     voxelManager: {
-        voxelData: Map<string, import("../Meta/Data/Voxels/Voxel.types.js").VoxelData>;
-        getVoxelData(id: string): import("../Meta/Data/Voxels/Voxel.types.js").VoxelData;
-        registerVoxelData(data: import("../Meta/Data/Voxels/Voxel.types.js").VoxelData | import("../Meta/Data/Voxels/Voxel.types.js").VoxelData[]): void;
+        voxelData: Map<string, import("../index.js").VoxelData>;
+        getVoxelData(id: string): import("../index.js").VoxelData;
+        registerVoxelData(data: import("../index.js").VoxelData | import("../index.js").VoxelData[]): void;
     };
-    syncSettings(data: EngineSettingsData): void;
-    reStart(): void;
-    isReady(): boolean;
     $INIT(): Promise<void>;
+    getRichDataTool(): RichDataTool;
+    getDataTool(): DataTool;
 };
-export declare type DivineVoxelEngineRichWorld = typeof DVERW;
+export type DivineVoxelEngineRichWorld = typeof DVERW;

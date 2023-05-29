@@ -1,4 +1,4 @@
-export declare type EngineSettingsData = {
+export type EngineSettingsData = {
     nexus: {
         enabled: boolean;
         autoSyncChunks: boolean;
@@ -7,6 +7,7 @@ export declare type EngineSettingsData = {
     data: {
         enabled: boolean;
         autoSyncChunks: boolean;
+        mode: "server" | "indexdb" | "both";
     };
     richWorld: {
         enabled: boolean;

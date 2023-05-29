@@ -1,10 +1,16 @@
 import type { DivineVoxelEngineData } from "DataLoader/DivineVoxelEngineDataLoader";
-import { ThreadComm } from "../../Libs/ThreadComm/ThreadComm.js";
+import { DataLoaderThreadState } from "../Threads/DataLoaderThreadState.js";
+import { ThreadComm } from "threadcomm";
 export async function InitWorker(DVED: DivineVoxelEngineData) {
- ThreadComm.$INIT("data-loader");
+ let parent = "render";
+ if (DVED.environment == "node") {
+  parent = "server";
+ }
+ await ThreadComm.$INIT("data-loader", parent);
+
  await DVED.UTIL.createPromiseCheck({
   check: () => {
-   return DVED.isReady();
+   return DataLoaderThreadState.isReady();
   },
   checkInterval: 1,
  });

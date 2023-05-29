@@ -1,8 +1,14 @@
 import type { DivineVoxelEngineNexus } from "Nexus/DivineVoxelEngineNexus";
-import { ThreadComm } from "../../Libs/ThreadComm/ThreadComm.js";
-export async function InitNexusWorker(
- DVEN: DivineVoxelEngineNexus
-) {
- await ThreadComm.$INIT("nexus");
- await DVEN.UTIL.createPromiseCheck({ check: DVEN.isReady, checkInterval: 1 });
+import { NexusThreadState } from "../Threads/NexusThreadState.js";
+import { ThreadComm } from "threadcomm";
+export async function InitNexusWorker(DVEN: DivineVoxelEngineNexus) {
+ let parent = "render";
+ if (DVEN.environment == "node") {
+  parent = "server";
+ }
+ await ThreadComm.$INIT("nexus", parent);
+ await DVEN.UTIL.createPromiseCheck({ check: ()=>{
+
+    return NexusThreadState.isReady()
+ }, checkInterval: 1 });
 }

@@ -1,8 +1,8 @@
-import type { LocationData } from "Libs/voxelSpaces/Types/VoxelSpaces.types";
+import type { LocationData } from "voxelspaces";
 import type { AddToRebuildQueue, BuildTasks, Priorities, PriorityTask } from "Meta/Tasks/Tasks.types";
-import type { CommBase } from "../../Libs/ThreadComm/Comm/Comm";
+import { CommBase } from "threadcomm";
 import { VisitedMap } from "../../Global/Util/VisistedMap.js";
-declare type RebuildModes = "sync" | "async";
+type RebuildModes = "sync" | "async";
 declare class Request<T, Q> {
     tasksType: string;
     origin: LocationData;
@@ -34,18 +34,20 @@ declare class Request<T, Q> {
     addNeighborsToRebuildQueue(x: number, y: number, z: number): false | this | undefined;
     runRebuildQueue(): this;
 }
-declare type Vec3Array = [x: number, y: number, z: number][];
-declare type FlowVec3Array = number[][];
+type Vec3Array = [x: number, y: number, z: number][];
+type FlowVec3Array = number[][];
 export declare const TasksRequest: {
     getLightUpdateRequest(origin: LocationData, buildQueue?: string, originThread?: string): Request<any, {
         rgb: {
             update: number[];
-            rmeove: number[];
+            remove: number[];
             map: VisitedMap;
         };
         sun: {
             update: number[];
-            rmeove: number[];
+            remove: number[];
+            updateMap: VisitedMap;
+            remvoeMap: VisitedMap;
         };
     }>;
     getFlowUpdateRequest(origin: LocationData, buildQueue?: string, originThread?: string): Request<null, {
@@ -54,7 +56,7 @@ export declare const TasksRequest: {
                 queue: FlowVec3Array;
                 map: VisitedMap;
             };
-            rmeove: {
+            remove: {
                 queue: FlowVec3Array;
                 map: VisitedMap;
                 noRemoveMap: VisitedMap;
@@ -62,12 +64,14 @@ export declare const TasksRequest: {
         };
         rgb: {
             update: number[];
-            rmeove: number[];
+            remove: number[];
             map: VisitedMap;
         };
         sun: {
             update: number[];
-            rmeove: number[];
+            remove: number[];
+            updateMap: VisitedMap;
+            remvoeMap: VisitedMap;
         };
     }>;
     getVoxelUpdateRequests(origin: LocationData, buildQueue?: string, originThread?: string): Request<null, {
@@ -76,7 +80,7 @@ export declare const TasksRequest: {
                 queue: FlowVec3Array;
                 map: VisitedMap;
             };
-            rmeove: {
+            remove: {
                 queue: FlowVec3Array;
                 map: VisitedMap;
                 noRemoveMap: VisitedMap;
@@ -84,12 +88,14 @@ export declare const TasksRequest: {
         };
         rgb: {
             update: number[];
-            rmeove: number[];
+            remove: number[];
             map: VisitedMap;
         };
         sun: {
             update: number[];
-            rmeove: number[];
+            remove: number[];
+            updateMap: VisitedMap;
+            remvoeMap: VisitedMap;
         };
     }>;
     getWorldSunRequests(origin: LocationData, buildQueue?: string, originThread?: string): Request<null, {
@@ -101,7 +107,7 @@ export declare const TasksRequest: {
                 queue: FlowVec3Array;
                 map: VisitedMap;
             };
-            rmeove: {
+            remove: {
                 queue: FlowVec3Array;
                 map: VisitedMap;
                 noRemoveMap: VisitedMap;
@@ -109,20 +115,22 @@ export declare const TasksRequest: {
         };
         rgb: {
             update: number[];
-            rmeove: number[];
+            remove: number[];
             map: VisitedMap;
         };
         sun: {
             update: number[];
-            rmeove: number[];
+            remove: number[];
+            updateMap: VisitedMap;
+            remvoeMap: VisitedMap;
         };
         queue: Vec3Array;
         map: VisitedMap;
     }>;
 };
-export declare type ExplosionTaskRequests = ReturnType<typeof TasksRequest.getExplosionRequests>;
-export declare type VoxelUpdateTaskRequest = ReturnType<typeof TasksRequest.getVoxelUpdateRequests>;
-export declare type FlowTaskRequests = ReturnType<typeof TasksRequest.getFlowUpdateRequest>;
-export declare type LightTaskRequest = ReturnType<typeof TasksRequest.getLightUpdateRequest>;
-export declare type WorldSunTaskRequest = ReturnType<typeof TasksRequest.getWorldSunRequests>;
+export type ExplosionTaskRequests = ReturnType<typeof TasksRequest.getExplosionRequests>;
+export type VoxelUpdateTaskRequest = ReturnType<typeof TasksRequest.getVoxelUpdateRequests>;
+export type FlowTaskRequests = ReturnType<typeof TasksRequest.getFlowUpdateRequest>;
+export type LightTaskRequest = ReturnType<typeof TasksRequest.getLightUpdateRequest>;
+export type WorldSunTaskRequest = ReturnType<typeof TasksRequest.getWorldSunRequests>;
 export {};

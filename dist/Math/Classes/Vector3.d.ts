@@ -1,3 +1,4 @@
+import { Position3Matrix } from "Math/Types/Math.types";
 export declare class Vector3 {
     x: number;
     y: number;
@@ -7,11 +8,12 @@ export declare class Vector3 {
         y: number;
         z: number;
     };
+    static NaNRestore(vec3: Position3Matrix): void;
     constructor(x: number, y: number, z: number);
-    updateFromArray(array: number[] | Float32Array | Float64Array, startIndex?: number): void;
-    updateVector(x: number, y: number, z: number): void;
-    updateFromVec3(vector: Vector3): void;
-    roundVector(deciamlPoints?: number): void;
+    updateFromArray(array: number[] | Float32Array | Float64Array, startIndex?: number): this;
+    updateVector(x: number, y: number, z: number): this;
+    updateFromVec3(vector: Vector3): this;
+    roundVector(deciamlPoints?: number): this;
     translate(x: number, y: number, z: number): this;
     getTranslated(x: number, y: number, z: number): {
         x: number;

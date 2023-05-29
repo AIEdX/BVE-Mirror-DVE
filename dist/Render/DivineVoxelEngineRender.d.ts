@@ -1,8 +1,9 @@
+import { DVEBabylonSystem } from "./Nodes/DVEBabylon.js";
 import type { DVERInitData } from "Meta/Render/DVER";
-import type { EngineSettingsData } from "Meta/Data/Settings/EngineSettings.types";
+import type { Scene } from "@babylonjs/core";
 import { SceneTool } from "./Tools/SceneTool.js";
-import type { Scene } from "babylonjs";
-import { DVEBabylonSystem } from "./Babylon/DVEBabylon.js";
+import { RichDataTool } from "../Tools/Data/RichDataTool.js";
+import { NodeMeshTool } from "./Tools/NodeMeshTool.js";
 export declare const DVER: {
     UTIL: {
         createPromiseCheck: (data: {
@@ -24,53 +25,48 @@ export declare const DVER: {
         threadNumber: number;
         threadName: string;
         environment: "node" | "browser";
-        _comms: Record<string, import("../Libs/ThreadComm/Comm/Comm.js").CommBase>;
-        _commManageras: Record<string, import("../Libs/ThreadComm/Manager/CommManager.js").CommManager>;
-        _tasks: Record<string, import("../Libs/ThreadComm/Tasks/Tasks.js").Task<any>>;
-        _queues: Map<string, Map<string, import("../Libs/ThreadComm/Queue/SyncedQueue.js").SyncedQueue>>;
-        _onDataSync: Record<string, import("../Libs/ThreadComm/Data/DataSync.js").DataSync<any, any>>;
-        parent: import("../Libs/ThreadComm/Comm/Comm.js").CommBase;
-        __internal: Record<number, Record<number, (data: any, event: any) => void>>;
+        _comms: Record<string, import("threadcomm").CommBase>;
+        _commManageras: Record<string, import("threadcomm").CommManager>;
+        _queues: Map<string, Map<string, import("threadcomm/Queue/SyncedQueue.js").SyncedQueue>>;
+        parent: import("threadcomm").CommBase;
+        internal: {
+            _tasks: Map<number, Map<number, import("threadcomm/Meta/Util.types.js").MessageFunction>>;
+            registerTasks(headID: number, taskId: number, run: import("threadcomm/Meta/Util.types.js").MessageFunction): void;
+            isInternal(data: any): boolean;
+            runInternal(data: any, event: any): false | undefined;
+        };
         __initalized: boolean;
         __expectedPorts: Record<string, boolean>;
-        $INIT(threadName: string): Promise<void>;
-        getSyncedQueue(threadId: string, queueId: string): import("../Libs/ThreadComm/Queue/SyncedQueue.js").SyncedQueue | undefined;
-        addComm(comm: import("../Libs/ThreadComm/Comm/Comm.js").CommBase): void;
-        createComm<T_2>(name: string, mergeObject?: T_2): T_2 & import("../Libs/ThreadComm/Comm/Comm.js").CommBase;
-        createCommManager(data: import("../Libs/ThreadComm/Meta/Manager/Manager.types.js").CommManagerData): import("../Libs/ThreadComm/Manager/CommManager.js").CommManager;
-        getComm(id: string): import("../Libs/ThreadComm/Comm/Comm.js").CommBase;
-        getCommManager(id: string): import("../Libs/ThreadComm/Manager/CommManager.js").CommManager;
-        __throwError(message: string): never;
+        crypto: Crypto;
+        $INIT(threadName: string, threadParentName: string): Promise<void>;
+        getSyncedQueue(threadId: string, queueId: string): import("threadcomm/Queue/SyncedQueue.js").SyncedQueue | undefined;
+        addComm(comm: import("threadcomm").CommBase): void;
+        createComm<T_2>(name: string, mergeObject?: T_2 | undefined): T_2 & import("threadcomm").CommBase;
+        createCommManager(data: import("threadcomm/Meta/Manager/Manager.types.js").CommManagerData): import("threadcomm").CommManager;
+        getComm(id: string): import("threadcomm").CommBase;
+        getCommManager(id: string): import("threadcomm").CommManager;
         getWorkerPort(): Promise<any>;
-        __handleInternalMessage(data: any[], event: any): void;
-        __isInternalMessage(data: any[]): boolean;
-        __handleTasksDone(tasksId: string, mode: number, threadId: string, tid: string, tasksData: any): void;
-        __handleTasksMessage(data: any[]): Promise<void>;
-        __isTasks(data: any[]): boolean;
-        registerTasks<T_3>(id: string | number, run: (data: T_3, onDone?: Function | undefined) => void, mode?: "async" | "deffered"): import("../Libs/ThreadComm/Tasks/Tasks.js").Task<T_3>;
-        __hanldeDataSyncMessage(data: any[]): Promise<void>;
-        __isDataSync(data: any[]): boolean;
-        onDataSync<T_4, K_1>(dataType: string | number, onSync?: ((data: T_4) => void) | undefined, onUnSync?: ((data: K_1) => void) | undefined): import("../Libs/ThreadComm/Data/DataSync.js").DataSync<T_4, K_1>;
+        registerTasks<T_1>(id: string | number, run: (data: T_1, onDone?: ((data?: any, transfers?: any) => void) | undefined) => void, mode?: "async" | "deferred" | undefined): void;
+        onDataSync<T_2, K_1>(dataType: string | number, onSync?: ((data: T_2) => void) | undefined, onUnSync?: ((data: K_1) => void) | undefined): import("threadcomm").DataSync<T_2, K_1>;
     };
-    currentCom: import("../Libs/ThreadComm/Comm/Comm.js").CommBase;
-    worldComm: import("../Libs/ThreadComm/Comm/Comm.js").CommBase;
-    nexusComm: import("../Libs/ThreadComm/Comm/Comm.js").CommBase & {
+    currentCom: import("threadcomm").CommBase;
+    worldComm: import("threadcomm").CommBase;
+    nexusComm: import("threadcomm").CommBase & {
         $INIT(): void;
     };
-    dataComm: import("../Libs/ThreadComm/Comm/Comm.js").CommBase & {
+    dataComm: import("threadcomm").CommBase & {
         $INIT(): void;
     };
-    fxComm: import("../Libs/ThreadComm/Comm/Comm.js").CommBase & {
+    fxComm: import("threadcomm").CommBase & {
         $INIT(): void;
     };
-    richWorldComm: import("../Libs/ThreadComm/Comm/Comm.js").CommBase & {
+    richWorldComm: import("threadcomm").CommBase & {
         $INIT(): void;
     };
-    constructorCommManager: import("../Libs/ThreadComm/Manager/CommManager.js").CommManager & {
-        $INIT(dasta: import("../Meta/Render/Textures/Texture.types.js").TextureTypeUVMap): void;
-        createConstructors(path: string, numBuilders?: number): void;
+    constructorCommManager: import("threadcomm").CommManager & {
+        $INIT(): void;
+        syncTextureData(dasta: import("../index.js").TextureTypeUVMap): void;
         setConstructors(constructors: Worker[]): void;
-        syncSettings(data: any): void;
     };
     babylon: {
         system: DVEBabylonSystem;
@@ -78,9 +74,9 @@ export declare const DVER: {
     };
     settings: {
         enviorment: "node" | "browser";
-        settings: EngineSettingsData;
-        getSettings(): EngineSettingsData;
-        syncSettings(data: EngineSettingsData): void;
+        settings: import("../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData;
+        getSettings(): import("../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData;
+        syncSettings(data: import("../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
         __syncWithObjects(): void;
         syncWithWorldBounds(worldBounds: {
             bounds: {
@@ -108,143 +104,106 @@ export declare const DVER: {
         isClient(): boolean;
     };
     render: {
-        fogOptions: import("../Meta/Render/Render/Render.options.types.js").RenderFogOptions;
         meshRegister: {
             _dimensions: import("../Meta/Render/Scene/MeshRegister.types.js").MeshRegisterDimensions;
             $INIT(): void;
+            clearAll(): void;
             dimensions: {
                 add(id: string): Map<any, any>;
                 get(id: string): Map<string, import("../Meta/Render/Scene/MeshRegister.types.js").MushRegisterRegion> | undefined;
                 remove(id: string): boolean;
             };
             region: {
-                add(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): import("../Meta/Render/Scene/MeshRegister.types.js").MushRegisterRegion;
-                remove(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): boolean;
+                add(location: import("voxelspaces").LocationData): import("../Meta/Render/Scene/MeshRegister.types.js").MushRegisterRegion;
+                remove(location: import("voxelspaces").LocationData): boolean;
                 _getRegionData(): import("../Meta/Render/Scene/MeshRegister.types.js").MushRegisterRegion;
-                get(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): false | import("../Meta/Render/Scene/MeshRegister.types.js").MushRegisterRegion;
+                get(location: import("voxelspaces").LocationData): false | import("../Meta/Render/Scene/MeshRegister.types.js").MushRegisterRegion;
             };
             column: {
-                add(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): import("../Meta/Render/Scene/MeshRegister.types.js").MeshRegisterColumn;
-                remove(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): false | import("../Meta/Render/Scene/MeshRegister.types.js").MeshRegisterColumn;
-                _getColumnData(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): import("../Meta/Render/Scene/MeshRegister.types.js").MeshRegisterColumn;
-                get(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): false | import("../Meta/Render/Scene/MeshRegister.types.js").MeshRegisterColumn | undefined;
+                add(location: import("voxelspaces").LocationData): import("../Meta/Render/Scene/MeshRegister.types.js").MeshRegisterColumn;
+                remove(location: import("voxelspaces").LocationData): false | import("../Meta/Render/Scene/MeshRegister.types.js").MeshRegisterColumn;
+                _getColumnData(location: import("voxelspaces").LocationData): import("../Meta/Render/Scene/MeshRegister.types.js").MeshRegisterColumn;
+                get(location: import("voxelspaces").LocationData): false | import("../Meta/Render/Scene/MeshRegister.types.js").MeshRegisterColumn | undefined;
             };
             chunk: {
-                add(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData, mesh: import("babylonjs").Mesh, substance: string): Map<string, import("../Meta/Render/Scene/MeshRegister.types.js").MeshRegisterChunk>;
-                _getChunkData(mesh: import("babylonjs").Mesh): import("../Meta/Render/Scene/MeshRegister.types.js").MeshRegisterChunk;
-                remove(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData, substance: string): false | import("babylonjs").Mesh;
-                get(location: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData, substance: string): false | import("../Meta/Render/Scene/MeshRegister.types.js").MeshRegisterChunk;
+                add(location: import("voxelspaces").LocationData, mesh: import("@babylonjs/core").Mesh, substance: string): Map<string, import("../Meta/Render/Scene/MeshRegister.types.js").MeshRegisterChunk>;
+                _getChunkData(mesh: import("@babylonjs/core").Mesh): import("../Meta/Render/Scene/MeshRegister.types.js").MeshRegisterChunk;
+                remove(location: import("voxelspaces").LocationData, substance: string): false | import("@babylonjs/core").Mesh;
+                get(location: import("voxelspaces").LocationData, substance: string): false | import("../Meta/Render/Scene/MeshRegister.types.js").MeshRegisterChunk;
             };
         };
         meshManager: {
             scene: Scene;
             runningUpdate: boolean;
-            meshMakers: Record<string, import("./Render/Meshes/DVEMesh.js").DVEMesh>;
             $INIT(scene: Scene): void;
+            removeColumnsOutsideRadius(origion: import("voxelspaces").LocationData, radius: number): void;
             chunks: {
                 remove(data: import("../Meta/Tasks/RenderTasks.types.js").RemoveChunkMeshTasks): false | undefined;
                 update(data: import("../Meta/Tasks/RenderTasks.types.js").SetChunkMeshTask): void;
-                removeColumn(data: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): false | undefined;
+                removeColumn(data: import("voxelspaces").LocationData): false | undefined;
             };
         };
         meshCuller: {
             $INIT(scene: Scene): void;
         };
-        fogData: import("babylonjs").Vector4;
-        effectOptions: import("../Meta/Render/Render/Render.options.types.js").DVERenderEffectsOptions;
         fo: {
-            activeCamera: import("babylonjs").TransformNode | null;
-            activeNode: import("babylonjs").TransformNode | null;
+            activeCamera: import("@babylonjs/core").TransformNode | null;
+            activeNode: import("@babylonjs/core").TransformNode | null;
             onOriginSet: Function[];
-            registerOnOriginSet(run: (node: import("babylonjs").TransformNode) => void): void;
+            registerOnOriginSet(run: (node: import("@babylonjs/core").TransformNode) => void): void;
             setOriginCenter(scene: Scene, object: {
-                position: import("babylonjs").Vector3;
+                position: import("@babylonjs/core").Vector3;
             }): void;
         };
         shaders: {
             builder: {
                 shaders: {
-                    _shaders: Map<string, import("../Libs/Shaders/Classes/DivineShader.js").DivineShader>;
-                    create(id: string): import("../Libs/Shaders/Classes/DivineShader.js").DivineShader;
+                    _shaders: Map<string, import("divine-shaders").DivineShader>;
+                    create(id: string): import("divine-shaders").DivineShader;
                 };
                 functions: {
-                    _functions: Map<string, import("../Libs/Shaders/Types/ShaderData.types.js").ShaderFunctionData<any>>;
+                    _functions: Map<string, import("divine-shaders").ShaderFunctionData<any>>;
                     _functionSets: Map<string, string[]>;
-                    create(id: string, data: import("../Libs/Shaders/Types/ShaderData.types.js").ShaderFunctionData<any>): void;
-                    _processFunctinos(id: string, data: import("../Libs/Shaders/Types/ShaderData.types.js").ShaderFunctionData<any>, shader?: import("../Libs/Shaders/Classes/DivineShader.js").DivineShader | null): string;
-                    build(id: string, data?: import("../Libs/Shaders/Types/ShaderData.types.js").ShaderFunctionData<any> | null, shader?: import("../Libs/Shaders/Classes/DivineShader.js").DivineShader | null): string;
+                    create(id: string, data: import("divine-shaders").ShaderFunctionData<any>): void;
+                    _processFunctinos(id: string, data: import("divine-shaders").ShaderFunctionData<any>, shader?: import("divine-shaders").DivineShader | null | undefined): string;
+                    build(id: string, data?: import("divine-shaders").ShaderFunctionData<any> | null | undefined, shader?: import("divine-shaders").DivineShader | null | undefined): string;
                 };
                 define: {
-                    _process(data: import("../Libs/Shaders/Types/ShaderData.types.js").ShaderDefinesData): string;
-                    build(data: import("../Libs/Shaders/Types/ShaderData.types.js").ShaderDefinesData | import("../Libs/Shaders/Types/ShaderData.types.js").ShaderDefinesData[] | Map<string, import("../Libs/Shaders/Types/ShaderData.types.js").ShaderDefinesData>): string;
+                    _process(data: import("divine-shaders").ShaderDefinesData): string;
+                    build(data: import("divine-shaders").ShaderDefinesData | import("divine-shaders").ShaderDefinesData[] | Map<string, import("divine-shaders").ShaderDefinesData>): string;
                 };
                 uniforms: {
-                    _process(data: import("../Libs/Shaders/Types/ShaderData.types.js").ShaderUniformData): string;
-                    build(data: import("../Libs/Shaders/Types/ShaderData.types.js").ShaderUniformData | import("../Libs/Shaders/Types/ShaderData.types.js").ShaderUniformData[] | Map<string, import("../Libs/Shaders/Types/ShaderData.types.js").ShaderUniformData>): string;
+                    _process(data: import("divine-shaders").ShaderUniformData): string;
+                    build(data: import("divine-shaders").ShaderUniformData | import("divine-shaders").ShaderUniformData[] | Map<string, import("divine-shaders").ShaderUniformData>): string;
                 };
                 snippets: {
-                    _snippets: Map<string, import("../Libs/Shaders/Types/ShaderData.types.js").ShaderSnippetData<any>>;
-                    create(data: import("../Libs/Shaders/Types/ShaderData.types.js").ShaderSnippetData<any>): void;
-                    override(id: string, data: import("../Libs/Shaders/Types/ShaderData.types.js").ShaderSnippetData<any>): boolean;
+                    _snippets: Map<string, import("divine-shaders").ShaderSnippetData<any>>;
+                    create(data: import("divine-shaders").ShaderSnippetData<any>): void;
+                    override(id: string, data: import("divine-shaders").ShaderSnippetData<any>): boolean;
                     get(id: string, args?: any): string;
-                    _process(text: string, shader?: import("../Libs/Shaders/Classes/DivineShader.js").DivineShader | undefined): {
+                    _process(text: string, shader?: import("divine-shaders").DivineShader | undefined): {
                         newBody: string;
                         foundSnippet: boolean;
                     };
-                    build(text: string, shader?: import("../Libs/Shaders/Classes/DivineShader.js").DivineShader | undefined): string;
+                    build(text: string, shader?: import("divine-shaders").DivineShader | undefined): string;
                 };
             };
-            voxelAttributes: [id: string, type: import("../Libs/Shaders/Types/ShaderData.types.js").ShaderDataTypes][];
-            voxelSharedUniforms: [id: string, type: import("../Libs/Shaders/Types/ShaderData.types.js").ShaderDataTypes][];
-            voxelVertexUniforms: [id: string, type: import("../Libs/Shaders/Types/ShaderData.types.js").ShaderDataTypes][];
-            voxelVarying: import("../Libs/Shaders/Types/ShaderData.types.js").ShaderVaryingData<any>[];
+            voxelAttributes: [id: string, type: import("divine-shaders").ShaderDataTypes][];
+            voxelSharedUniforms: [id: string, type: import("divine-shaders").ShaderDataTypes][];
+            voxelVertexUniforms: [id: string, type: import("divine-shaders").ShaderDataTypes][];
+            voxelVarying: import("divine-shaders").ShaderVaryingData<any>[];
             voxelFragFunctions: string[];
             voxelVertexFunctions: string[];
-            _defaultShader: import("../Libs/Shaders/Classes/DivineShader.js").DivineShader;
+            _defaultShader: import("divine-shaders").DivineShader;
             $INIT(): void;
-            createVoxelShader(id: string): import("../Libs/Shaders/Classes/DivineShader.js").DivineShader;
-            createSkyBoxShader(id: string): import("../Libs/Shaders/Classes/DivineShader.js").DivineShader;
+            createVoxelShader(id: string): import("divine-shaders").DivineShader;
+            createBasicTextureShader(id: string): import("divine-shaders").DivineShader;
+            createSkyBoxShader(id: string): import("divine-shaders").DivineShader;
         };
-        solidMaterial: import("./Render/Materials/DVEMaterial.js").DVEMaterial;
-        floraMaterial: import("./Render/Materials/DVEMaterial.js").DVEMaterial;
-        liquidMaterial: import("./Render/Materials/DVEMaterial.js").DVEMaterial;
-        solidMesh: import("./Render/Meshes/DVEMesh.js").DVEMesh;
-        floraMesh: import("./Render/Meshes/DVEMesh.js").DVEMesh;
-        liquidMesh: import("./Render/Meshes/DVEMesh.js").DVEMesh;
-        skyBoxMaterial: {
-            material: import("babylonjs").ShaderMaterial | null;
-            time: number;
-            getMaterial(): import("babylonjs").ShaderMaterial | null;
-            updateFogOptions(data: import("babylonjs").Vector4): void;
-            setSunLightLevel(level: number): void;
-            setBaseLevel(level: number): void;
-            updateMaterialSettings(settings: EngineSettingsData): void;
-            createMaterial(scene: Scene): import("babylonjs").ShaderMaterial;
-            overrideMaterial(material: any): void;
-            runEffects(): void;
-        };
+        sceneTool: SceneTool;
         scene: Scene | null;
-        updateFogOptions(options: import("../Meta/Util.types.js").RecursivePartial<import("../Meta/Render/Render/Render.options.types.js").RenderFogOptions>): void;
-        _setFogData(): void;
         $INIT(scene: Scene): void;
-        updateShaderEffectOptions(options: import("../Meta/Util.types.js").RecursivePartial<import("../Meta/Render/Render/Render.options.types.js").DVERenderEffectsOptions>): void;
-        syncSettings(): void;
         getScene(): Scene | null;
-        getDefaultCamera(scene: Scene): import("babylonjs").UniversalCamera;
-        createSkyBoxMaterial(scene?: Scene | undefined): import("babylonjs").ShaderMaterial | null;
-        setSunLevel(level: number): void;
-        setBaseLevel(level: number): void;
-    };
-    meshManager: {
-        scene: Scene;
-        runningUpdate: boolean;
-        meshMakers: Record<string, import("./Render/Meshes/DVEMesh.js").DVEMesh>;
-        $INIT(scene: Scene): void;
-        chunks: {
-            remove(data: import("../Meta/Tasks/RenderTasks.types.js").RemoveChunkMeshTasks): false | undefined;
-            update(data: import("../Meta/Tasks/RenderTasks.types.js").SetChunkMeshTask): void;
-            removeColumn(data: import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData): false | undefined;
-        };
     };
     data: {
         worldBounds: {
@@ -259,7 +218,7 @@ export declare const DVER: {
             setWorldBounds(minX: number, maxX: number, minZ: number, maxZ: number, minY: number, maxY: number): void;
         };
         spaces: {
-            region: import("../Libs/voxelSpaces/Classes/VoxelSpace.js").VoxelSpace & {
+            region: import("voxelspaces/Classes/VoxelSpace.js").VoxelSpace & {
                 chunkBounds: {
                     x: number;
                     y: number;
@@ -273,8 +232,8 @@ export declare const DVER: {
                 getChunkVolume(): number;
                 getColumnVolume(): number;
             };
-            column: import("../Libs/voxelSpaces/Classes/VoxelSpace.js").VoxelSpace;
-            chunk: import("../Libs/voxelSpaces/Classes/VoxelSpace.js").VoxelSpace & {
+            column: import("voxelspaces/Classes/VoxelSpace.js").VoxelSpace;
+            chunk: import("voxelspaces/Classes/VoxelSpace.js").VoxelSpace & {
                 _regionPosition: {
                     x: number;
                     y: number;
@@ -317,7 +276,7 @@ export declare const DVER: {
                 getRegionIndex(): number;
                 getRegionIndexXYZ(x: number, y: number, z: number): number;
             };
-            voxel: import("../Libs/voxelSpaces/Classes/VoxelSpace.js").VoxelSpace;
+            voxel: import("voxelspaces/Classes/VoxelSpace.js").VoxelSpace;
             setDimensions(data: {
                 regions: {
                     x: number;
@@ -336,37 +295,104 @@ export declare const DVER: {
                 };
             }): void;
         } & {
-            $INIT(settings: EngineSettingsData): void;
+            $INIT(settings: import("../Meta/Data/Settings/EngineSettings.types.js").EngineSettingsData): void;
         };
     };
-    textures: {
-        defaultTexturePath: string;
-        textureTypes: Map<string, import("./Textures/TextureType.js").TextureType>;
-        _processVariations(texture: import("../Meta/Render/Textures/Texture.types.js").TextureData, texturePaths: string[], map: Record<string, number>, animations: number[][], textureAnimatioTimes: number[][], extension: string, count: number, path: string): number;
-        generateTexturesData(id: string): false | undefined;
-        _ready: boolean;
-        isReady(): boolean;
-        $INIT(): Promise<void>;
-        $START_ANIMATIONS(): void;
-        getTextureUVMap(): import("../Meta/Render/Textures/Texture.types.js").TextureTypeUVMap;
-        defineDefaultTexturePath(path: string): void;
-        getTextureType(id: string): false | import("./Textures/TextureType.js").TextureType;
-        addTextureType(id: string): void;
-        registerTexture(textureData: import("../Meta/Render/Textures/Texture.types.js").TextureData | import("../Meta/Render/Textures/Texture.types.js").TextureData[]): void;
+    nodes: {
+        shaders: {
+            shaders: import("../Global/Util/UtilMap.js").UtilMap<string, import("divine-shaders").DivineShader>;
+            create(shaders: import("divine-shaders").DivineShader[]): void;
+            get(id: string): import("divine-shaders").DivineShader | undefined;
+            getBulder(): {
+                shaders: {
+                    _shaders: Map<string, import("divine-shaders").DivineShader>;
+                    create(id: string): import("divine-shaders").DivineShader;
+                };
+                functions: {
+                    _functions: Map<string, import("divine-shaders").ShaderFunctionData<any>>;
+                    _functionSets: Map<string, string[]>;
+                    create(id: string, data: import("divine-shaders").ShaderFunctionData<any>): void;
+                    _processFunctinos(id: string, data: import("divine-shaders").ShaderFunctionData<any>, shader?: import("divine-shaders").DivineShader | null | undefined): string;
+                    build(id: string, data?: import("divine-shaders").ShaderFunctionData<any> | null | undefined, shader?: import("divine-shaders").DivineShader | null | undefined): string;
+                };
+                define: {
+                    _process(data: import("divine-shaders").ShaderDefinesData): string;
+                    build(data: import("divine-shaders").ShaderDefinesData | import("divine-shaders").ShaderDefinesData[] | Map<string, import("divine-shaders").ShaderDefinesData>): string;
+                };
+                uniforms: {
+                    _process(data: import("divine-shaders").ShaderUniformData): string;
+                    build(data: import("divine-shaders").ShaderUniformData | import("divine-shaders").ShaderUniformData[] | Map<string, import("divine-shaders").ShaderUniformData>): string;
+                };
+                snippets: {
+                    _snippets: Map<string, import("divine-shaders").ShaderSnippetData<any>>;
+                    create(data: import("divine-shaders").ShaderSnippetData<any>): void;
+                    override(id: string, data: import("divine-shaders").ShaderSnippetData<any>): boolean;
+                    get(id: string, args?: any): string;
+                    _process(text: string, shader?: import("divine-shaders").DivineShader | undefined): {
+                        newBody: string;
+                        foundSnippet: boolean;
+                    };
+                    build(text: string, shader?: import("divine-shaders").DivineShader | undefined): string;
+                };
+            };
+        };
+        meshes: {
+            meshes: import("../Global/Util/UtilMap.js").UtilMap<string, import("./Nodes/Meshes/NodeMesh.js").NodeMesh>;
+            add(meshes: import("./Nodes/types/RenderNode.types.js").NodeMeshData[]): void;
+            create(id: string, data: import("../Meta/Tasks/RenderTasks.types.js").SetNodeMesh): false | import("@babylonjs/core").Mesh;
+            get(id: string): import("./Nodes/Meshes/NodeMesh.js").NodeMesh | undefined;
+        };
+        materials: {
+            materials: import("../Global/Util/UtilMap.js").UtilMap<string, import("./Nodes/Materials/NodeMaterial.js").NodeMaterial>;
+            fogOptions: import("../Meta/Render/Render/Render.options.types.js").RenderFogOptions;
+            fogData: import("@babylonjs/core").Vector4;
+            unifrosm: {
+                lightGradient: number[];
+            };
+            init(): void;
+            get(id: string): import("./Nodes/Materials/NodeMaterial.js").NodeMaterial | null;
+            create(materials: import("./Nodes/types/RenderNode.types.js").NodeMaterialData[]): void;
+            _updateFogData(data: import("@babylonjs/core").Vector4): void;
+            setSunLevel(level: number): void;
+            setBaseLevel(level: number): void;
+            setOption(id: string, value: boolean): void;
+            updateFogOptions(options: import("../index.js").RecursivePartial<import("../Meta/Render/Render/Render.options.types.js").RenderFogOptions>): void;
+        };
+        textures: {
+            defaultTexturePath: string;
+            textureTypes: Map<string, import("./Nodes/Textures/TextureType.js").TextureType>;
+            uvMap: import("../index.js").TextureTypeUVMap;
+            getTextureIndex(data: import("../index.js").ConstructorTextureData, overlay?: boolean): number;
+            _ready: boolean;
+            isReady(): boolean;
+            $INIT(): Promise<void>;
+            $START_ANIMATIONS(): void;
+            generateTextureUVMap(): import("../index.js").TextureTypeUVMap;
+            defineDefaultTexturePath(path: string): void;
+            getTextureType(id: string): false | import("./Nodes/Textures/TextureType.js").TextureType;
+            addTextureType(id: string): import("./Nodes/Textures/TextureType.js").TextureType;
+            clearTextureData(): void;
+            registerTexture(textureData: import("../index.js").TextureData | import("../index.js").TextureData[]): void;
+            createRawDataMap(): Promise<Map<string, Uint8ClampedArray>>;
+        };
+        _scene: Scene;
+        init(): void;
     };
     tasks: {
-        setChunk: import("../Libs/ThreadComm/Tasks/Tasks.js").Task<import("../Meta/Tasks/RenderTasks.types.js").SetChunkMeshTask>;
-        removeChunk: import("../Libs/ThreadComm/Tasks/Tasks.js").Task<import("../Meta/Tasks/RenderTasks.types.js").RemoveChunkMeshTasks>;
-        removeColumn: import("../Libs/ThreadComm/Tasks/Tasks.js").Task<import("../Libs/voxelSpaces/Types/VoxelSpaces.types.js").LocationData>;
-        removeColumnsOutsideRadius: import("../Libs/ThreadComm/Tasks/Tasks.js").Task<import("../Meta/Tasks/RenderTasks.types.js").RemoveChunksOutsideDistance>;
+        setChunk: void;
+        removeChunk: void;
+        removeColumn: void;
+        clearAll: void;
+        removeColumnsOutsideRadius: void;
+        setNodeMesh: void;
     };
-    syncSettingsWithWorkers(data: EngineSettingsData): void;
     $INIT(initData: DVERInitData): Promise<void>;
     $SCENEINIT(data: {
         scene: Scene;
         system: DVEBabylonSystem;
     }): Promise<void>;
-    __createWorker(path: string): Worker;
     getSceneTool(): SceneTool;
+    getRichDataTool(): RichDataTool;
+    getNodeMeshTool(): NodeMeshTool;
 };
-export declare type DivineVoxelEngineRender = typeof DVER;
+export type DivineVoxelEngineRender = typeof DVER;

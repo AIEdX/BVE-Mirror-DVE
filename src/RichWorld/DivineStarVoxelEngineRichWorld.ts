@@ -1,23 +1,35 @@
-//types
-import type { EngineSettingsData } from "Meta/Data/Settings/EngineSettings.types.js";
 //objects
 import { EngineSettings } from "../Data/Settings/EngineSettings.js";
 import { Util } from "../Global/Util.helper.js";
 //import { RichWorldTasks } from "./Tasks/Tasks.js";
+//data
+import { DataSyncNode } from "../Data/DataSyncNode.js";
+import { DataManager } from "../Data/DataManager.js";
+import { WorldBounds } from "../Data/World/WorldBounds.js";
+
 //threads
-import { WorldComm } from "./Threads/World/WorldComm.js";
-import { ParentComm } from "./Threads/Parent/ParentComm.js";
+import {
+ WorldComm,
+ ParentComm,
+ NexusComm,
+ ConstructorComm,
+ FXComm,
+ DataComm,
+} from "./Threads/RichWorldThreads.js";
 //functions
 import { InitWorker } from "./Init/InitWorker.js";
 import { RichDataRegister } from "./Register/RichDataRegister.js";
 import { VoxelManager } from "../World/Data/Managers/VoxelManager.js";
-import { WorldBounds } from "../Data/World/WorldBounds.js";
-import { ThreadComm } from "../Libs/ThreadComm/ThreadComm.js";
+import { ThreadComm } from "threadcomm";
+import { RichWorldTasks } from "./Tasks/RichWorldTasks.js";
+import { RichDataTool } from "./Tools/RichDataTool.js";
+import { DataTool } from "../Tools/Data/DataTool.js";
 
 export const DVERW = {
  environment: <"node" | "browser">"browser",
  __settingsHaveBeenSynced: false,
 
+ tasks: RichWorldTasks,
  TC: ThreadComm,
  worldBounds: WorldBounds,
  UTIL: Util,
@@ -25,26 +37,26 @@ export const DVERW = {
 
  worldComm: WorldComm,
  parentComm: ParentComm,
+ nexusComm: NexusComm,
+ constructorComm: ConstructorComm,
+ fxComm: FXComm,
+ dataComm: DataComm,
 
  richData: RichDataRegister,
 
+ dataSyncNode: DataSyncNode,
+ data: DataManager,
+
  voxelManager: VoxelManager,
-
- //takss: RichWorldTasks,
-
- syncSettings(data: EngineSettingsData) {
-  this.settings.syncSettings(data);
-  this.settings.syncWithWorldBounds(this.worldBounds);
-  this.__settingsHaveBeenSynced = true;
- },
- reStart() {},
-
- isReady() {
-  return DVERW.worldComm.isReady() && DVERW.__settingsHaveBeenSynced;
- },
 
  async $INIT() {
   await InitWorker(this);
+ },
+ getRichDataTool() {
+  return new RichDataTool();
+ },
+ getDataTool() {
+  return new DataTool();
  },
 };
 

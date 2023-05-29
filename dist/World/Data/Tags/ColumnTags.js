@@ -1,4 +1,4 @@
-import { TagManager } from "../../../Libs/DivineBinaryTags/TagManager.js";
+import { TagManager } from "divine-binary-tags";
 import { ColumnTags } from "../../../Data/World/Column/ColumnTags.js";
 import { WorldDataTagIDs } from "../../../Data/Constants/Tags/WorldDataTagIds.js";
 export const ColumnDataTags = new TagManager("column-tags");
@@ -43,11 +43,23 @@ ColumnDataTags.registerTag({
     numberType: "32ui",
 });
 ColumnDataTags.registerTag({
+    id: "#dve_has_rich_data",
+    type: "boolean",
+});
+ColumnDataTags.registerTag({
+    id: "#dve_has_entity_data",
+    type: "boolean",
+});
+ColumnDataTags.registerTag({
     id: "#dve_is_stored",
     type: "boolean",
 });
 ColumnDataTags.registerTag({
     id: "#dve_is_world_gen_done",
+    type: "boolean",
+});
+ColumnDataTags.registerTag({
+    id: "#dve_is_world_decor_done",
     type: "boolean",
 });
 ColumnDataTags.registerTag({

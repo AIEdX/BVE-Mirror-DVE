@@ -1,7 +1,7 @@
-import { Hooks } from "../Libs/Hooks/Hooks.js";
-import { LocationData } from "Meta/Data/CommonTypes.js";
-import { SetRichVoxel } from "Meta/Data/RichWorldData.types.js";
+import { Hooks } from "divine-hooks";
+import type { LocationData } from "voxelspaces";
 import { DimensionData } from "Meta/Data/DimensionData.types.js";
+import { EngineSettingsData } from "Meta/Data/Settings/EngineSettings.types.js";
 
 export const DataHooks = {
  dimension: {
@@ -29,4 +29,5 @@ export const DataHooks = {
   onAddToRGBUpdate: Hooks.getSyncHook<LocationData, void>(),
   onRichVoxelPaint: Hooks.getSyncHook<[id:string,location : LocationData], void>(),
  },
+ settingsSynced : Hooks.getSyncHook<EngineSettingsData, void>(),
 };

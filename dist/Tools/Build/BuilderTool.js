@@ -1,12 +1,12 @@
 import { WorldRegister } from "../../Data/World/WorldRegister.js";
 import { ChunkDataTool } from "../Data/WorldData/ChunkDataTool.js";
-import { ThreadComm } from "../../Libs/ThreadComm/ThreadComm.js";
+import { ThreadComm } from "threadcomm";
 import { LocationBoundTool } from "../../Tools/Classes/LocationBoundTool.js";
-import { TasksTool } from "../../Tools/Tasks/TasksTool.js";
+import { TaskTool } from "../../Tools/Tasks/TasksTool.js";
 const parentComm = ThreadComm.parent;
-export class BuilderTool extends LocationBoundTool {
+class BuilderTool extends LocationBoundTool {
     static _chunkTool = new ChunkDataTool();
-    tasks = TasksTool();
+    tasks = new TaskTool();
     data = {
         LOD: 1,
     };
@@ -14,16 +14,17 @@ export class BuilderTool extends LocationBoundTool {
         this.data.LOD = lod;
         return this;
     }
-    buildChunk() {
-        const [dimension, x, y, z] = this.location;
-        this.tasks.build.chunk.async.add(x, y, z);
-        this.tasks.build.chunk.async.run(() => { });
+    clearAll() {
+        parentComm.runTasks("clear-all", []);
+    }
+    buildChunk(runQueue = false) {
+        this.tasks.build.chunk.queued.add(this.location);
+        if (runQueue)
+            this.tasks.build.chunk.queued.run(() => { });
         return this;
     }
     buildColumn(onDone) {
-        const [dimension, x, y, z] = this.location;
-        this.tasks.setFocalPoint(this.location);
-        this.tasks.build.column.deferred.run(x, y, z, onDone ? onDone : (data) => { });
+        this.tasks.build.column.deferred.run(this.location, onDone ? onDone : (data) => { });
         return this;
     }
     removeColumn() {
@@ -43,3 +44,4 @@ export class BuilderTool extends LocationBoundTool {
         parentComm.runTasks("remove-column-outside-radius", [this.location, radius]);
     }
 }
+export { BuilderTool };

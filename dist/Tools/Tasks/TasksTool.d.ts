@@ -1,7 +1,8 @@
-import { BuildTasks, Priorities } from "Meta/Tasks/Tasks.types.js";
-import { LocationData } from "Libs/voxelSpaces/Types/VoxelSpaces.types.js";
+import { BuildTasks, GenerateTasks, Priorities } from "Meta/Tasks/Tasks.types.js";
+import { LocationData } from "voxelspaces";
 import type { RawVoxelData } from "Meta/Data/Voxels/Voxel.types.js";
-declare class TasksBase {
+export type TaskRunModes = "async" | "sync";
+export declare class TaskTool {
     _data: {
         dimension: string;
         queue: string;
@@ -11,137 +12,81 @@ declare class TasksBase {
     constructor();
     setPriority(priority: Priorities): this;
     setFocalPoint(location: LocationData): this;
-    generate: {
-        async: {
-            _s: TasksBase;
-            add(x: number, y: number, z: number, data?: any): void;
-            run(onDone: Function): void;
-            runAndAwait(): Promise<void>;
-        };
-        deferred: {
-            _s: TasksBase;
-            run(x: number, y: number, z: number, data: any, onDone: (data: any) => void): void;
-        };
-    };
     voxelUpdate: {
+        update: {
+            run: (location: LocationData, raw: RawVoxelData, onDone: (data: any) => void, mode?: TaskRunModes) => void;
+        };
         erase: {
-            deferred: {
-                _s: TasksBase;
-                run(x: number, y: number, z: number, onDone: (data: any) => void): void;
-            };
-            async: {
-                _s: TasksBase;
-                add(x: number, y: number, z: number): void;
-                run(onDone: Function): void;
-                runAndAwait(): Promise<void>;
-            };
+            run: (location: LocationData, onDone: (data: any) => void, mode?: TaskRunModes) => void;
         };
         paint: {
-            deferred: {
-                _s: TasksBase;
-                run(x: number, y: number, z: number, raw: RawVoxelData, onDone: (data: any) => void): void;
-            };
-            async: {
-                _s: TasksBase;
-                add(x: number, y: number, z: number, raw: RawVoxelData): void;
-                run(onDone: Function): void;
-                runAndAwait(): Promise<void>;
-            };
+            run: (location: LocationData, raw: RawVoxelData, onDone: (data: any) => void, mode?: TaskRunModes) => void;
         };
     };
     build: {
         chunk: {
             deferred: {
-                _s: TasksBase;
-                run(buildTasks: BuildTasks, onDone: (data: any) => void): void;
+                run: (buildTasks: BuildTasks, onDone: (data: any) => void) => void;
             };
-            async: {
-                _s: TasksBase;
-                add(x: number, y: number, z: number): void;
-                run(onDone: Function): void;
-                runAndAwait(): Promise<void>;
+            queued: {
+                add: (location: LocationData) => void;
+                run: (onDone: Function) => void;
+                runAndAwait: () => Promise<void>;
             };
         };
         column: {
-            async: {};
+            queued: {};
             deferred: {
-                _s: TasksBase;
-                run(x: number, y: number, z: number, onDone: (data: any) => void): void;
+                run: (location: LocationData, onDone: (data: any) => void) => void;
             };
         };
     };
     explosion: {
-        run: {
-            _s: TasksBase;
-            add(x: number, y: number, z: number, radius: number): void;
-            run(onDone: Function): void;
-            runAndAwait(): Promise<void>;
-        };
-    };
-    flow: {
-        update: {
-            _s: TasksBase;
-            add(x: number, y: number, z: number): void;
-            run(onDone: Function): void;
-            runAndAwait(): Promise<void>;
-        };
-        remove: {
-            _s: TasksBase;
-            add(x: number, y: number, z: number): void;
-            run(onDone: Function): void;
-            runAndAwait(): Promise<void>;
-        };
+        run: (location: LocationData, radius: number, onDone: (data: any) => void) => void;
     };
     anaylzer: {
-        propagation: {
-            _s: TasksBase;
-            run(x: number, y: number, z: number, onDone: (data: any) => void): void;
-        };
         update: {
-            _s: TasksBase;
-            run(x: number, y: number, z: number, onDone: (data: any) => void): void;
+            run: (location: LocationData, onDone: (data: any) => void) => void;
         };
     };
-    light: {
-        rgb: {
-            update: {
-                _s: TasksBase;
-                add(x: number, y: number, z: number, queue?: string | null): void;
-                run(onDone: Function): void;
-                runAndAwait(): Promise<void>;
-            };
-            remove: {
-                _s: TasksBase;
-                add(x: number, y: number, z: number, queue?: string | null): void;
-                run(onDone: Function): void;
-                runAndAwait(): Promise<void>;
-            };
+    propagation: {
+        deferred: {
+            run: (location: LocationData, onDone: (data: any) => void) => void;
         };
-        sun: {
-            update: {
-                _s: TasksBase;
-                add(x: number, y: number, z: number): void;
-                run(onDone: Function): void;
-                runAndAwait(): Promise<void>;
-            };
-            remove: {
-                _s: TasksBase;
-                add(x: number, y: number, z: number): void;
-                run(onDone: Function): void;
-                runAndAwait(): Promise<void>;
-            };
+        queued: {
+            add: (location: LocationData) => void;
+            run: (onDone: Function) => void;
+            runAndAwait: () => Promise<void>;
         };
-        worldSun: {
-            _s: TasksBase;
-            deferred: {
-                _s: TasksBase;
-                run(x: number, y: number, z: number, onDone: (data: any) => void): void;
-            };
-            add(x: number, z: number, y?: number): void;
-            run(onDone: Function): void;
-            runAndAwait(): Promise<void>;
+    };
+    generate: {
+        deferred: {
+            run(location: LocationData, data: any, onDone: (data: any) => void): void;
+        };
+        queued: {
+            add: (data: GenerateTasks) => void;
+            run: (onDone: Function) => void;
+            runAndAwait: () => Promise<void>;
+        };
+    };
+    decorate: {
+        deferred: {
+            run: (location: LocationData, data: any, onDone: (data: any) => void) => void;
+        };
+        queued: {
+            add: (data: GenerateTasks) => Promise<void>;
+            run: (onDone: Function) => void;
+            runAndAwait: () => Promise<void>;
+        };
+    };
+    worldSun: {
+        deferred: {
+            run: (location: LocationData, onDone: (data: any) => void) => void;
+        };
+        queued: {
+            add: (location: LocationData) => void;
+            run: (onDone: Function) => void;
+            runAndAwait: () => Promise<void>;
         };
     };
 }
-export declare const TasksTool: () => TasksBase;
-export {};

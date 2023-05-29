@@ -2,6 +2,7 @@ export const ConstructorTasks = {
  buildChunk: 0,
  buildColumn: 0,
  generate: 0,
+ decorate: 0,
  RGBlightUpdate: 0,
  RGBlightRemove: 0,
  worldSun: 0,
@@ -16,6 +17,7 @@ export const ConstructorTasks = {
  explosion: 0,
  voxelErease: 0,
  voxelPaint: 0,
+ voxelUpdate: 0,
 };
 
 let index = 0;

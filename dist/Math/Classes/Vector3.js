@@ -7,6 +7,14 @@ export class Vector3 {
         y: 0,
         z: 0,
     };
+    static NaNRestore(vec3) {
+        if (Number.isNaN(vec3.x))
+            vec3.x = 0;
+        if (Number.isNaN(vec3.y))
+            vec3.y = 0;
+        if (Number.isNaN(vec3.z))
+            vec3.z = 0;
+    }
     constructor(x, y, z) {
         this.x = x;
         this.y = y;
@@ -16,21 +24,25 @@ export class Vector3 {
         this.x = array[startIndex];
         this.y = array[startIndex + 1];
         this.z = array[startIndex + 2];
+        return this;
     }
     updateVector(x, y, z) {
         this.x = x;
         this.y = y;
         this.z = z;
+        return this;
     }
     updateFromVec3(vector) {
         this.x = vector.x;
         this.y = vector.y;
         this.z = vector.z;
+        return this;
     }
     roundVector(deciamlPoints = 2) {
         this.x = Number(this.x.toFixed(deciamlPoints));
         this.y = Number(this.y.toFixed(deciamlPoints));
         this.z = Number(this.z.toFixed(deciamlPoints));
+        return this;
     }
     translate(x, y, z) {
         this.x = this.x + x;
@@ -150,12 +162,14 @@ export class Vector3 {
         this.x = this.x / scalar;
         this.y = this.y / scalar;
         this.z = this.z / scalar;
+        Vector3.NaNRestore(this);
         return this;
     }
     getDivided(scalar) {
         this._tv3.x = this.x / scalar;
         this._tv3.y = this.y / scalar;
         this._tv3.z = this.z / scalar;
+        Vector3.NaNRestore(this._tv3);
         return this._tv3;
     }
     normalize() {

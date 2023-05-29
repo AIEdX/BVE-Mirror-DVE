@@ -1,58 +1,64 @@
-import { DVEBabylon } from "../Babylon/DVEBabylon.js";
-import { RenderManager } from "../Render/RenderManager.js";
+import { NodeManager } from "../Nodes/NodeManager.js";
+import { DVEBabylon } from "../Nodes/DVEBabylon.js";
 export class SceneTool {
-    constructor() {
-        this.sky._s = this;
-        this.fog._s = this;
-        this.effects._s = this;
-        this.levels._s = this;
-    }
+    constructor() { }
     sky = {
-        _s: {},
-        setColor(r, g, b) {
-            //todo
-            return this._s;
+        setColor: (r, g, b) => {
+            return this;
         },
     };
     fog = {
-        _s: {},
-        setHeightFactor(v) {
-            RenderManager.updateFogOptions({ volumetricOptions: { heightFactor: v } });
-            return this._s;
+        setHeightFactor: (v) => {
+            NodeManager.materials.updateFogOptions({
+                volumetricOptions: { heightFactor: v },
+            });
+            return this;
         },
-        setDensity(v) {
-            RenderManager.updateFogOptions({ density: v });
-            return this._s;
+        setDensity: (v) => {
+            NodeManager.materials.updateFogOptions({ density: v });
+            return this;
         },
-        setMode(mode) {
-            RenderManager.updateFogOptions({ mode: mode });
-            return this._s;
+        setMode: (mode) => {
+            NodeManager.materials.updateFogOptions({ mode: mode });
+            return this;
         },
-        setColor(r, g = r, b = r) {
-            RenderManager.updateFogOptions({ color: new DVEBabylon.system.Color3(r, g, b) });
-            return this._s;
-        },
-    };
-    effects = {
-        _s: {},
-        setFloraEffects(enabled) {
-            RenderManager.updateShaderEffectOptions({ floraEffects: enabled });
-            return this._s;
-        },
-        setLiquidEffects(enabled) {
-            RenderManager.updateShaderEffectOptions({ liquidEffects: enabled });
-            return this._s;
+        setColor: (r, g = r, b = r) => {
+            NodeManager.materials.updateFogOptions({
+                color: new DVEBabylon.system.Color3(r, g, b),
+            });
+            return this;
         },
     };
     levels = {
-        _s: {},
-        setBase(v) {
-            RenderManager.setBaseLevel(v);
-            return this._s;
+        setBase: (v) => {
+            NodeManager.materials.setBaseLevel(v);
+            return this;
         },
-        setSun(v) {
-            RenderManager.setSunLevel(v);
-            return this._s;
+        setSun: (v) => {
+            NodeManager.materials.setSunLevel(v);
+            return this;
+        },
+    };
+    options = {
+        doColor: (v) => {
+            NodeManager.materials.setOption("doColor", v);
+            return this.options;
+        },
+        doAO: (v) => {
+            NodeManager.materials.setOption("doAO", v);
+            return this.options;
+        },
+        doSun: (v) => {
+            NodeManager.materials.setOption("doSun", v);
+            return this.options;
+        },
+        doRGB: (v) => {
+            NodeManager.materials.setOption("doRGB", v);
+            return this.options;
+        },
+        doEffects: (v) => {
+            NodeManager.materials.setOption("doEffects", v);
+            return this.options;
         },
     };
 }

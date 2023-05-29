@@ -1,0 +1,20 @@
+import type { TextureData, TextureTypeUVMap } from "Meta/Render/Textures/Texture.types";
+import { TextureType } from "./TextureType.js";
+import { ConstructorTextureData } from "Meta/index.js";
+export declare const TextureManager: {
+    defaultTexturePath: string;
+    textureTypes: Map<string, TextureType>;
+    uvMap: TextureTypeUVMap;
+    getTextureIndex(data: ConstructorTextureData, overlay?: boolean): number;
+    _ready: boolean;
+    isReady(): boolean;
+    $INIT(): Promise<void>;
+    $START_ANIMATIONS(): void;
+    generateTextureUVMap(): TextureTypeUVMap;
+    defineDefaultTexturePath(path: string): void;
+    getTextureType(id: string): false | TextureType;
+    addTextureType(id: string): TextureType;
+    clearTextureData(): void;
+    registerTexture(textureData: TextureData | TextureData[]): void;
+    createRawDataMap(): Promise<Map<string, Uint8ClampedArray>>;
+};

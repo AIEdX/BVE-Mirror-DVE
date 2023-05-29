@@ -24,6 +24,7 @@ export const FlowManager = {
   z: number
  ) {
   this.sunCheck(tasks, x, y, z);
+  SunRemove(tasks);
   this._brush.setId(vox).setXYZ(x, y, z).paint();
   this._sDataTool.loadInAt(x, y, z);
   this._sDataTool
@@ -31,6 +32,7 @@ export const FlowManager = {
    .setLevelState(levelState)
    .setLight(this.getAbsorbLight(x, y, z))
    .commit();
+  SunUpdate(tasks);
  },
 
  setDimension(dimension: string) {
@@ -148,8 +150,7 @@ export const FlowManager = {
   if (!this._nDataTool.isAir()) return;
   const l = this._nDataTool.getLight();
   if (this.lightData.getS(l) == 0xf) {
-   tasks.queues.sun.rmeove.push(x, y - 1, z);
-   SunRemove(tasks);
+   tasks.queues.sun.remove.push(x, y - 1, z);
   }
  },
 };
